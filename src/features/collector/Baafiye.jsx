@@ -930,7 +930,7 @@ export default function Baafiye() {
                                                     {/* Copy the whole action button logic here if needed, but for minimal change just keep structure */}
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); setExpandedActionId(expandedActionId === c.sqn ? null : c.sqn); }}
-                                                        className={`flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 relative overflow-hidden active:scale-95
+                                                        className={`flex items-center justify-center w-7 h-7 rounded-full transition-all duration-300 relative overflow-hidden active:scale-95
                                                             ${expandedActionId === c.sqn
                                                                 ? 'bg-red-500 text-white rotate-90 shadow-md'
                                                                 : 'bg-white text-gray-500 shadow-sm border border-gray-100 hover:bg-gray-50 hover:shadow-md'}`}
@@ -1030,10 +1030,10 @@ export default function Baafiye() {
                                                 </button>
                                             </div>
 
-                                            <div className="flex items-center gap-2 flex-wrap text-[10px] font-bold pl-8">
-                                                <span className="bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-mono">{c.sqn}</span>
-                                                {c.status === 'Balan' && <span className="bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded flex items-center gap-1"><Calendar size={10} /> {formatDateCompact(c.date)}</span>}
-                                                {c.fahfahin && <span className="bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded truncate max-w-[150px]">{c.fahfahin}</span>}
+                                            <div className="flex items-center gap-1.5 flex-wrap text-[9px] font-bold pl-8 -mt-0.5">
+                                                <span className="bg-gray-100 text-gray-500 px-1.5 py-0 rounded font-mono border border-gray-200">{c.sqn}</span>
+                                                {c.status === 'Balan' && <span className="bg-orange-50 text-orange-600 px-1.5 py-0 rounded flex items-center gap-1 border border-orange-100"><Calendar size={9} /> {formatDateCompact(c.date)}</span>}
+                                                {c.fahfahin && <span className="bg-indigo-50 text-indigo-600 px-1.5 py-0 rounded truncate max-w-[150px] border border-indigo-100">{c.fahfahin}</span>}
                                             </div>
                                         </div>
 
