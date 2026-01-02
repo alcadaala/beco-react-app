@@ -663,12 +663,12 @@ export default function Baafiye() {
                     </div>
                 ) : (
                     <>
-                        <div className="flex flex-col">
-                            <img src="/beco_logo_final.png" alt="Beco" className="h-8 brightness-0 invert" />
-                            <div className="flex items-center gap-1 ml-1 mt-0.5">
-                                <span className={`w-1.5 h-1.5 rounded-full ${isQuotaExceeded ? 'bg-orange-400' : (navigator.onLine ? 'bg-emerald-400' : 'bg-red-400 animate-pulse')}`}></span>
-                                <span className="text-[9px] font-bold text-indigo-100 uppercase tracking-widest leading-none">
-                                    {isQuotaExceeded ? 'Offline (Limit)' : (navigator.onLine ? 'Connected' : 'Offline')}
+                        <div className="flex flex-col items-start bg-white/10 backdrop-blur-md px-3 py-2 rounded-2xl border border-white/20 shadow-xl animate-in fade-in zoom-in duration-700 hover:scale-105 transition-transform">
+                            <img src="/beco_logo_final.png" alt="Beco" className="h-6 w-auto object-contain drop-shadow-sm brightness-0 invert" />
+                            <div className="flex items-center gap-1.5 mt-1">
+                                <span className={`w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor] ${isQuotaExceeded ? 'bg-orange-400 text-orange-400' : (navigator.onLine ? 'bg-emerald-400 text-emerald-400' : 'bg-red-500 text-red-500 animate-pulse')}`}></span>
+                                <span className="text-[9px] font-black text-white/90 uppercase tracking-widest leading-none">
+                                    {isQuotaExceeded ? 'Limit' : (navigator.onLine ? 'BEC' : 'OFF')}
                                 </span>
                             </div>
                         </div>
