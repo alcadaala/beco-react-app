@@ -930,12 +930,12 @@ export default function Baafiye() {
                                                     {/* Copy the whole action button logic here if needed, but for minimal change just keep structure */}
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); setExpandedActionId(expandedActionId === c.sqn ? null : c.sqn); }}
-                                                        className={`flex items-center justify-center w-7 h-7 rounded-full transition-all duration-300 relative overflow-hidden active:scale-95
+                                                        className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-300 relative overflow-hidden active:scale-95
                                                             ${expandedActionId === c.sqn
                                                                 ? 'bg-red-500 text-white rotate-90 shadow-md'
                                                                 : 'bg-white text-gray-500 shadow-sm border border-gray-100 hover:bg-gray-50 hover:shadow-md'}`}
                                                     >
-                                                        {expandedActionId === c.sqn ? <X size={16} strokeWidth={3} /> : <MoreHorizontal size={18} strokeWidth={2.5} />}
+                                                        {expandedActionId === c.sqn ? <X size={14} strokeWidth={3} /> : <MoreHorizontal size={16} strokeWidth={2.5} />}
                                                     </button>
                                                     {/* EXPANDED MENU POPUP (Keep existing logic) */}
                                                     {/* EXPANDED MENU POPUP - ANIMATED ICONS */}
@@ -1019,7 +1019,7 @@ export default function Baafiye() {
                                                     )}
                                                 </div>
 
-                                                <h3 className={`font-bold truncate text-sm mr-1 ${c.status === 'Paid' ? 'line-through text-gray-400' : (filterType === '2 Bilood' || prevBal >= 2 ? 'text-red-600' : 'text-gray-900')}`}>{c.name}</h3>
+                                                <h3 className={`font-bold truncate text-xs mr-1 ${c.status === 'Paid' ? 'line-through text-gray-400' : (filterType === '2 Bilood' || prevBal >= 2 ? 'text-red-600' : 'text-gray-900')}`}>{c.name}</h3>
 
                                                 {/* PIN TOGGLE AT NAME END */}
                                                 <button
@@ -1044,7 +1044,7 @@ export default function Baafiye() {
                                                     e.stopPropagation();
                                                     setViewingBalanceId(viewingBalanceId === c.sqn ? null : c.sqn);
                                                 }}
-                                                className={`text-base font-black leading-tight ${c.status === 'Paid' ? 'text-emerald-500' : 'text-gray-900'} cursor-pointer`}
+                                                className={`text-sm font-black leading-tight ${c.status === 'Paid' ? 'text-emerald-500' : 'text-gray-900'} cursor-pointer`}
                                             >
                                                 ${c.balance}
                                             </div>
