@@ -927,9 +927,13 @@ export default function Baafiye() {
                                                     {/* Copy the whole action button logic here if needed, but for minimal change just keep structure */}
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); setExpandedActionId(expandedActionId === c.sqn ? null : c.sqn); }}
-                                                        className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+                                                        className={`flex items-center justify-center w-8 h-8 rounded-full shadow-md transition-all duration-500 relative overflow-hidden group
+                                                            ${expandedActionId === c.sqn
+                                                                ? 'bg-red-500 text-white rotate-90'
+                                                                : 'bg-gradient-to-tr from-violet-500 to-fuchsia-600 text-white animate-pulse'}`}
                                                     >
-                                                        {expandedActionId === c.sqn ? <X size={14} /> : <MoreHorizontal size={14} />}
+                                                        <div className="absolute inset-0 bg-white/20 group-hover:bg-white/30 transition-colors"></div>
+                                                        {expandedActionId === c.sqn ? <X size={16} strokeWidth={3} /> : <MoreHorizontal size={18} strokeWidth={2.5} />}
                                                     </button>
                                                     {/* EXPANDED MENU POPUP (Keep existing logic) */}
                                                     {/* EXPANDED MENU POPUP - ANIMATED ICONS */}
