@@ -12,17 +12,19 @@ import { db } from '../../lib/firebase';
 const parseDate = (dateStr) => {
     if (!dateStr) return null;
     if (typeof dateStr !== 'string') return null;
-    try {
-        const d = new Date(dateStr);
-        if (!isNaN(d.getTime())) return d;
 
-        // Manual parsing for dd-mm-yyyy or dd/mm/yyyy
-        const parts = dateStr.match(/(\d+)/g);
-        if (parts && parts.length === 3) {
-            // Assume dd/mm/yyyy for consistency in this region
-            return new Date(parts[2], parts[1] - 1, parts[0]);
-        }
-    } catch (e) { }
+    // Check for DD/MM/YYYY or DD-MM-YYYY format first (Prioritize this!)
+    // We expect this format from our save logic.
+    const parts = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (parts) {
+        // parts[1] is day, parts[2] is month, parts[3] is year
+        return new Date(parts[3], parts[2] - 1, parts[1]);
+    }
+
+    // Fallback to standard parsing (e.g. for ISO strings YYYY-MM-DD)
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) return d;
+
     return null;
 };
 
@@ -1115,7 +1117,7 @@ export default function Baafiye() {
                 {/* MESSAGE MODAL */}
                 {
                     messageFlow.step !== 'idle' && (
-                        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                        <div className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4">
                             <div className="bg-white rounded-3xl w-full max-w-sm p-6 animate-in zoom-in-95">
                                 {messageFlow.step === 'select' ? (
                                     <>
@@ -1149,53 +1151,30 @@ export default function Baafiye() {
                     )
                 }
 
-                {/* DATE PICKER MODAL - REMOVED */}
-
                 {/* CALL MODAL */}
                 {
                     callSelection && (
-                        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-                            <div className="bg-white rounded-3xl w-full max-w-sm p-6 space-y-4 animate-in zoom-in-95">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="font-black text-xl">Call Customer</h3>
-                                    <button onClick={() => setCallSelection(null)}><X className="text-gray-400" /></button>
+                        <div className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4">
+                            <div className="bg-white rounded-3xl w-full max-w-sm p-8 text-center animate-in zoom-in-95">
+                                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600 animate-pulse">
+                                    <Phone size={40} fill="currentColor" />
                                 </div>
-                                <button onClick={() => {
-                                    window.location.href = `tel:${callSelection.tell}`;
-                                    logActivity('call', 'Primary', callSelection.name, callSelection.sqn);
-                                }} className="w-full p-4 bg-green-50 border border-green-100 rounded-2xl flex items-center justify-between group hover:bg-green-100 transition-colors">
-                                    <div className="text-left">
-                                        <p className="font-black text-lg">{callSelection.tell}</p>
-                                        <p className="text-xs text-green-600 font-bold">Primary Number</p>
-                                    </div>
-                                    <div className="bg-green-500 p-2 rounded-full text-white"><Phone size={20} /></div>
-                                </button>
-                                {/* Other options simplified for brevity */}
+                                <h3 className="text-2xl font-black text-gray-900 mb-2">{callSelection.name}</h3>
+                                <p className="text-gray-500 font-bold text-lg mb-8">{callSelection.tell || callSelection.phone}</p>
+                                <div className="space-y-3">
+                                    <a href={`tel:${callSelection.tell || callSelection.phone}`} className="block w-full py-4 bg-green-500 text-white font-bold rounded-2xl shadow-lg shadow-green-200 hover:scale-105 transition-transform" onClick={() => logActivity('call', 'Called Customer', callSelection.name, callSelection.sqn)}>
+                                        Call Now
+                                    </a>
+                                    <button onClick={() => setCallSelection(null)} className="block w-full py-4 bg-gray-100 text-gray-500 font-bold rounded-2xl">Cancel</button>
+                                </div>
                             </div>
                         </div>
                     )
                 }
 
-            </div >
-            {/* End of Customer List */}
+                {/* End of Scrollable Wrapper */}
+            </div>
+
         </div>
-            {/* End of Scrollable Wrapper */ }
-            </div >
-
-        {/* MODALS - OUTSIDE SCROLLING AREA (Or keep inside if global fixed? Usually better outside but for now inside works if fixed positioning is used correctly) */ }
-    {/* ... Actually, Modals are 'fixed inset-0' so they don't care about container. */ }
-
-    {/* CALL MODAL (Moved up or kept here? It was at end) */ }
-    {/* The previous logic had Modals INSIDE. Since I wrapped "Content" in a div, and Modals were children of the root... */ }
-    {/* Let's verify where Modals are. Call Modal starts around line 1157. */ }
-    {/* I need to close the 'flex-1 overflow-y-auto' wrapper BEFORE the Modals or AFTER? */ }
-    {/* If Modals are 'fixed', it doesn't matter much, but logically they are siblings of content. */ }
-    {/* However, the 'flex-col' parent ends at line 1184 (implied). */ }
-    {/* The wrapper should likely end BEFORE the Modals to keep DOM clean, or just before the final closing div. */ }
-    {/* Let's close it just before the Modals if possible, or at the very end. */ }
-    {/* Looking at the previous Replace, I started the wrapper at 754. */ }
-    {/* I need to close it. */ }
-            
-        </div >
     );
 }
