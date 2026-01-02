@@ -917,13 +917,13 @@ export default function Baafiye() {
                                     }}
                                     style={{ transform: `translateX(${visualOffset}px)`, transition: isSwiped ? 'none' : 'transform 0.3s ease-out' }}
                                     onClick={() => setSelectedCustomer(c)}
-                                    className={`relative bg-gradient-to-br from-white to-stone-50 p-2.5 rounded-[1rem] shadow-[0_1px_8px_-2px_rgba(0,0,0,0.08)] z-10 active:scale-[0.99] transition-all mb-0.5 border
+                                    className={`relative bg-gradient-to-br from-white to-stone-50 p-2 rounded-[0.8rem] shadow-[0_1px_6px_-2px_rgba(0,0,0,0.05)] z-10 active:scale-[0.99] transition-all mb-px border
                                         ${isHighRisk ? 'border-red-400 bg-red-50/30' : 'border-white'}`}
                                 >
                                     <div className="flex justify-between items-start">
                                         {/* Left Info */}
-                                        <div className="flex-1 min-w-0 pr-2">
-                                            <div className="flex items-center gap-2 mb-1 relative">
+                                        <div className="flex-1 min-w-0 pr-1">
+                                            <div className="flex items-center gap-2 relative">
                                                 {/* ACTION TRIGGER (Moved to be less intrusive, or kept same) */}
                                                 <div className="relative">
                                                     {/* Copy the whole action button logic here if needed, but for minimal change just keep structure */}
