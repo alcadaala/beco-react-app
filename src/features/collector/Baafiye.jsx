@@ -1155,17 +1155,46 @@ export default function Baafiye() {
                 {
                     callSelection && (
                         <div className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4">
-                            <div className="bg-white rounded-3xl w-full max-w-sm p-8 text-center animate-in zoom-in-95">
-                                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600 animate-pulse">
-                                    <Phone size={40} fill="currentColor" />
+                            <div className="bg-white rounded-3xl w-full max-w-sm p-6 text-center animate-in zoom-in-95">
+                                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600 animate-pulse">
+                                    <Phone size={32} fill="currentColor" />
                                 </div>
-                                <h3 className="text-2xl font-black text-gray-900 mb-2">{callSelection.name}</h3>
-                                <p className="text-gray-500 font-bold text-lg mb-8">{callSelection.tell || callSelection.phone}</p>
+                                <h3 className="text-xl font-black text-gray-900 mb-1">{callSelection.name}</h3>
+                                <p className="text-gray-400 font-medium text-xs mb-6 uppercase tracking-wider">Select Number to Call</p>
+
                                 <div className="space-y-3">
-                                    <a href={`tel:${callSelection.tell || callSelection.phone}`} className="block w-full py-4 bg-green-500 text-white font-bold rounded-2xl shadow-lg shadow-green-200 hover:scale-105 transition-transform" onClick={() => logActivity('call', 'Called Customer', callSelection.name, callSelection.sqn)}>
-                                        Call Now
+                                    {/* SQN / TEEL OPTION */}
+                                    <a href={`tel:${callSelection.tell}`}
+                                        className="flex items-center justify-between w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl group hover:bg-green-50 hover:border-green-200 transition-all"
+                                        onClick={() => logActivity('call', 'SQN/Tell', callSelection.name, callSelection.sqn)}
+                                    >
+                                        <div className="text-left">
+                                            <div className="text-xs font-bold text-gray-400 uppercase mb-0.5">Account / SQN</div>
+                                            <div className="font-black text-lg text-gray-900">{callSelection.tell || 'N/A'}</div>
+                                            <div className="text-[10px] font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full inline-block mt-1">SQN: {callSelection.sqn}</div>
+                                        </div>
+                                        <div className="bg-white p-2.5 rounded-full shadow-sm text-gray-400 group-hover:text-green-600 transition-colors">
+                                            <Phone size={20} />
+                                        </div>
                                     </a>
-                                    <button onClick={() => setCallSelection(null)} className="block w-full py-4 bg-gray-100 text-gray-500 font-bold rounded-2xl">Cancel</button>
+
+                                    {/* MOBILE / PHONE OPTION */}
+                                    {callSelection.phone && callSelection.phone !== callSelection.tell && (
+                                        <a href={`tel:${callSelection.phone}`}
+                                            className="flex items-center justify-between w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl group hover:bg-blue-50 hover:border-blue-200 transition-all"
+                                            onClick={() => logActivity('call', 'Mobile', callSelection.name, callSelection.sqn)}
+                                        >
+                                            <div className="text-left">
+                                                <div className="text-xs font-bold text-gray-400 uppercase mb-0.5">Mobile Number</div>
+                                                <div className="font-black text-lg text-gray-900">{callSelection.phone}</div>
+                                            </div>
+                                            <div className="bg-white p-2.5 rounded-full shadow-sm text-gray-400 group-hover:text-blue-600 transition-colors">
+                                                <Phone size={20} />
+                                            </div>
+                                        </a>
+                                    )}
+
+                                    <button onClick={() => setCallSelection(null)} className="w-full py-3 text-gray-400 font-bold text-sm hover:text-gray-600 mt-2">Cancel</button>
                                 </div>
                             </div>
                         </div>
