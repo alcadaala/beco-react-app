@@ -986,7 +986,7 @@ export default function Baafiye() {
                                                                         setBalanDropdownId(null);
                                                                     }}
                                                                 >
-                                                                    <div 
+                                                                    <div
                                                                         onClick={(e) => e.stopPropagation()}
                                                                         className="bg-white rounded-3xl p-6 w-[85%] max-w-[320px] shadow-2xl animate-in zoom-in-95 duration-200 border border-white/20"
                                                                     >
@@ -994,45 +994,47 @@ export default function Baafiye() {
                                                                             <h4 className="text-lg font-black text-gray-800">📅 Set Appointment</h4>
                                                                             <button onClick={() => setBalanDropdownId(null)} className="p-1 bg-gray-100 rounded-full"><X size={18} /></button>
                                                                         </div>
-                                                                        
+
                                                                         <div className="space-y-4">
                                                                             <div>
                                                                                 <label className="text-xs font-bold text-gray-500 uppercase ml-1">Date</label>
-                                                                                <input 
-                                                                                    type="date" 
+                                                                                <input
+                                                                                    type="date"
                                                                                     autoFocus
                                                                                     className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-base font-bold outline-none focus:border-orange-500 transition-colors"
                                                                                     onChange={(e) => setActiveFormData(prev => ({ ...prev, date: e.target.value }))}
                                                                                 />
                                                                             </div>
                                                                             <div>
-                                                                                 <label className="text-xs font-bold text-gray-500 uppercase ml-1">Note</label>
-                                                                                 <input 
-                                                                                    type="text" 
+                                                                                <label className="text-xs font-bold text-gray-500 uppercase ml-1">Note</label>
+                                                                                <input
+                                                                                    type="text"
                                                                                     placeholder="Optional details..."
                                                                                     className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-orange-500 transition-colors"
                                                                                     onChange={(e) => setActiveFormData(prev => ({ ...prev, note: e.target.value }))}
                                                                                 />
                                                                             </div>
-                                                                            <button 
+                                                                            <button
                                                                                 onClick={(e) => {
                                                                                     e.stopPropagation();
                                                                                     if (!activeFormData.date) return alert("Please pick a date");
-                                                                            // Reuse handleSaveCustomer logic by constructing object
-                                                                            const updatedC = {
-                                                                                ...c,
-                                                                                status: 'Balan',
-                                                                                date: activeFormData.date.split('-').reverse().join('/'), // Convert YYYY-MM-DD to DD/MM/YYYY
-                                                                                fahfahin: activeFormData.note ? `Balan: ${activeFormData.note}` : 'Balan'
-                                                                            };
-                                                                            handleSaveCustomer(updatedC);
-                                                                            setBalanDropdownId(null);
-                                                                            setExpandedActionId(null);
-                                                                        }}
-                                                                        className="w-full bg-orange-500 text-white font-bold py-2 rounded-lg text-xs shadow-lg active:scale-95 transition-transform"
-                                                                    >
-                                                                        Confirm Balan
-                                                                    </button>
+                                                                                    // Reuse handleSaveCustomer logic by constructing object
+                                                                                    const updatedC = {
+                                                                                        ...c,
+                                                                                        status: 'Balan',
+                                                                                        date: activeFormData.date.split('-').reverse().join('/'), // Convert YYYY-MM-DD to DD/MM/YYYY
+                                                                                        fahfahin: activeFormData.note ? `Balan: ${activeFormData.note}` : 'Balan'
+                                                                                    };
+                                                                                    handleSaveCustomer(updatedC);
+                                                                                    setBalanDropdownId(null);
+                                                                                    setExpandedActionId(null);
+                                                                                }}
+                                                                                className="w-full bg-orange-500 text-white font-bold py-2 rounded-lg text-xs shadow-lg active:scale-95 transition-transform"
+                                                                            >
+                                                                                Confirm Balan
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             )}
                                                         </div>
@@ -1057,120 +1059,120 @@ export default function Baafiye() {
                                             </div>
                                         </div>
 
-                                                {/* Right Balance */}
-                                                <div className="text-right flex flex-col items-end justify-center">
-                                                    <div
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setViewingBalanceId(viewingBalanceId === c.sqn ? null : c.sqn);
-                                                        }}
-                                                        className={`text-sm font-black leading-tight ${c.status === 'Paid' ? 'text-emerald-500' : 'text-gray-900'} cursor-pointer`}
-                                                    >
-                                                        ${c.balance}
-                                                    </div>
-                                                    <div className="text-[9px] text-gray-400 font-bold uppercase leading-none mt-0.5">Due</div>
-
-                                                    {/* BALANCE POPUP (STYLED) */}
-                                                    {isBalanceOpen && (
-                                                        <div className="absolute top-10 right-0 bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-600 text-white p-4 rounded-2xl shadow-2xl z-50 min-w-[140px] animate-in zoom-in-95 border border-white/20">
-                                                            <div className="flex justify-between items-center mb-2 pb-2 border-b border-white/20">
-                                                                <span className="text-[10px] text-indigo-100 font-medium">Total</span>
-                                                                <span className="font-bold text-sm">${c.total || c.balance}</span>
-                                                            </div>
-                                                            <div className="flex justify-between items-center mb-1">
-                                                                <span className="text-[10px] text-indigo-100 font-medium">Prev</span>
-                                                                <span className={`font-bold text-xs opacity-90 ${filterType === '2 Bilood' || parseFloat(c.prev_balance || 0) >= 3 ? 'text-red-200' : 'text-white'}`}>${c.prev_balance || c.prev || 0}</span>
-                                                            </div>
-                                                            <div className="mt-2 text-[9px] text-center text-indigo-200 uppercase tracking-widest font-bold">
-                                                                Beco Energy
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                        {/* Right Balance */}
+                                        <div className="text-right flex flex-col items-end justify-center">
+                                            <div
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setViewingBalanceId(viewingBalanceId === c.sqn ? null : c.sqn);
+                                                }}
+                                                className={`text-sm font-black leading-tight ${c.status === 'Paid' ? 'text-emerald-500' : 'text-gray-900'} cursor-pointer`}
+                                            >
+                                                ${c.balance}
                                             </div>
+                                            <div className="text-[9px] text-gray-400 font-bold uppercase leading-none mt-0.5">Due</div>
+
+                                            {/* BALANCE POPUP (STYLED) */}
+                                            {isBalanceOpen && (
+                                                <div className="absolute top-10 right-0 bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-600 text-white p-4 rounded-2xl shadow-2xl z-50 min-w-[140px] animate-in zoom-in-95 border border-white/20">
+                                                    <div className="flex justify-between items-center mb-2 pb-2 border-b border-white/20">
+                                                        <span className="text-[10px] text-indigo-100 font-medium">Total</span>
+                                                        <span className="font-bold text-sm">${c.total || c.balance}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center mb-1">
+                                                        <span className="text-[10px] text-indigo-100 font-medium">Prev</span>
+                                                        <span className={`font-bold text-xs opacity-90 ${filterType === '2 Bilood' || parseFloat(c.prev_balance || 0) >= 3 ? 'text-red-200' : 'text-white'}`}>${c.prev_balance || c.prev || 0}</span>
+                                                    </div>
+                                                    <div className="mt-2 text-[9px] text-center text-indigo-200 uppercase tracking-widest font-bold">
+                                                        Beco Energy
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                    );
+                                </div>
+                            </div>
+                        );
                     })
                 )}
-                                    {visibleCount < listToRender.length && <div className="text-center py-4 text-xs font-bold text-gray-400">Loading more...</div>}
+                {visibleCount < listToRender.length && <div className="text-center py-4 text-xs font-bold text-gray-400">Loading more...</div>}
+            </div>
+
+            {/* MODALS */}
+            {
+                selectedCustomer && (
+                    <CustomerEditModal
+                        customer={selectedCustomer}
+                        onClose={() => setSelectedCustomer(null)}
+                        onSave={handleSaveCustomer}
+                    />
+                )
+            }
+
+            {/* MESSAGE MODAL */}
+            {
+                messageFlow.step !== 'idle' && (
+                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl w-full max-w-sm p-6 animate-in zoom-in-95">
+                            {messageFlow.step === 'select' ? (
+                                <>
+                                    <h3 className="text-xl font-black text-center mb-6">Choose Channel</h3>
+                                    <div className="space-y-3">
+                                        <button onClick={() => handleChannelSelect('whatsapp')} className="w-full py-4 bg-[#25D366] text-white rounded-2xl font-bold flex justify-center items-center gap-2">
+                                            <MessageCircle fill="white" /> WhatsApp
+                                        </button>
+                                        <button onClick={() => handleChannelSelect('sms')} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold flex justify-center items-center gap-2">
+                                            <MessageSquare /> SMS
+                                        </button>
+                                        <button onClick={() => setMessageFlow({ step: 'idle', customer: null })} className="w-full py-3 text-gray-400 font-bold">Cancel</button>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <h3 className="font-black mb-4">Preview Message</h3>
+                                    <textarea
+                                        value={messageFlow.text}
+                                        onChange={e => setMessageFlow(prev => ({ ...prev, text: e.target.value }))}
+                                        className="w-full h-32 bg-gray-50 rounded-xl p-3 text-sm font-medium border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <div className="flex gap-3 mt-4">
+                                        <button onClick={() => setMessageFlow({ step: 'idle', customer: null })} className="flex-1 py-3 text-gray-400 font-bold">Cancel</button>
+                                        <button onClick={handleSendMessage} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">Send</button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* DATE PICKER MODAL - REMOVED */}
+
+            {/* CALL MODAL */}
+            {
+                callSelection && (
+                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl w-full max-w-sm p-6 space-y-4 animate-in zoom-in-95">
+                            <div className="flex justify-between items-center">
+                                <h3 className="font-black text-xl">Call Customer</h3>
+                                <button onClick={() => setCallSelection(null)}><X className="text-gray-400" /></button>
+                            </div>
+                            <button onClick={() => {
+                                window.location.href = `tel:${callSelection.tell}`;
+                                logActivity('call', 'Primary', callSelection.name, callSelection.sqn);
+                            }} className="w-full p-4 bg-green-50 border border-green-100 rounded-2xl flex items-center justify-between group hover:bg-green-100 transition-colors">
+                                <div className="text-left">
+                                    <p className="font-black text-lg">{callSelection.tell}</p>
+                                    <p className="text-xs text-green-600 font-bold">Primary Number</p>
                                 </div>
+                                <div className="bg-green-500 p-2 rounded-full text-white"><Phone size={20} /></div>
+                            </button>
+                            {/* Other options simplified for brevity */}
+                        </div>
+                    </div>
+                )
+            }
 
-                                {/* MODALS */}
-                                {
-                                    selectedCustomer && (
-                                        <CustomerEditModal
-                                            customer={selectedCustomer}
-                                            onClose={() => setSelectedCustomer(null)}
-                                            onSave={handleSaveCustomer}
-                                        />
-                                    )
-                                }
-
-                                {/* MESSAGE MODAL */}
-                                {
-                                    messageFlow.step !== 'idle' && (
-                                        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-                                            <div className="bg-white rounded-3xl w-full max-w-sm p-6 animate-in zoom-in-95">
-                                                {messageFlow.step === 'select' ? (
-                                                    <>
-                                                        <h3 className="text-xl font-black text-center mb-6">Choose Channel</h3>
-                                                        <div className="space-y-3">
-                                                            <button onClick={() => handleChannelSelect('whatsapp')} className="w-full py-4 bg-[#25D366] text-white rounded-2xl font-bold flex justify-center items-center gap-2">
-                                                                <MessageCircle fill="white" /> WhatsApp
-                                                            </button>
-                                                            <button onClick={() => handleChannelSelect('sms')} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold flex justify-center items-center gap-2">
-                                                                <MessageSquare /> SMS
-                                                            </button>
-                                                            <button onClick={() => setMessageFlow({ step: 'idle', customer: null })} className="w-full py-3 text-gray-400 font-bold">Cancel</button>
-                                                        </div>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <h3 className="font-black mb-4">Preview Message</h3>
-                                                        <textarea
-                                                            value={messageFlow.text}
-                                                            onChange={e => setMessageFlow(prev => ({ ...prev, text: e.target.value }))}
-                                                            className="w-full h-32 bg-gray-50 rounded-xl p-3 text-sm font-medium border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                        />
-                                                        <div className="flex gap-3 mt-4">
-                                                            <button onClick={() => setMessageFlow({ step: 'idle', customer: null })} className="flex-1 py-3 text-gray-400 font-bold">Cancel</button>
-                                                            <button onClick={handleSendMessage} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">Send</button>
-                                                        </div>
-                                                    </>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )
-                                }
-
-                                {/* DATE PICKER MODAL - REMOVED */}
-
-                                {/* CALL MODAL */}
-                                {
-                                    callSelection && (
-                                        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-                                            <div className="bg-white rounded-3xl w-full max-w-sm p-6 space-y-4 animate-in zoom-in-95">
-                                                <div className="flex justify-between items-center">
-                                                    <h3 className="font-black text-xl">Call Customer</h3>
-                                                    <button onClick={() => setCallSelection(null)}><X className="text-gray-400" /></button>
-                                                </div>
-                                                <button onClick={() => {
-                                                    window.location.href = `tel:${callSelection.tell}`;
-                                                    logActivity('call', 'Primary', callSelection.name, callSelection.sqn);
-                                                }} className="w-full p-4 bg-green-50 border border-green-100 rounded-2xl flex items-center justify-between group hover:bg-green-100 transition-colors">
-                                                    <div className="text-left">
-                                                        <p className="font-black text-lg">{callSelection.tell}</p>
-                                                        <p className="text-xs text-green-600 font-bold">Primary Number</p>
-                                                    </div>
-                                                    <div className="bg-green-500 p-2 rounded-full text-white"><Phone size={20} /></div>
-                                                </button>
-                                                {/* Other options simplified for brevity */}
-                                            </div>
-                                        </div>
-                                    )
-                                }
-
-                            </div >
-                        );
-                    }
+        </div >
+    );
+}
