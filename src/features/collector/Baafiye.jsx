@@ -707,14 +707,8 @@ export default function Baafiye() {
                     </div>
                 ) : (
                     <>
-                        <div className="flex flex-col items-start bg-white/10 backdrop-blur-md px-3 py-2 rounded-2xl border border-white/20 shadow-xl animate-in fade-in zoom-in duration-700 hover:scale-105 transition-transform">
-                            <img src="/beco_logo_final.png" alt="Beco" className="h-6 w-auto object-contain drop-shadow-sm brightness-0 invert" />
-                            <div className="flex items-center gap-1.5 mt-1">
-                                <span className={`w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor] ${isQuotaExceeded ? 'bg-orange-400 text-orange-400' : (navigator.onLine ? 'bg-emerald-400 text-emerald-400' : 'bg-red-500 text-red-500 animate-pulse')}`}></span>
-                                <span className="text-[9px] font-black text-white/90 uppercase tracking-widest leading-none">
-                                    {isQuotaExceeded ? 'Limit' : (navigator.onLine ? 'BEC' : 'OFF')}
-                                </span>
-                            </div>
+                        <div className="flex flex-col items-center justify-center p-1">
+                            <img src="/beco_logo_final.png" alt="Beco" className="h-9 w-auto object-contain drop-shadow-md brightness-0 invert opacity-95" />
                         </div>
                         <div className="flex gap-2">
                             <button onClick={() => navigate('/billing')} className="p-2 bg-white/10 rounded-xl"><BarChart3 size={20} /></button>
@@ -1219,9 +1213,13 @@ export default function Baafiye() {
 
                                 <div className="space-y-3">
                                     {/* SQN / TEEL OPTION */}
-                                    <a href={`tel:${callSelection.tell}`}
-                                        className="flex items-center justify-between w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl group hover:bg-green-50 hover:border-green-200 transition-all"
-                                        onClick={() => logActivity('call', 'SQN/Tell', callSelection.name, callSelection.sqn)}
+                                    {/* SQN / TEEL OPTION - DIRECT DIAL */}
+                                    <div
+                                        className="flex items-center justify-between w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl group hover:bg-green-50 hover:border-green-200 transition-all cursor-pointer active:scale-95"
+                                        onClick={() => {
+                                            logActivity('call', 'SQN/Tell', callSelection.name, callSelection.sqn);
+                                            window.location.href = `tel:${callSelection.tell}`;
+                                        }}
                                     >
                                         <div className="text-left">
                                             <div className="text-xs font-bold text-gray-400 uppercase mb-0.5">Account / SQN</div>
@@ -1231,13 +1229,16 @@ export default function Baafiye() {
                                         <div className="bg-white p-2.5 rounded-full shadow-sm text-gray-400 group-hover:text-green-600 transition-colors">
                                             <Phone size={20} />
                                         </div>
-                                    </a>
+                                    </div>
 
-                                    {/* MOBILE / PHONE OPTION */}
+                                    {/* MOBILE / PHONE OPTION - DIRECT DIAL */}
                                     {callSelection.phone && callSelection.phone !== callSelection.tell && (
-                                        <a href={`tel:${callSelection.phone}`}
-                                            className="flex items-center justify-between w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl group hover:bg-blue-50 hover:border-blue-200 transition-all"
-                                            onClick={() => logActivity('call', 'Mobile', callSelection.name, callSelection.sqn)}
+                                        <div
+                                            className="flex items-center justify-between w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl group hover:bg-blue-50 hover:border-blue-200 transition-all cursor-pointer active:scale-95"
+                                            onClick={() => {
+                                                logActivity('call', 'Mobile', callSelection.name, callSelection.sqn);
+                                                window.location.href = `tel:${callSelection.phone}`;
+                                            }}
                                         >
                                             <div className="text-left">
                                                 <div className="text-xs font-bold text-gray-400 uppercase mb-0.5">Mobile Number</div>
@@ -1246,7 +1247,7 @@ export default function Baafiye() {
                                             <div className="bg-white p-2.5 rounded-full shadow-sm text-gray-400 group-hover:text-blue-600 transition-colors">
                                                 <Phone size={20} />
                                             </div>
-                                        </a>
+                                        </div>
                                     )}
 
                                     <button onClick={() => setCallSelection(null)} className="w-full py-3 text-gray-400 font-bold text-sm hover:text-gray-600 mt-2">Cancel</button>
