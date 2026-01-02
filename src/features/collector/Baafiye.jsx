@@ -930,11 +930,37 @@ export default function Baafiye() {
                                                         {expandedActionId === c.sqn ? <X size={14} /> : <MoreHorizontal size={14} />}
                                                     </button>
                                                     {/* EXPANDED MENU POPUP (Keep existing logic) */}
+                                                    {/* EXPANDED MENU POPUP - ANIMATED ICONS */}
                                                     {expandedActionId === c.sqn && (
-                                                        <div className="absolute left-0 top-8 bg-white/95 backdrop-blur shadow-xl border border-gray-100 rounded-xl flex p-1.5 gap-2 z-[60] animate-in slide-in-from-left-2 zoom-in-95">
-                                                            <button onClick={(e) => { e.stopPropagation(); setCallSelection(c); }} className="w-8 h-8 rounded-full bg-green-50 text-green-600 flex items-center justify-center hover:scale-110 transition-transform"><Phone size={14} /></button>
-                                                            <button onClick={(e) => { e.stopPropagation(); handleMessageIconClick(c); }} className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:scale-110 transition-transform"><MessageCircle size={14} /></button>
-                                                            <button onClick={(e) => { e.stopPropagation(); setSelectedCustomer(c); }} className="w-8 h-8 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center hover:scale-110 transition-transform"><Calendar size={14} /></button>
+                                                        <div onClick={(e) => e.stopPropagation()} className="absolute ml-8 -mt-8 bg-white/90 backdrop-blur-xl shadow-2xl border border-white/40 rounded-2xl flex items-center p-2 gap-3 z-[60] animate-in slide-in-from-left-4 zoom-in-90 duration-300 ring-1 ring-black/5">
+
+                                                            {/* CALL */}
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); setCallSelection(c); }}
+                                                                className="relative group p-2.5 rounded-xl bg-gradient-to-br from-emerald-400 to-green-600 shadow-lg shadow-green-200 hover:scale-110 hover:-translate-y-1 transition-all duration-300"
+                                                            >
+                                                                <div className="absolute inset-0 bg-white/20 rounded-xl animate-pulse"></div>
+                                                                <Phone size={18} className="text-white relative z-10 animate-bounce" style={{ animationDuration: '2s' }} />
+                                                                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Call</span>
+                                                            </button>
+
+                                                            {/* MESSAGE */}
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); handleMessageIconClick(c); }}
+                                                                className="relative group p-2.5 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-600 shadow-lg shadow-blue-200 hover:scale-110 hover:-translate-y-1 transition-all duration-300"
+                                                            >
+                                                                <MessageCircle size={18} className="text-white relative z-10 animate-pulse" />
+                                                                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">SMS</span>
+                                                            </button>
+
+                                                            {/* CALENDAR */}
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); setSelectedCustomer(c); }}
+                                                                className="relative group p-2.5 rounded-xl bg-gradient-to-br from-amber-300 to-orange-500 shadow-lg shadow-orange-200 hover:scale-110 hover:-translate-y-1 transition-all duration-300"
+                                                            >
+                                                                <Calendar size={18} className="text-white relative z-10 group-hover:rotate-12 transition-transform" />
+                                                                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Meet</span>
+                                                            </button>
                                                         </div>
                                                     )}
                                                 </div>
