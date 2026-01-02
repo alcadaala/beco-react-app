@@ -658,8 +658,8 @@ export default function Baafiye() {
         <div className="flex flex-col min-h-full bg-white relative pb-safe">
             {/* NOTIFICATION TOAST REMOVED */}
 
-            {/* HEADER */}
-            <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 sticky top-0 z-20 shadow-lg pt-12 px-4 py-4 flex justify-between items-center text-white">
+            {/* HEADER (Raised) */}
+            <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 sticky top-0 z-30 shadow-lg pt-4 px-4 py-3 flex justify-between items-center text-white">
                 {isSearchActive ? (
                     <div className="flex-1 flex gap-2">
                         <input autoFocus type="text" placeholder="Search..." className="flex-1 bg-white/10 rounded-xl px-4 py-2 border border-white/20 focus:outline-none placeholder-indigo-200 font-bold" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
@@ -731,8 +731,8 @@ export default function Baafiye() {
                 </div>
             )}
 
-            {/* TABS */}
-            <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 p-1 pb-3 sticky top-[60px] z-10 shadow-lg">
+            {/* TABS (Adjusted Sticky Top) */}
+            <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 p-1 pb-3 sticky top-[60px] z-20 shadow-lg">
                 <div className="flex bg-black/20 p-1 rounded-xl backdrop-blur-sm">
                     {['active', 'today', 'balan', 'paid'].map(tab => {
                         let count = 0;
@@ -919,7 +919,7 @@ export default function Baafiye() {
                                     onClick={() => setSelectedCustomer(c)}
                                     className={`relative bg-gradient-to-br from-white to-stone-50 p-1 rounded-xl shadow-[0_1px_4px_-1px_rgba(0,0,0,0.05)] active:scale-[0.99] transition-all mb-px border
                                         ${isHighRisk ? 'border-red-400 bg-red-50/30' : 'border-white'}
-                                        ${expandedActionId === c.sqn ? 'z-50' : 'z-10'}`}
+                                        ${expandedActionId === c.sqn ? 'z-50 !overflow-visible' : 'z-10'}`}
                                 >
                                     <div className="flex justify-between items-start">
                                         {/* Left Info */}
