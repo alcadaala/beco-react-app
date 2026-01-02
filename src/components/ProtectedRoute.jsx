@@ -12,7 +12,9 @@ const ProtectedRoute = ({ allowedRoles = [] }) => {
         );
     }
 
-    if (!user) {
+    // If we have a profile (persisted session), we are technically 'logged in' for UI purposes
+    // while Firebase reconnects in the background.
+    if (!user && !profile) {
         return <Navigate to="/login" replace />;
     }
 
