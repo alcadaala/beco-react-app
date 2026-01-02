@@ -195,6 +195,7 @@ export default function Baafiye() {
             const querySnapshot = await getDocs(q);
             let data = querySnapshot.docs.map(doc => ({
                 sqn: doc.id,
+                _collectionPath: `zones/${zone}/customers`,
                 ...doc.data()
             }));
 
@@ -207,7 +208,7 @@ export default function Baafiye() {
                 const legacyQ = query(collection(db, 'customers'), where('collector_id', '==', user.id));
                 const legacySnap = await getDocs(legacyQ);
                 if (!legacySnap.empty) {
-                    data = legacySnap.docs.map(doc => ({ sqn: doc.id, ...doc.data() }));
+                    data = legacySnap.docs.map(doc => ({ sqn: doc.id, _collectionPath: 'customers', ...doc.data() }));
                 }
             }
 
@@ -297,7 +298,8 @@ export default function Baafiye() {
             // Best practice: Use specific ID.
             const docId = updatedCustomer.id || updatedCustomer.sqn;
             if (docId) {
-                const customerRef = doc(db, 'customers', String(docId));
+                const collectionPath = updatedCustomer._collectionPath || 'customers';
+                const customerRef = doc(db, collectionPath, String(docId));
                 await updateDoc(customerRef, {
                     ...updatedCustomer,
                     is_favorite: updatedCustomer.isFavorite ?? false // Ensure boolean
