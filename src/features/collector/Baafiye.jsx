@@ -938,36 +938,82 @@ export default function Baafiye() {
                                                     </button>
                                                     {/* EXPANDED MENU POPUP (Keep existing logic) */}
                                                     {/* EXPANDED MENU POPUP - ANIMATED ICONS */}
+                                                    {/* EXPANDED MENU POPUP - ANIMATED ICONS */}
                                                     {expandedActionId === c.sqn && (
-                                                        <div onClick={(e) => e.stopPropagation()} className="absolute ml-8 -mt-8 bg-white/90 backdrop-blur-xl shadow-2xl border border-white/40 rounded-2xl flex items-center p-2 gap-3 z-[60] animate-in slide-in-from-left-4 zoom-in-90 duration-300 ring-1 ring-black/5">
+                                                        <div onClick={(e) => e.stopPropagation()} className="absolute ml-8 -mt-8 z-[60] flex items-center animate-in slide-in-from-left-4 zoom-in-90 duration-300">
 
-                                                            {/* CALL */}
-                                                            <button
-                                                                onClick={(e) => { e.stopPropagation(); setCallSelection(c); }}
-                                                                className="relative group p-2.5 rounded-xl bg-gradient-to-br from-emerald-400 to-green-600 shadow-lg shadow-green-200 hover:scale-110 hover:-translate-y-1 transition-all duration-300"
-                                                            >
-                                                                <div className="absolute inset-0 bg-white/20 rounded-xl animate-pulse"></div>
-                                                                <Phone size={18} className="text-white relative z-10 animate-bounce" style={{ animationDuration: '2s' }} />
-                                                                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Call</span>
-                                                            </button>
+                                                            {/* MAIN ACTIONS CONTAINER */}
+                                                            <div className="bg-white/90 backdrop-blur-xl shadow-2xl border border-white/40 rounded-2xl flex items-center p-2 gap-3 ring-1 ring-black/5">
+                                                                {/* CALL */}
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); setCallSelection(c); }}
+                                                                    className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm active:scale-90 transition-transform hover:bg-emerald-100"
+                                                                >
+                                                                    <Phone size={18} fill="currentColor" className="mb-0.5" />
+                                                                    <span className="text-[9px] font-bold uppercase leading-none">Call</span>
+                                                                </button>
 
-                                                            {/* MESSAGE */}
-                                                            <button
-                                                                onClick={(e) => { e.stopPropagation(); handleMessageIconClick(c); }}
-                                                                className="relative group p-2.5 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-600 shadow-lg shadow-blue-200 hover:scale-110 hover:-translate-y-1 transition-all duration-300"
-                                                            >
-                                                                <MessageCircle size={18} className="text-white relative z-10 animate-pulse" />
-                                                                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">SMS</span>
-                                                            </button>
+                                                                {/* MESSAGE */}
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); handleMessageIconClick(c); }}
+                                                                    className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-blue-50 text-blue-600 border border-blue-100 shadow-sm active:scale-90 transition-transform hover:bg-blue-100"
+                                                                >
+                                                                    <MessageCircle size={18} fill="currentColor" className="mb-0.5" />
+                                                                    <span className="text-[9px] font-bold uppercase leading-none">SMS</span>
+                                                                </button>
 
-                                                            {/* CALENDAR */}
-                                                            <button
-                                                                onClick={(e) => { e.stopPropagation(); setSelectedCustomer(c); }}
-                                                                className="relative group p-2.5 rounded-xl bg-gradient-to-br from-amber-300 to-orange-500 shadow-lg shadow-orange-200 hover:scale-110 hover:-translate-y-1 transition-all duration-300"
-                                                            >
-                                                                <Calendar size={18} className="text-white relative z-10 group-hover:rotate-12 transition-transform" />
-                                                                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Meet</span>
-                                                            </button>
+                                                                {/* BALAN (TOGGLES DROPDOWN) */}
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setBalanDropdownId(balanDropdownId === c.sqn ? null : c.sqn);
+                                                                        setActiveFormData({ date: '', note: '' });
+                                                                    }}
+                                                                    className={`flex flex-col items-center justify-center w-12 h-12 rounded-full border shadow-sm active:scale-90 transition-transform
+                                                                        ${balanDropdownId === c.sqn ? 'bg-orange-500 text-white border-orange-500 ring-2 ring-orange-200' : 'bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100'}`}
+                                                                >
+                                                                    <Calendar size={18} className="mb-0.5" />
+                                                                    <span className="text-[9px] font-bold uppercase leading-none">Balan</span>
+                                                                </button>
+                                                            </div>
+
+                                                            {/* BALAN DROPDOWN - INLINE */}
+                                                            {balanDropdownId === c.sqn && (
+                                                                <div className="absolute top-16 left-0 bg-white shadow-2xl rounded-2xl p-4 w-[220px] border border-gray-100 animate-in slide-in-from-top-2 z-[70]">
+                                                                    <div className="absolute -top-2 left-20 w-4 h-4 bg-white rotate-45 border-t border-l border-gray-100"></div>
+                                                                    <h4 className="text-xs font-black text-gray-400 uppercase mb-2">Set Appointment</h4>
+                                                                    <input
+                                                                        type="date"
+                                                                        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold mb-2 focus:ring-2 focus:ring-orange-500 outline-none"
+                                                                        onChange={(e) => setActiveFormData(prev => ({ ...prev, date: e.target.value }))}
+                                                                    />
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder="Note (Optional)"
+                                                                        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 focus:ring-2 focus:ring-orange-500 outline-none"
+                                                                        onChange={(e) => setActiveFormData(prev => ({ ...prev, note: e.target.value }))}
+                                                                    />
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            if (!activeFormData.date) return alert("Please pick a date");
+                                                                            // Reuse handleSaveCustomer logic by constructing object
+                                                                            const updatedC = {
+                                                                                ...c,
+                                                                                status: 'Balan',
+                                                                                date: activeFormData.date.split('-').reverse().join('/'), // Convert YYYY-MM-DD to DD/MM/YYYY
+                                                                                fahfahin: activeFormData.note ? `Balan: ${activeFormData.note}` : 'Balan'
+                                                                            };
+                                                                            handleSaveCustomer(updatedC);
+                                                                            setBalanDropdownId(null);
+                                                                            setExpandedActionId(null);
+                                                                        }}
+                                                                        className="w-full bg-orange-500 text-white font-bold py-2 rounded-lg text-xs shadow-lg active:scale-95 transition-transform"
+                                                                    >
+                                                                        Confirm Balan
+                                                                    </button>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     )}
                                                 </div>
