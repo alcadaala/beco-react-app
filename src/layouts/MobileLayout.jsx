@@ -120,7 +120,7 @@ export default function MobileLayout() {
                 </div>
             )}
 
-            <div className="w-full max-w-[480px] h-screen bg-gray-50 flex flex-col relative shadow-2xl overflow-hidden sm:rounded-[2rem] sm:h-[95vh] sm:border-[8px] sm:border-gray-900">
+            <div className="w-full max-w-[480px] h-[100dvh] bg-gray-50 flex flex-col relative shadow-2xl overflow-hidden sm:rounded-[2rem] sm:h-[95vh] sm:border-[8px] sm:border-gray-900">
                 <div className="hidden sm:block absolute top-0 left-1/2 transform -translate-x-1/2 w-40 h-6 bg-gray-900 rounded-b-xl z-[60]"></div>
 
                 {/* Pending Approval Modal */}

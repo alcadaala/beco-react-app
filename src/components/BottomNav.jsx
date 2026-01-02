@@ -29,7 +29,7 @@ export const BottomNav = memo(function BottomNav() {
                         to={item.path}
                         className={({ isActive }) =>
                             cn(
-                                "relative flex items-center justify-center h-12 rounded-full transition-all duration-300",
+                                "relative flex items-center justify-center h-12 min-h-[44px] rounded-full transition-all duration-300",
                                 isActive
                                     ? "bg-[#E31B23] text-white flex-[2] px-4 shadow-lg"
                                     : "text-gray-400 bg-transparent flex-1 hover:bg-gray-50"
@@ -53,6 +53,6 @@ export const BottomNav = memo(function BottomNav() {
                     </NavLink>
                 ))}
             </div>
-        </nav>
+        </nav >
     );
 });

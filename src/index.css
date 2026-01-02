@@ -11,6 +11,13 @@
     font-family: 'Outfit', sans-serif;
   }
 
+  /* Prevent Zoom on iOS inputs */
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+
   /* Smooth scrolling */
   * {
     scroll-behavior: smooth;
