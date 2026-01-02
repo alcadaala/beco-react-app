@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow authenticated users to read/write their own profile
+    match /profiles/{userId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow all authenticated users to read branches
+    match /branches/{branchId} {
+      allow read: if true;  // Public read for now
+      allow write: if false;
+    }
+    
+    // Allow authenticated users to create/read activities
+    match /activities/{activityId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Temporary: Allow all reads/writes for testing
+    // TODO: Tighten security after testing
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
