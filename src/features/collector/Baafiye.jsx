@@ -363,7 +363,7 @@ export default function Baafiye() {
         let result = customers.filter(c => {
             if (!c) return false;
             const term = (searchTerm || '').toLowerCase();
-            const cName = String(c.name || '').toLowerCase();
+            const cName = String(c.name || '').trim().toLowerCase();
             const cFahfahin = String(c.fahfahin || '').toLowerCase();
             const cSqn = String(c.sqn || '');
 
