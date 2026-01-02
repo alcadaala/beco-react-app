@@ -1,44 +1,45 @@
 import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
+import { lazyImport } from './utils/lazyImport';
 import MobileLayout from './layouts/MobileLayout';
 import Login from './features/auth/Login';
 import Signup from './features/auth/Signup';
 import AdminSetup from './pages/AdminSetup';
 
 // Lazy-loaded Collector components
-const Dashboard = lazy(() => import('./features/collector/Dashboard'));
-const Baafiye = lazy(() => import('./features/collector/Baafiye'));
-const Balan = lazy(() => import('./features/collector/Balan'));
-const Discounts = lazy(() => import('./features/collector/Discounts'));
-const Tasks = lazy(() => import('./features/collector/Tasks'));
-const Services = lazy(() => import('./features/collector/Services'));
-const Billing = lazy(() => import('./features/collector/Billing'));
-const HospitalDiscounts = lazy(() => import('./features/collector/HospitalDiscounts'));
-const Quran = lazy(() => import('./features/collector/Quran'));
-const DataBundles = lazy(() => import('./features/collector/DataBundles'));
+const Dashboard = lazyImport(() => import('./features/collector/Dashboard'));
+const Baafiye = lazyImport(() => import('./features/collector/Baafiye'));
+const Balan = lazyImport(() => import('./features/collector/Balan'));
+const Discounts = lazyImport(() => import('./features/collector/Discounts'));
+const Tasks = lazyImport(() => import('./features/collector/Tasks'));
+const Services = lazyImport(() => import('./features/collector/Services'));
+const Billing = lazyImport(() => import('./features/collector/Billing'));
+const HospitalDiscounts = lazyImport(() => import('./features/collector/HospitalDiscounts'));
+const Quran = lazyImport(() => import('./features/collector/Quran'));
+const DataBundles = lazyImport(() => import('./features/collector/DataBundles'));
 
 import SupervisorLayout from './layouts/SupervisorLayout';
 
 // Lazy-loaded Supervisor components
-const SupervisorDashboard = lazy(() => import('./features/supervisor/Dashboard'));
-const TeamList = lazy(() => import('./features/supervisor/TeamList'));
-const SupervisorTasks = lazy(() => import('./features/supervisor/SupervisorTasks'));
-const SupervisorServices = lazy(() => import('./features/supervisor/SupervisorServices'));
-const SupervisorDiscounts = lazy(() => import('./features/supervisor/SupervisorDiscounts'));
-const SupervisorBaafiye = lazy(() => import('./features/supervisor/SupervisorBaafiye'));
+const SupervisorDashboard = lazyImport(() => import('./features/supervisor/Dashboard'));
+const TeamList = lazyImport(() => import('./features/supervisor/TeamList'));
+const SupervisorTasks = lazyImport(() => import('./features/supervisor/SupervisorTasks'));
+const SupervisorServices = lazyImport(() => import('./features/supervisor/SupervisorServices'));
+const SupervisorDiscounts = lazyImport(() => import('./features/supervisor/SupervisorDiscounts'));
+const SupervisorBaafiye = lazyImport(() => import('./features/supervisor/SupervisorBaafiye'));
 import SuperAdminLayout from './layouts/SuperAdminLayout';
 
 // Lazy-loaded Super Admin components
-const SuperAdminDashboard = lazy(() => import('./features/superadmin/Dashboard'));
+const SuperAdminDashboard = lazyImport(() => import('./features/superadmin/Dashboard'));
 
 // Lazy-loaded Super Admin components
-const SuperAdminBranches = lazy(() => import('./features/superadmin/Branches'));
-const SuperAdminReports = lazy(() => import('./features/superadmin/Reports'));
-const DataAdmin = lazy(() => import('./features/superadmin/DataAdmin'));
-const SuperAdminHospitals = lazy(() => import('./features/superadmin/Hospitals'));
-const Subscriptions = lazy(() => import('./features/superadmin/Subscriptions'));
-const UserApprovals = lazy(() => import('./features/superadmin/UserApprovals'));
-const PendingApproval = lazy(() => import('./pages/PendingApproval'));
+const SuperAdminBranches = lazyImport(() => import('./features/superadmin/Branches'));
+const SuperAdminReports = lazyImport(() => import('./features/superadmin/Reports'));
+const DataAdmin = lazyImport(() => import('./features/superadmin/DataAdmin'));
+const SuperAdminHospitals = lazyImport(() => import('./features/superadmin/Hospitals'));
+const Subscriptions = lazyImport(() => import('./features/superadmin/Subscriptions'));
+const UserApprovals = lazyImport(() => import('./features/superadmin/UserApprovals'));
+const PendingApproval = lazyImport(() => import('./pages/PendingApproval'));
 
 // Loading Fallback
 const LoadingFallback = () => (

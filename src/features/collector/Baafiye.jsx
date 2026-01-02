@@ -917,7 +917,7 @@ export default function Baafiye() {
                                     }}
                                     style={{ transform: `translateX(${visualOffset}px)`, transition: isSwiped ? 'none' : 'transform 0.3s ease-out' }}
                                     onClick={() => setSelectedCustomer(c)}
-                                    className={`relative bg-gradient-to-br from-white to-stone-50 p-1.5 rounded-xl shadow-[0_1px_4px_-1px_rgba(0,0,0,0.05)] active:scale-[0.99] transition-all mb-px border
+                                    className={`relative bg-gradient-to-br from-white to-stone-50 p-1 rounded-xl shadow-[0_1px_4px_-1px_rgba(0,0,0,0.05)] active:scale-[0.99] transition-all mb-px border
                                         ${isHighRisk ? 'border-red-400 bg-red-50/30' : 'border-white'}
                                         ${expandedActionId === c.sqn ? 'z-50' : 'z-10'}`}
                                 >
@@ -978,10 +978,10 @@ export default function Baafiye() {
                                                                 </button>
                                                             </div>
 
-                                                            {/* BALAN DROPDOWN - INLINE (MOVED TOP) */}
+                                                            {/* BALAN DROPDOWN - INLINE (MOVED BELOW) */}
                                                             {balanDropdownId === c.sqn && (
-                                                                <div className="absolute bottom-14 left-0 mb-3 bg-white shadow-2xl rounded-2xl p-4 w-[220px] border border-gray-100 animate-in slide-in-from-bottom-2 z-[999] pointer-events-auto">
-                                                                    <div className="absolute -bottom-2 left-10 w-4 h-4 bg-white rotate-45 border-b border-r border-gray-100"></div>
+                                                                <div className="absolute top-16 left-0 mt-2 bg-white shadow-2xl rounded-2xl p-4 w-[220px] border border-gray-100 animate-in slide-in-from-top-2 z-[999] pointer-events-auto">
+                                                                    <div className="absolute -top-2 left-10 w-4 h-4 bg-white rotate-45 border-t border-l border-gray-100"></div>
                                                                     <h4 className="text-xs font-black text-gray-400 uppercase mb-2">Set Appointment</h4>
                                                                     <input
                                                                         type="date"
