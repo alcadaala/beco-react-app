@@ -655,11 +655,11 @@ export default function Baafiye() {
     }
 
     return (
-        <div className="flex flex-col min-h-full bg-white relative pb-safe">
+        <div className="flex flex-col h-full bg-white relative">
             {/* NOTIFICATION TOAST REMOVED */}
 
-            {/* HEADER (Raised) */}
-            <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 sticky top-0 z-30 shadow-lg pt-4 px-4 py-3 flex justify-between items-center text-white">
+            {/* HEADER (Fixed) */}
+            <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 shadow-lg pt-4 px-4 py-3 flex-none flex justify-between items-center text-white z-30">
                 {isSearchActive ? (
                     <div className="flex-1 flex gap-2">
                         <input autoFocus type="text" placeholder="Search..." className="flex-1 bg-white/10 rounded-xl px-4 py-2 border border-white/20 focus:outline-none placeholder-indigo-200 font-bold" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
@@ -731,8 +731,8 @@ export default function Baafiye() {
                 </div>
             )}
 
-            {/* TABS (Adjusted Sticky Top) */}
-            <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 p-1 pb-3 sticky top-[60px] z-20 shadow-lg">
+            {/* TABS (Fixed) */}
+            <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 p-1 pb-3 shadow-lg flex-none z-20">
                 <div className="flex bg-black/20 p-1 rounded-xl backdrop-blur-sm">
                     {['active', 'today', 'balan', 'paid'].map(tab => {
                         let count = 0;
@@ -754,425 +754,448 @@ export default function Baafiye() {
                 </div>
             </div>
 
-            {/* CLEAR TODAY BAR */}
-            {activeTab === 'today' && todayCount > 0 && (
-                <div className="bg-yellow-50 px-4 py-2 flex justify-between items-center border-b border-yellow-200">
-                    <span className="text-xs font-bold text-yellow-800 flex items-center gap-1"><AlertCircle size={14} /> End of Day?</span>
-                    <button onClick={handleClearToday} className="bg-white border border-yellow-300 text-red-500 text-xs font-bold px-3 py-1 rounded-lg shadow-sm">Clear List</button>
-                </div>
-            )}
+            {/* SCROLLABLE CONTENT AREA */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50/50 pb-24 no-scrollbar">
 
-            {/* GENERAL SUMMARY CARD (Applied for ALL Filters) */}
-            {filterType !== 'all' && summaryStats && summaryStats.count > 0 && (
-                <div className="mx-3 mt-3 mb-2 p-4 bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 rounded-2xl shadow-lg text-white animate-in slide-in-from-top-4 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-3 opacity-10 transform translate-x-3 -translate-y-3">
-                        <BarChart3 size={100} />
+                {/* CLEAR TODAY BAR */}
+                {activeTab === 'today' && todayCount > 0 && (
+                    <div className="bg-yellow-50 px-4 py-2 flex justify-between items-center border-b border-yellow-200">
+                        <span className="text-xs font-bold text-yellow-800 flex items-center gap-1"><AlertCircle size={14} /> End of Day?</span>
+                        <button onClick={handleClearToday} className="bg-white border border-yellow-300 text-red-500 text-xs font-bold px-3 py-1 rounded-lg shadow-sm">Clear List</button>
                     </div>
+                )}
 
-                    <div className="relative z-10">
-                        {/* Header Line */}
-                        <div className="flex items-center justify-between mb-3 opacity-95">
-                            <div className="flex items-center gap-2">
-                                <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm shadow-inner">
-                                    <Users size={18} className="text-white" />
-                                </div>
-                                <div className="flex flex-col">
-                                    <h3 className="text-2xl font-black leading-none">{summaryStats.count}</h3>
-                                    <p className="text-[9px] font-bold text-indigo-100 uppercase tracking-widest">{filterType} Clients</p>
-                                </div>
-                            </div>
-
-                            {/* ACTIVE / PAID PILLS */}
-                            <div className="flex gap-1.5">
-                                <div className="bg-emerald-500/30 backdrop-blur-sm border border-emerald-400/30 rounded-md px-2 py-1 flex flex-col items-center min-w-[50px]">
-                                    <span className="text-[10px] font-bold text-emerald-300">Active</span>
-                                    <span className="text-sm font-black">{summaryStats.active}</span>
-                                </div>
-                                <div className="bg-blue-500/30 backdrop-blur-sm border border-blue-400/30 rounded-md px-2 py-1 flex flex-col items-center min-w-[50px]">
-                                    <span className="text-[10px] font-bold text-blue-200">Paid</span>
-                                    <span className="text-sm font-black">{summaryStats.paid}</span>
-                                </div>
-                            </div>
+                {/* GENERAL SUMMARY CARD (Applied for ALL Filters) */}
+                {filterType !== 'all' && summaryStats && summaryStats.count > 0 && (
+                    <div className="mx-3 mt-3 mb-2 p-4 bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 rounded-2xl shadow-lg text-white animate-in slide-in-from-top-4 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-3 opacity-10 transform translate-x-3 -translate-y-3">
+                            <BarChart3 size={100} />
                         </div>
 
-                        {/* Metrics Grid */}
-                        <div className="grid grid-cols-2 gap-2">
-                            <div className="bg-black/20 p-2.5 rounded-xl backdrop-blur-md border border-white/10 relative overflow-hidden">
-                                <div className="absolute top-0 right-0 p-1.5 opacity-10"><Clock size={30} /></div>
-                                <p className="text-[9px] font-bold text-indigo-200 uppercase mb-0.5 tracking-wider">Total Prev Debt</p>
-                                <h3 className="text-lg font-black text-yellow-300">
-                                    ${summaryStats.prev.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
-                                </h3>
-                            </div>
-                            <div className="bg-white/10 p-2.5 rounded-xl backdrop-blur-md border border-white/10 relative overflow-hidden">
-                                <div className="absolute top-0 right-0 p-1.5 opacity-10"><Receipt size={30} /></div>
-                                <p className="text-[9px] font-bold text-indigo-100 uppercase mb-0.5 tracking-wider">Total Due</p>
-                                <h3 className="text-lg font-black text-white">
-                                    ${summaryStats.due.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
-                                </h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* CUSTOMER LIST */}
-            <div className="flex-1 bg-gray-50/50 p-4 pb-20 min-h-screen">
-                {loading && customers.length === 0 ? (
-                    <div className="flex justify-center pt-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div></div>
-                ) : listToRender.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16 px-6 text-center animate-in fade-in zoom-in duration-500">
-                        <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-6 animate-bounce shadow-lg shadow-blue-100">
-                            <Upload size={36} className="text-blue-500" strokeWidth={2.5} />
-                        </div>
-                        <h3 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">Data Not Found</h3>
-                        <p className="text-gray-500 font-medium mb-8 max-w-[280px] mx-auto leading-relaxed">
-                            Start by uploading your customer data Excel sheet to see them here.
-                        </p>
-                        <button
-                            onClick={() => navigate('/services')}
-                            className="bg-gray-900 text-white font-bold py-4 px-10 rounded-2xl shadow-xl shadow-gray-200 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group"
-                        >
-                            <span className="text-lg">Upload Now</span>
-                            <div className="bg-white/20 p-1.5 rounded-lg group-hover:bg-white/30 transition-colors">
-                                <ChevronRight size={18} />
-                            </div>
-                        </button>
-                    </div>
-                ) : (
-                    listToRender.slice(0, visibleCount).map((c, index) => {
-                        const isSwiped = swipeState.id === c.sqn;
-                        const offset = isSwiped ? swipeState.currentX - swipeState.startX : 0;
-                        const visualOffset = offset;
-                        const isLast = index === visibleCount - 1;
-                        const isBalanceOpen = viewingBalanceId === c.sqn;
-                        const prevBal = parseFloat(String(c.prev_balance || c.prev || '0').replace(/[^0-9.-]+/g, "") || 0);
-                        const isHighRisk = prevBal >= 3;
-                        const is2BiloodMode = filterType === '2 Bilood' || (filterType === 'all' && prevBal >= 2);
-
-                        return (
-                            <div key={c.sqn} ref={isLast ? lastElementRef : null} className={`mb-4 relative group ${isBalanceOpen ? 'z-50' : 'z-0'}`}>
-                                {/* SWIPE BACKGROUNDS - Ultra Premium with Animations */}
-                                <div className="absolute inset-0 rounded-3xl overflow-hidden flex justify-between items-center px-6">
-                                    {/* CALL ICON - Left */}
-                                    <div className={`flex items-center gap-3 transition-all duration-500 ${offset > 50 ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}>
-                                        <div className="relative">
-                                            {/* Animated Glow Ring */}
-                                            <div className={`absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-600 rounded-2xl blur-xl ${offset > 50 ? 'animate-pulse' : ''}`}></div>
-
-                                            {/* Icon Container */}
-                                            <div className="relative bg-gradient-to-br from-green-500 via-emerald-500 to-green-600 p-3.5 rounded-2xl shadow-2xl transform hover:scale-110 transition-transform">
-                                                <Phone size={22} className="text-white animate-bounce" style={{ animationDuration: '1.5s' }} />
-                                            </div>
-
-                                            {/* Floating Particles */}
-                                            {offset > 50 && (
-                                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-ping"></div>
-                                            )}
-                                        </div>
-                                        <div className="relative">
-                                            <span className="font-black text-green-700 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-xl text-sm shadow-lg border-2 border-green-200 animate-pulse">
-                                                Call
-                                            </span>
-                                        </div>
+                        <div className="relative z-10">
+                            {/* Header Line */}
+                            <div className="flex items-center justify-between mb-3 opacity-95">
+                                <div className="flex items-center gap-2">
+                                    <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm shadow-inner">
+                                        <Users size={18} className="text-white" />
                                     </div>
-
-                                    {/* MESSAGE ICON - Right */}
-                                    <div className={`flex items-center gap-3 transition-all duration-500 ${offset < -50 ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}>
-                                        <div className="relative">
-                                            <span className="font-black text-blue-700 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-xl text-sm shadow-lg border-2 border-blue-200 animate-pulse">
-                                                Message
-                                            </span>
-                                        </div>
-                                        <div className="relative">
-                                            {/* Animated Glow Ring */}
-                                            <div className={`absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-2xl blur-xl ${offset < -50 ? 'animate-pulse' : ''}`}></div>
-
-                                            {/* Icon Container */}
-                                            <div className="relative bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-600 p-3.5 rounded-2xl shadow-2xl transform hover:scale-110 transition-transform">
-                                                <MessageSquare size={22} className="text-white animate-bounce" style={{ animationDuration: '1.5s' }} />
-                                            </div>
-
-                                            {/* Floating Particles */}
-                                            {offset < -50 && (
-                                                <div className="absolute -top-1 -left-1 w-3 h-3 bg-blue-400 rounded-full animate-ping"></div>
-                                            )}
-                                        </div>
+                                    <div className="flex flex-col">
+                                        <h3 className="text-2xl font-black leading-none">{summaryStats.count}</h3>
+                                        <p className="text-[9px] font-bold text-indigo-100 uppercase tracking-widest">{filterType} Clients</p>
                                     </div>
                                 </div>
-                                <div className={`absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-green-50 via-emerald-50/50 to-transparent rounded-l-3xl transition-all duration-300 ${offset > 0 ? 'opacity-100' : 'opacity-0'}`}></div>
-                                <div className={`absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-blue-50 via-indigo-50/50 to-transparent rounded-r-3xl transition-all duration-300 ${offset < 0 ? 'opacity-100' : 'opacity-0'}`}></div>
 
-                                {/* CARD CONTENT (Grid Removed - Flatter Look) */}
-                                <div
-                                    onTouchStart={(e) => handleTouchStart(e, c.sqn)}
-                                    // ... touch handlers remain same
-                                    onTouchMove={handleTouchMove}
-                                    onTouchEnd={() => {
-                                        if (Math.abs(offset) > 100) {
-                                            if (offset > 0) setCallSelection(c);
-                                            else handleMessageIconClick(c);
-                                        }
-                                        handleTouchEnd(c);
-                                    }}
-                                    style={{ transform: `translateX(${visualOffset}px)`, transition: isSwiped ? 'none' : 'transform 0.3s ease-out' }}
-                                    onClick={() => setSelectedCustomer(c)}
-                                    className={`relative bg-gradient-to-br from-white to-stone-50 p-1 rounded-xl shadow-[0_1px_4px_-1px_rgba(0,0,0,0.05)] active:scale-[0.99] transition-all mb-px border
+                                {/* ACTIVE / PAID PILLS */}
+                                <div className="flex gap-1.5">
+                                    <div className="bg-emerald-500/30 backdrop-blur-sm border border-emerald-400/30 rounded-md px-2 py-1 flex flex-col items-center min-w-[50px]">
+                                        <span className="text-[10px] font-bold text-emerald-300">Active</span>
+                                        <span className="text-sm font-black">{summaryStats.active}</span>
+                                    </div>
+                                    <div className="bg-blue-500/30 backdrop-blur-sm border border-blue-400/30 rounded-md px-2 py-1 flex flex-col items-center min-w-[50px]">
+                                        <span className="text-[10px] font-bold text-blue-200">Paid</span>
+                                        <span className="text-sm font-black">{summaryStats.paid}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Metrics Grid */}
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className="bg-black/20 p-2.5 rounded-xl backdrop-blur-md border border-white/10 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 p-1.5 opacity-10"><Clock size={30} /></div>
+                                    <p className="text-[9px] font-bold text-indigo-200 uppercase mb-0.5 tracking-wider">Total Prev Debt</p>
+                                    <h3 className="text-lg font-black text-yellow-300">
+                                        ${summaryStats.prev.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                                    </h3>
+                                </div>
+                                <div className="bg-white/10 p-2.5 rounded-xl backdrop-blur-md border border-white/10 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 p-1.5 opacity-10"><Receipt size={30} /></div>
+                                    <p className="text-[9px] font-bold text-indigo-100 uppercase mb-0.5 tracking-wider">Total Due</p>
+                                    <h3 className="text-lg font-black text-white">
+                                        ${summaryStats.due.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* CUSTOMER LIST */}
+                <div className="p-4 min-h-[500px]">
+                    {loading && customers.length === 0 ? (
+                        <div className="flex justify-center pt-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div></div>
+                    ) : listToRender.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-16 px-6 text-center animate-in fade-in zoom-in duration-500">
+                            <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-6 animate-bounce shadow-lg shadow-blue-100">
+                                <Upload size={36} className="text-blue-500" strokeWidth={2.5} />
+                            </div>
+                            <h3 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">Data Not Found</h3>
+                            <p className="text-gray-500 font-medium mb-8 max-w-[280px] mx-auto leading-relaxed">
+                                Start by uploading your customer data Excel sheet to see them here.
+                            </p>
+                            <button
+                                onClick={() => navigate('/services')}
+                                className="bg-gray-900 text-white font-bold py-4 px-10 rounded-2xl shadow-xl shadow-gray-200 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group"
+                            >
+                                <span className="text-lg">Upload Now</span>
+                                <div className="bg-white/20 p-1.5 rounded-lg group-hover:bg-white/30 transition-colors">
+                                    <ChevronRight size={18} />
+                                </div>
+                            </button>
+                        </div>
+                    ) : (
+                        listToRender.slice(0, visibleCount).map((c, index) => {
+                            const isSwiped = swipeState.id === c.sqn;
+                            const offset = isSwiped ? swipeState.currentX - swipeState.startX : 0;
+                            const visualOffset = offset;
+                            const isLast = index === visibleCount - 1;
+                            const isBalanceOpen = viewingBalanceId === c.sqn;
+                            const prevBal = parseFloat(String(c.prev_balance || c.prev || '0').replace(/[^0-9.-]+/g, "") || 0);
+                            const isHighRisk = prevBal >= 3;
+                            const is2BiloodMode = filterType === '2 Bilood' || (filterType === 'all' && prevBal >= 2);
+
+                            return (
+                                <div key={c.sqn} ref={isLast ? lastElementRef : null} className={`mb-4 relative group ${isBalanceOpen ? 'z-50' : 'z-0'}`}>
+                                    {/* SWIPE BACKGROUNDS - Ultra Premium with Animations */}
+                                    <div className="absolute inset-0 rounded-3xl overflow-hidden flex justify-between items-center px-6">
+                                        {/* CALL ICON - Left */}
+                                        <div className={`flex items-center gap-3 transition-all duration-500 ${offset > 50 ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}>
+                                            <div className="relative">
+                                                {/* Animated Glow Ring */}
+                                                <div className={`absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-600 rounded-2xl blur-xl ${offset > 50 ? 'animate-pulse' : ''}`}></div>
+
+                                                {/* Icon Container */}
+                                                <div className="relative bg-gradient-to-br from-green-500 via-emerald-500 to-green-600 p-3.5 rounded-2xl shadow-2xl transform hover:scale-110 transition-transform">
+                                                    <Phone size={22} className="text-white animate-bounce" style={{ animationDuration: '1.5s' }} />
+                                                </div>
+
+                                                {/* Floating Particles */}
+                                                {offset > 50 && (
+                                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-ping"></div>
+                                                )}
+                                            </div>
+                                            <div className="relative">
+                                                <span className="font-black text-green-700 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-xl text-sm shadow-lg border-2 border-green-200 animate-pulse">
+                                                    Call
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* MESSAGE ICON - Right */}
+                                        <div className={`flex items-center gap-3 transition-all duration-500 ${offset < -50 ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}>
+                                            <div className="relative">
+                                                <span className="font-black text-blue-700 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-xl text-sm shadow-lg border-2 border-blue-200 animate-pulse">
+                                                    Message
+                                                </span>
+                                            </div>
+                                            <div className="relative">
+                                                {/* Animated Glow Ring */}
+                                                <div className={`absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-2xl blur-xl ${offset < -50 ? 'animate-pulse' : ''}`}></div>
+
+                                                {/* Icon Container */}
+                                                <div className="relative bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-600 p-3.5 rounded-2xl shadow-2xl transform hover:scale-110 transition-transform">
+                                                    <MessageSquare size={22} className="text-white animate-bounce" style={{ animationDuration: '1.5s' }} />
+                                                </div>
+
+                                                {/* Floating Particles */}
+                                                {offset < -50 && (
+                                                    <div className="absolute -top-1 -left-1 w-3 h-3 bg-blue-400 rounded-full animate-ping"></div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={`absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-green-50 via-emerald-50/50 to-transparent rounded-l-3xl transition-all duration-300 ${offset > 0 ? 'opacity-100' : 'opacity-0'}`}></div>
+                                    <div className={`absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-blue-50 via-indigo-50/50 to-transparent rounded-r-3xl transition-all duration-300 ${offset < 0 ? 'opacity-100' : 'opacity-0'}`}></div>
+
+                                    {/* CARD CONTENT (Grid Removed - Flatter Look) */}
+                                    <div
+                                        onTouchStart={(e) => handleTouchStart(e, c.sqn)}
+                                        // ... touch handlers remain same
+                                        onTouchMove={handleTouchMove}
+                                        onTouchEnd={() => {
+                                            if (Math.abs(offset) > 100) {
+                                                if (offset > 0) setCallSelection(c);
+                                                else handleMessageIconClick(c);
+                                            }
+                                            handleTouchEnd(c);
+                                        }}
+                                        style={{ transform: `translateX(${visualOffset}px)`, transition: isSwiped ? 'none' : 'transform 0.3s ease-out' }}
+                                        onClick={() => setSelectedCustomer(c)}
+                                        className={`relative bg-gradient-to-br from-white to-stone-50 p-1 rounded-xl shadow-[0_1px_4px_-1px_rgba(0,0,0,0.05)] active:scale-[0.99] transition-all mb-px border
                                         ${isHighRisk ? 'border-red-400 bg-red-50/30' : 'border-white'}
                                         ${expandedActionId === c.sqn ? 'z-50 !overflow-visible' : 'z-10'}`}
-                                >
-                                    <div className="flex justify-between items-start">
-                                        {/* Left Info */}
-                                        <div className="flex-1 min-w-0 pr-1">
-                                            <div className="flex items-center gap-2 relative">
-                                                {/* ACTION TRIGGER (Moved to be less intrusive, or kept same) */}
-                                                <div className="relative">
-                                                    {/* Copy the whole action button logic here if needed, but for minimal change just keep structure */}
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); setExpandedActionId(expandedActionId === c.sqn ? null : c.sqn); }}
-                                                        className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-300 relative overflow-hidden active:scale-95
+                                    >
+                                        <div className="flex justify-between items-start">
+                                            {/* Left Info */}
+                                            <div className="flex-1 min-w-0 pr-1">
+                                                <div className="flex items-center gap-2 relative">
+                                                    {/* ACTION TRIGGER (Moved to be less intrusive, or kept same) */}
+                                                    <div className="relative">
+                                                        {/* Copy the whole action button logic here if needed, but for minimal change just keep structure */}
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); setExpandedActionId(expandedActionId === c.sqn ? null : c.sqn); }}
+                                                            className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-300 relative overflow-hidden active:scale-95
                                                             ${expandedActionId === c.sqn
-                                                                ? 'bg-red-500 text-white rotate-90 shadow-md'
-                                                                : 'bg-white text-gray-500 shadow-sm border border-gray-100 hover:bg-gray-50 hover:shadow-md'}`}
-                                                    >
-                                                        {expandedActionId === c.sqn ? <X size={14} strokeWidth={3} /> : <MoreHorizontal size={16} strokeWidth={2.5} />}
-                                                    </button>
-                                                    {/* EXPANDED MENU POPUP (Keep existing logic) */}
-                                                    {/* EXPANDED MENU POPUP - ANIMATED ICONS */}
-                                                    {/* EXPANDED MENU POPUP - ANIMATED ICONS */}
-                                                    {expandedActionId === c.sqn && (
-                                                        <div onClick={(e) => e.stopPropagation()} className="absolute ml-8 -mt-8 z-[60] flex items-center animate-in slide-in-from-left-4 zoom-in-90 duration-300">
+                                                                    ? 'bg-red-500 text-white rotate-90 shadow-md'
+                                                                    : 'bg-white text-gray-500 shadow-sm border border-gray-100 hover:bg-gray-50 hover:shadow-md'}`}
+                                                        >
+                                                            {expandedActionId === c.sqn ? <X size={14} strokeWidth={3} /> : <MoreHorizontal size={16} strokeWidth={2.5} />}
+                                                        </button>
+                                                        {/* EXPANDED MENU POPUP (Keep existing logic) */}
+                                                        {/* EXPANDED MENU POPUP - ANIMATED ICONS */}
+                                                        {/* EXPANDED MENU POPUP - ANIMATED ICONS */}
+                                                        {expandedActionId === c.sqn && (
+                                                            <div onClick={(e) => e.stopPropagation()} className="absolute ml-8 -mt-8 z-[60] flex items-center animate-in slide-in-from-left-4 zoom-in-90 duration-300">
 
-                                                            {/* MAIN ACTIONS CONTAINER */}
-                                                            <div className="bg-white/90 backdrop-blur-xl shadow-2xl border border-white/40 rounded-2xl flex items-center p-2 gap-3 ring-1 ring-black/5">
-                                                                {/* CALL */}
-                                                                <button
-                                                                    onClick={(e) => { e.stopPropagation(); setCallSelection(c); }}
-                                                                    className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm active:scale-90 transition-transform hover:bg-emerald-100"
-                                                                >
-                                                                    <Phone size={18} fill="currentColor" className="mb-0.5" />
-                                                                    <span className="text-[9px] font-bold uppercase leading-none">Call</span>
-                                                                </button>
-
-                                                                {/* MESSAGE */}
-                                                                <button
-                                                                    onClick={(e) => { e.stopPropagation(); handleMessageIconClick(c); }}
-                                                                    className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-blue-50 text-blue-600 border border-blue-100 shadow-sm active:scale-90 transition-transform hover:bg-blue-100"
-                                                                >
-                                                                    <MessageCircle size={18} fill="currentColor" className="mb-0.5" />
-                                                                    <span className="text-[9px] font-bold uppercase leading-none">SMS</span>
-                                                                </button>
-
-                                                                {/* BALAN (TOGGLES DROPDOWN) */}
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        setBalanDropdownId(balanDropdownId === c.sqn ? null : c.sqn);
-                                                                        setActiveFormData({ date: '', note: '' });
-                                                                    }}
-                                                                    className={`flex flex-col items-center justify-center w-12 h-12 rounded-full border shadow-sm active:scale-90 transition-transform
-                                                                        ${balanDropdownId === c.sqn ? 'bg-orange-500 text-white border-orange-500 ring-2 ring-orange-200' : 'bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100'}`}
-                                                                >
-                                                                    <Calendar size={18} className="mb-0.5" />
-                                                                    <span className="text-[9px] font-bold uppercase leading-none">Balan</span>
-                                                                </button>
-                                                            </div>
-
-                                                            {/* BALAN MODAL - FIXED OVERLAY */}
-                                                            {balanDropdownId === c.sqn && (
-                                                                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        setBalanDropdownId(null);
-                                                                    }}
-                                                                >
-                                                                    <div
-                                                                        onClick={(e) => e.stopPropagation()}
-                                                                        className="bg-white rounded-3xl p-6 w-[85%] max-w-[320px] shadow-2xl animate-in zoom-in-95 duration-200 border border-white/20"
+                                                                {/* MAIN ACTIONS CONTAINER */}
+                                                                <div className="bg-white/90 backdrop-blur-xl shadow-2xl border border-white/40 rounded-2xl flex items-center p-2 gap-3 ring-1 ring-black/5">
+                                                                    {/* CALL */}
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); setCallSelection(c); }}
+                                                                        className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm active:scale-90 transition-transform hover:bg-emerald-100"
                                                                     >
-                                                                        <div className="flex justify-between items-center mb-4">
-                                                                            <h4 className="text-lg font-black text-gray-800">📅 Set Appointment</h4>
-                                                                            <button onClick={() => setBalanDropdownId(null)} className="p-1 bg-gray-100 rounded-full"><X size={18} /></button>
-                                                                        </div>
+                                                                        <Phone size={18} fill="currentColor" className="mb-0.5" />
+                                                                        <span className="text-[9px] font-bold uppercase leading-none">Call</span>
+                                                                    </button>
 
-                                                                        <div className="space-y-4">
-                                                                            <div>
-                                                                                <label className="text-xs font-bold text-gray-500 uppercase ml-1">Date</label>
-                                                                                <input
-                                                                                    type="date"
-                                                                                    autoFocus
-                                                                                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-base font-bold outline-none focus:border-orange-500 transition-colors"
-                                                                                    onChange={(e) => setActiveFormData(prev => ({ ...prev, date: e.target.value }))}
-                                                                                />
+                                                                    {/* MESSAGE */}
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); handleMessageIconClick(c); }}
+                                                                        className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-blue-50 text-blue-600 border border-blue-100 shadow-sm active:scale-90 transition-transform hover:bg-blue-100"
+                                                                    >
+                                                                        <MessageCircle size={18} fill="currentColor" className="mb-0.5" />
+                                                                        <span className="text-[9px] font-bold uppercase leading-none">SMS</span>
+                                                                    </button>
+
+                                                                    {/* BALAN (TOGGLES DROPDOWN) */}
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setBalanDropdownId(balanDropdownId === c.sqn ? null : c.sqn);
+                                                                            setActiveFormData({ date: '', note: '' });
+                                                                        }}
+                                                                        className={`flex flex-col items-center justify-center w-12 h-12 rounded-full border shadow-sm active:scale-90 transition-transform
+                                                                        ${balanDropdownId === c.sqn ? 'bg-orange-500 text-white border-orange-500 ring-2 ring-orange-200' : 'bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100'}`}
+                                                                    >
+                                                                        <Calendar size={18} className="mb-0.5" />
+                                                                        <span className="text-[9px] font-bold uppercase leading-none">Balan</span>
+                                                                    </button>
+                                                                </div>
+
+                                                                {/* BALAN MODAL - FIXED OVERLAY */}
+                                                                {balanDropdownId === c.sqn && (
+                                                                    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setBalanDropdownId(null);
+                                                                        }}
+                                                                    >
+                                                                        <div
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                            className="bg-white rounded-3xl p-6 w-[85%] max-w-[320px] shadow-2xl animate-in zoom-in-95 duration-200 border border-white/20"
+                                                                        >
+                                                                            <div className="flex justify-between items-center mb-4">
+                                                                                <h4 className="text-lg font-black text-gray-800">📅 Set Appointment</h4>
+                                                                                <button onClick={() => setBalanDropdownId(null)} className="p-1 bg-gray-100 rounded-full"><X size={18} /></button>
                                                                             </div>
-                                                                            <div>
-                                                                                <label className="text-xs font-bold text-gray-500 uppercase ml-1">Note</label>
-                                                                                <input
-                                                                                    type="text"
-                                                                                    placeholder="Optional details..."
-                                                                                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-orange-500 transition-colors"
-                                                                                    onChange={(e) => setActiveFormData(prev => ({ ...prev, note: e.target.value }))}
-                                                                                />
+
+                                                                            <div className="space-y-4">
+                                                                                <div>
+                                                                                    <label className="text-xs font-bold text-gray-500 uppercase ml-1">Date</label>
+                                                                                    <input
+                                                                                        type="date"
+                                                                                        autoFocus
+                                                                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-base font-bold outline-none focus:border-orange-500 transition-colors"
+                                                                                        onChange={(e) => setActiveFormData(prev => ({ ...prev, date: e.target.value }))}
+                                                                                    />
+                                                                                </div>
+                                                                                <div>
+                                                                                    <label className="text-xs font-bold text-gray-500 uppercase ml-1">Note</label>
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        placeholder="Optional details..."
+                                                                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-orange-500 transition-colors"
+                                                                                        onChange={(e) => setActiveFormData(prev => ({ ...prev, note: e.target.value }))}
+                                                                                    />
+                                                                                </div>
+                                                                                <button
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation();
+                                                                                        if (!activeFormData.date) return alert("Please pick a date");
+                                                                                        // Reuse handleSaveCustomer logic by constructing object
+                                                                                        const updatedC = {
+                                                                                            ...c,
+                                                                                            status: 'Balan',
+                                                                                            date: activeFormData.date.split('-').reverse().join('/'), // Convert YYYY-MM-DD to DD/MM/YYYY
+                                                                                            fahfahin: activeFormData.note ? `Balan: ${activeFormData.note}` : 'Balan'
+                                                                                        };
+                                                                                        handleSaveCustomer(updatedC);
+                                                                                        setBalanDropdownId(null);
+                                                                                        setExpandedActionId(null);
+                                                                                    }}
+                                                                                    className="w-full bg-orange-500 text-white font-bold py-2 rounded-lg text-xs shadow-lg active:scale-95 transition-transform"
+                                                                                >
+                                                                                    Confirm Balan
+                                                                                </button>
                                                                             </div>
-                                                                            <button
-                                                                                onClick={(e) => {
-                                                                                    e.stopPropagation();
-                                                                                    if (!activeFormData.date) return alert("Please pick a date");
-                                                                                    // Reuse handleSaveCustomer logic by constructing object
-                                                                                    const updatedC = {
-                                                                                        ...c,
-                                                                                        status: 'Balan',
-                                                                                        date: activeFormData.date.split('-').reverse().join('/'), // Convert YYYY-MM-DD to DD/MM/YYYY
-                                                                                        fahfahin: activeFormData.note ? `Balan: ${activeFormData.note}` : 'Balan'
-                                                                                    };
-                                                                                    handleSaveCustomer(updatedC);
-                                                                                    setBalanDropdownId(null);
-                                                                                    setExpandedActionId(null);
-                                                                                }}
-                                                                                className="w-full bg-orange-500 text-white font-bold py-2 rounded-lg text-xs shadow-lg active:scale-95 transition-transform"
-                                                                            >
-                                                                                Confirm Balan
-                                                                            </button>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    )}
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <h3 className={`font-bold truncate text-xs mr-1 ${c.status === 'Paid' ? 'line-through text-gray-400' : (filterType === '2 Bilood' || prevBal >= 2 ? 'text-red-600' : 'text-gray-900')}`}>{c.name}</h3>
+
+                                                    {/* PIN TOGGLE AT NAME END */}
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); handleSaveCustomer({ ...c, isFavorite: !c.isFavorite }); }}
+                                                        className="focus:outline-none active:scale-90 transition-transform"
+                                                    >
+                                                        <Pin size={14} className={c.isFavorite ? "text-violet-600 fill-violet-600" : "text-gray-300"} />
+                                                    </button>
                                                 </div>
 
-                                                <h3 className={`font-bold truncate text-xs mr-1 ${c.status === 'Paid' ? 'line-through text-gray-400' : (filterType === '2 Bilood' || prevBal >= 2 ? 'text-red-600' : 'text-gray-900')}`}>{c.name}</h3>
+                                                <div className="flex items-center gap-1.5 flex-wrap text-[9px] font-bold pl-8 -mt-0.5">
+                                                    <span className="bg-gray-100 text-gray-500 px-1.5 py-0 rounded font-mono border border-gray-200">{c.sqn}</span>
+                                                    {c.status === 'Balan' && <span className="bg-orange-50 text-orange-600 px-1.5 py-0 rounded flex items-center gap-1 border border-orange-100"><Calendar size={9} /> {formatDateCompact(c.date)}</span>}
+                                                    {c.fahfahin && <span className="bg-indigo-50 text-indigo-600 px-1.5 py-0 rounded truncate max-w-[150px] border border-indigo-100">{c.fahfahin}</span>}
+                                                </div>
+                                            </div>
 
-                                                {/* PIN TOGGLE AT NAME END */}
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleSaveCustomer({ ...c, isFavorite: !c.isFavorite }); }}
-                                                    className="focus:outline-none active:scale-90 transition-transform"
+                                            {/* Right Balance */}
+                                            <div className="text-right flex flex-col items-end justify-center">
+                                                <div
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setViewingBalanceId(viewingBalanceId === c.sqn ? null : c.sqn);
+                                                    }}
+                                                    className={`text-sm font-black leading-tight ${c.status === 'Paid' ? 'text-emerald-500' : 'text-gray-900'} cursor-pointer`}
                                                 >
-                                                    <Pin size={14} className={c.isFavorite ? "text-violet-600 fill-violet-600" : "text-gray-300"} />
-                                                </button>
-                                            </div>
-
-                                            <div className="flex items-center gap-1.5 flex-wrap text-[9px] font-bold pl-8 -mt-0.5">
-                                                <span className="bg-gray-100 text-gray-500 px-1.5 py-0 rounded font-mono border border-gray-200">{c.sqn}</span>
-                                                {c.status === 'Balan' && <span className="bg-orange-50 text-orange-600 px-1.5 py-0 rounded flex items-center gap-1 border border-orange-100"><Calendar size={9} /> {formatDateCompact(c.date)}</span>}
-                                                {c.fahfahin && <span className="bg-indigo-50 text-indigo-600 px-1.5 py-0 rounded truncate max-w-[150px] border border-indigo-100">{c.fahfahin}</span>}
-                                            </div>
-                                        </div>
-
-                                        {/* Right Balance */}
-                                        <div className="text-right flex flex-col items-end justify-center">
-                                            <div
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setViewingBalanceId(viewingBalanceId === c.sqn ? null : c.sqn);
-                                                }}
-                                                className={`text-sm font-black leading-tight ${c.status === 'Paid' ? 'text-emerald-500' : 'text-gray-900'} cursor-pointer`}
-                                            >
-                                                ${c.balance}
-                                            </div>
-                                            <div className="text-[9px] text-gray-400 font-bold uppercase leading-none mt-0.5">Due</div>
-
-                                            {/* BALANCE POPUP (STYLED) */}
-                                            {isBalanceOpen && (
-                                                <div className="absolute top-10 right-0 bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-600 text-white p-4 rounded-2xl shadow-2xl z-50 min-w-[140px] animate-in zoom-in-95 border border-white/20">
-                                                    <div className="flex justify-between items-center mb-2 pb-2 border-b border-white/20">
-                                                        <span className="text-[10px] text-indigo-100 font-medium">Total</span>
-                                                        <span className="font-bold text-sm">${c.total || c.balance}</span>
-                                                    </div>
-                                                    <div className="flex justify-between items-center mb-1">
-                                                        <span className="text-[10px] text-indigo-100 font-medium">Prev</span>
-                                                        <span className={`font-bold text-xs opacity-90 ${filterType === '2 Bilood' || parseFloat(c.prev_balance || 0) >= 3 ? 'text-red-200' : 'text-white'}`}>${c.prev_balance || c.prev || 0}</span>
-                                                    </div>
-                                                    <div className="mt-2 text-[9px] text-center text-indigo-200 uppercase tracking-widest font-bold">
-                                                        Beco Energy
-                                                    </div>
+                                                    ${c.balance}
                                                 </div>
-                                            )}
+                                                <div className="text-[9px] text-gray-400 font-bold uppercase leading-none mt-0.5">Due</div>
+
+                                                {/* BALANCE POPUP (STYLED) */}
+                                                {isBalanceOpen && (
+                                                    <div className="absolute top-10 right-0 bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-600 text-white p-4 rounded-2xl shadow-2xl z-50 min-w-[140px] animate-in zoom-in-95 border border-white/20">
+                                                        <div className="flex justify-between items-center mb-2 pb-2 border-b border-white/20">
+                                                            <span className="text-[10px] text-indigo-100 font-medium">Total</span>
+                                                            <span className="font-bold text-sm">${c.total || c.balance}</span>
+                                                        </div>
+                                                        <div className="flex justify-between items-center mb-1">
+                                                            <span className="text-[10px] text-indigo-100 font-medium">Prev</span>
+                                                            <span className={`font-bold text-xs opacity-90 ${filterType === '2 Bilood' || parseFloat(c.prev_balance || 0) >= 3 ? 'text-red-200' : 'text-white'}`}>${c.prev_balance || c.prev || 0}</span>
+                                                        </div>
+                                                        <div className="mt-2 text-[9px] text-center text-indigo-200 uppercase tracking-widest font-bold">
+                                                            Beco Energy
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                            );
+                        })
+                    )}
+                    {visibleCount < listToRender.length && <div className="text-center py-4 text-xs font-bold text-gray-400">Loading more...</div>}
+                </div>
+
+                {/* MODALS */}
+                {
+                    selectedCustomer && (
+                        <CustomerEditModal
+                            customer={selectedCustomer}
+                            onClose={() => setSelectedCustomer(null)}
+                            onSave={handleSaveCustomer}
+                        />
+                    )
+                }
+
+                {/* MESSAGE MODAL */}
+                {
+                    messageFlow.step !== 'idle' && (
+                        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                            <div className="bg-white rounded-3xl w-full max-w-sm p-6 animate-in zoom-in-95">
+                                {messageFlow.step === 'select' ? (
+                                    <>
+                                        <h3 className="text-xl font-black text-center mb-6">Choose Channel</h3>
+                                        <div className="space-y-3">
+                                            <button onClick={() => handleChannelSelect('whatsapp')} className="w-full py-4 bg-[#25D366] text-white rounded-2xl font-bold flex justify-center items-center gap-2">
+                                                <MessageCircle fill="white" /> WhatsApp
+                                            </button>
+                                            <button onClick={() => handleChannelSelect('sms')} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold flex justify-center items-center gap-2">
+                                                <MessageSquare /> SMS
+                                            </button>
+                                            <button onClick={() => setMessageFlow({ step: 'idle', customer: null })} className="w-full py-3 text-gray-400 font-bold">Cancel</button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <h3 className="font-black mb-4">Preview Message</h3>
+                                        <textarea
+                                            value={messageFlow.text}
+                                            onChange={e => setMessageFlow(prev => ({ ...prev, text: e.target.value }))}
+                                            className="w-full h-32 bg-gray-50 rounded-xl p-3 text-sm font-medium border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                        <div className="flex gap-3 mt-4">
+                                            <button onClick={() => setMessageFlow({ step: 'idle', customer: null })} className="flex-1 py-3 text-gray-400 font-bold">Cancel</button>
+                                            <button onClick={handleSendMessage} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">Send</button>
+                                        </div>
+                                    </>
+                                )}
                             </div>
-                        );
-                    })
-                )}
-                {visibleCount < listToRender.length && <div className="text-center py-4 text-xs font-bold text-gray-400">Loading more...</div>}
-            </div>
-
-            {/* MODALS */}
-            {
-                selectedCustomer && (
-                    <CustomerEditModal
-                        customer={selectedCustomer}
-                        onClose={() => setSelectedCustomer(null)}
-                        onSave={handleSaveCustomer}
-                    />
-                )
-            }
-
-            {/* MESSAGE MODAL */}
-            {
-                messageFlow.step !== 'idle' && (
-                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-                        <div className="bg-white rounded-3xl w-full max-w-sm p-6 animate-in zoom-in-95">
-                            {messageFlow.step === 'select' ? (
-                                <>
-                                    <h3 className="text-xl font-black text-center mb-6">Choose Channel</h3>
-                                    <div className="space-y-3">
-                                        <button onClick={() => handleChannelSelect('whatsapp')} className="w-full py-4 bg-[#25D366] text-white rounded-2xl font-bold flex justify-center items-center gap-2">
-                                            <MessageCircle fill="white" /> WhatsApp
-                                        </button>
-                                        <button onClick={() => handleChannelSelect('sms')} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold flex justify-center items-center gap-2">
-                                            <MessageSquare /> SMS
-                                        </button>
-                                        <button onClick={() => setMessageFlow({ step: 'idle', customer: null })} className="w-full py-3 text-gray-400 font-bold">Cancel</button>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <h3 className="font-black mb-4">Preview Message</h3>
-                                    <textarea
-                                        value={messageFlow.text}
-                                        onChange={e => setMessageFlow(prev => ({ ...prev, text: e.target.value }))}
-                                        className="w-full h-32 bg-gray-50 rounded-xl p-3 text-sm font-medium border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                    <div className="flex gap-3 mt-4">
-                                        <button onClick={() => setMessageFlow({ step: 'idle', customer: null })} className="flex-1 py-3 text-gray-400 font-bold">Cancel</button>
-                                        <button onClick={handleSendMessage} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">Send</button>
-                                    </div>
-                                </>
-                            )}
                         </div>
-                    </div>
-                )
-            }
+                    )
+                }
 
-            {/* DATE PICKER MODAL - REMOVED */}
+                {/* DATE PICKER MODAL - REMOVED */}
 
-            {/* CALL MODAL */}
-            {
-                callSelection && (
-                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-                        <div className="bg-white rounded-3xl w-full max-w-sm p-6 space-y-4 animate-in zoom-in-95">
-                            <div className="flex justify-between items-center">
-                                <h3 className="font-black text-xl">Call Customer</h3>
-                                <button onClick={() => setCallSelection(null)}><X className="text-gray-400" /></button>
-                            </div>
-                            <button onClick={() => {
-                                window.location.href = `tel:${callSelection.tell}`;
-                                logActivity('call', 'Primary', callSelection.name, callSelection.sqn);
-                            }} className="w-full p-4 bg-green-50 border border-green-100 rounded-2xl flex items-center justify-between group hover:bg-green-100 transition-colors">
-                                <div className="text-left">
-                                    <p className="font-black text-lg">{callSelection.tell}</p>
-                                    <p className="text-xs text-green-600 font-bold">Primary Number</p>
+                {/* CALL MODAL */}
+                {
+                    callSelection && (
+                        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                            <div className="bg-white rounded-3xl w-full max-w-sm p-6 space-y-4 animate-in zoom-in-95">
+                                <div className="flex justify-between items-center">
+                                    <h3 className="font-black text-xl">Call Customer</h3>
+                                    <button onClick={() => setCallSelection(null)}><X className="text-gray-400" /></button>
                                 </div>
-                                <div className="bg-green-500 p-2 rounded-full text-white"><Phone size={20} /></div>
-                            </button>
-                            {/* Other options simplified for brevity */}
+                                <button onClick={() => {
+                                    window.location.href = `tel:${callSelection.tell}`;
+                                    logActivity('call', 'Primary', callSelection.name, callSelection.sqn);
+                                }} className="w-full p-4 bg-green-50 border border-green-100 rounded-2xl flex items-center justify-between group hover:bg-green-100 transition-colors">
+                                    <div className="text-left">
+                                        <p className="font-black text-lg">{callSelection.tell}</p>
+                                        <p className="text-xs text-green-600 font-bold">Primary Number</p>
+                                    </div>
+                                    <div className="bg-green-500 p-2 rounded-full text-white"><Phone size={20} /></div>
+                                </button>
+                                {/* Other options simplified for brevity */}
+                            </div>
                         </div>
-                    </div>
-                )
-            }
+                    )
+                }
 
+            </div >
+            {/* End of Customer List */}
+        </div>
+            {/* End of Scrollable Wrapper */ }
+            </div >
+
+        {/* MODALS - OUTSIDE SCROLLING AREA (Or keep inside if global fixed? Usually better outside but for now inside works if fixed positioning is used correctly) */ }
+    {/* ... Actually, Modals are 'fixed inset-0' so they don't care about container. */ }
+
+    {/* CALL MODAL (Moved up or kept here? It was at end) */ }
+    {/* The previous logic had Modals INSIDE. Since I wrapped "Content" in a div, and Modals were children of the root... */ }
+    {/* Let's verify where Modals are. Call Modal starts around line 1157. */ }
+    {/* I need to close the 'flex-1 overflow-y-auto' wrapper BEFORE the Modals or AFTER? */ }
+    {/* If Modals are 'fixed', it doesn't matter much, but logically they are siblings of content. */ }
+    {/* However, the 'flex-col' parent ends at line 1184 (implied). */ }
+    {/* The wrapper should likely end BEFORE the Modals to keep DOM clean, or just before the final closing div. */ }
+    {/* Let's close it just before the Modals if possible, or at the very end. */ }
+    {/* Looking at the previous Replace, I started the wrapper at 754. */ }
+    {/* I need to close it. */ }
+            
         </div >
     );
 }
