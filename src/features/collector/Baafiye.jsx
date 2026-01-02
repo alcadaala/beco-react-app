@@ -159,6 +159,8 @@ export default function Baafiye() {
     const [customNotes, setCustomNotes] = useState([]);
     const [viewingBalanceId, setViewingBalanceId] = useState(null);
     const [viewCallHistoryId, setViewCallHistoryId] = useState(null);
+    const [callHistoryData, setCallHistoryData] = useState([]);
+    const [historyLoading, setHistoryLoading] = useState(false);
     const [activeFormData, setActiveFormData] = useState({ date: '', note: '' });
 
     // SWIPE LOGIC STATE
@@ -332,7 +334,43 @@ export default function Baafiye() {
                 details: { detail, customerName, customerId },
                 created_at: new Date().toISOString()
             });
+
+            // Optimistically update local count if it's a call
+            if (type === 'call') {
+                setCustomers(prev => prev.map(c =>
+                    (c.sqn === customerId || c.id === customerId)
+                        ? { ...c, callCount: (c.callCount || 0) + 1 }
+                        : c
+                ));
+            }
+
         } catch (e) { console.error("Log error", e); }
+    };
+
+    // FETCH CALL HISTORY
+    const handleViewCallHistory = async (c) => {
+        setViewCallHistoryId(c.sqn);
+        setCallHistoryData([]);
+        setHistoryLoading(true);
+        try {
+            // Query logs for this customer
+            const q = query(
+                collection(db, 'activity_logs'),
+                where('details.customerId', '==', c.sqn),
+                where('action_type', '==', 'call')
+            );
+            // Note: Ordering requires composite index. Sorting client-side for safety.
+            const snap = await getDocs(q);
+            const logs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+            // Sort Descending
+            logs.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            setCallHistoryData(logs);
+        } catch (e) {
+            console.error("History fetch error", e);
+        } finally {
+            setHistoryLoading(false);
+        }
     };
 
     // CLEAR TODAY LOGIC (Local Storage Only)
@@ -1057,16 +1095,19 @@ export default function Baafiye() {
                                                     </button>
 
                                                     {/* MINI CALL ICON (Counts) */}
+                                                    {/* MINI CALL ICON (Counts) */}
                                                     <button
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            alert(`${c.name} call icon ${c.callCount || 0}`);
+                                                            handleViewCallHistory(c);
                                                         }}
-                                                        className="focus:outline-none active:scale-90 transition-transform ml-2 bg-green-50 p-0.5 rounded-full border border-green-100"
+                                                        className={`focus:outline-none active:scale-90 transition-transform ml-2 p-0.5 rounded-full border ${(!c.callCount || c.callCount === 0) ? 'bg-white border-gray-100 shadow-sm' : 'bg-green-50 border-green-100'}`}
                                                     >
                                                         <div className="flex items-center gap-0.5 px-0.5">
-                                                            <Phone size={10} className="text-green-600 fill-green-600" />
-                                                            <span className="text-[9px] font-black text-green-700 leading-none">{c.callCount || 0}</span>
+                                                            <Phone size={10} className={(!c.callCount || c.callCount === 0) ? "text-gray-300" : "text-green-600 fill-green-600"} />
+                                                            <span className={`text-[9px] font-black leading-none ${(!c.callCount || c.callCount === 0) ? "text-gray-300" : "text-green-700"}`}>
+                                                                {c.callCount || 0}
+                                                            </span>
                                                         </div>
                                                     </button>
                                                 </div>
@@ -1214,6 +1255,43 @@ export default function Baafiye() {
                         </div>
                     )
                 }
+
+                {/* HISTORY MODAL */}
+                {viewCallHistoryId && (
+                    <div className="fixed inset-0 z-[110] bg-black/60 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl w-full max-w-sm p-6 animate-in zoom-in-95 max-h-[80vh] flex flex-col">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="font-black text-lg flex items-center gap-2">
+                                    <Clock size={20} className="text-gray-400" />
+                                    Call History
+                                </h3>
+                                <button onClick={() => setViewCallHistoryId(null)} className="bg-gray-100 p-1 rounded-full"><X size={18} /></button>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto min-h-[200px]">
+                                {historyLoading ? (
+                                    <div className="flex justify-center py-10"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div></div>
+                                ) : callHistoryData.length === 0 ? (
+                                    <div className="text-center py-10 text-gray-400 font-medium">No calls recorded yet.</div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {callHistoryData.map(log => (
+                                            <div key={log.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                                <div className="bg-green-100 p-2 rounded-full text-green-600 mt-1"><Phone size={14} /></div>
+                                                <div>
+                                                    <p className="text-xs font-black text-gray-900">
+                                                        {new Date(log.created_at).toLocaleDateString()} at {new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </p>
+                                                    <p className="text-[10px] uppercase font-bold text-gray-400 mt-0.5">{log.details.detail}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* End of Scrollable Wrapper */}
             </div>
