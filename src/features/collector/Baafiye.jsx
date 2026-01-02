@@ -1055,6 +1055,20 @@ export default function Baafiye() {
                                                     >
                                                         <Pin size={14} className={c.isFavorite ? "text-violet-600 fill-violet-600" : "text-gray-300"} />
                                                     </button>
+
+                                                    {/* MINI CALL ICON (Counts) */}
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            alert(`${c.name} call icon ${c.callCount || 0}`);
+                                                        }}
+                                                        className="focus:outline-none active:scale-90 transition-transform ml-2 bg-green-50 p-0.5 rounded-full border border-green-100"
+                                                    >
+                                                        <div className="flex items-center gap-0.5 px-0.5">
+                                                            <Phone size={10} className="text-green-600 fill-green-600" />
+                                                            <span className="text-[9px] font-black text-green-700 leading-none">{c.callCount || 0}</span>
+                                                        </div>
+                                                    </button>
                                                 </div>
 
                                                 <div className="flex items-center gap-1.5 flex-wrap text-[9px] font-bold pl-8 -mt-0.5">
