@@ -980,8 +980,8 @@ export default function Baafiye() {
 
                                                             {/* BALAN DROPDOWN - INLINE (MOVED TOP) */}
                                                             {balanDropdownId === c.sqn && (
-                                                                <div className="absolute bottom-16 left-0 bg-white shadow-2xl rounded-2xl p-4 w-[220px] border border-gray-100 animate-in slide-in-from-bottom-2 z-[70]">
-                                                                    <div className="absolute -bottom-2 left-20 w-4 h-4 bg-white rotate-45 border-b border-r border-gray-100"></div>
+                                                                <div className="absolute bottom-12 left-0 mb-2 bg-white shadow-2xl rounded-2xl p-4 w-[220px] border border-gray-100 animate-in slide-in-from-bottom-2 z-[999] pointer-events-auto">
+                                                                    <div className="absolute -bottom-2 left-4 w-4 h-4 bg-white rotate-45 border-b border-r border-gray-100"></div>
                                                                     <h4 className="text-xs font-black text-gray-400 uppercase mb-2">Set Appointment</h4>
                                                                     <input
                                                                         type="date"
