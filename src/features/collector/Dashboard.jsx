@@ -10,24 +10,24 @@ import { signOut } from 'firebase/auth';
 
 function KPICard({ title, value, icon: Icon, color, trend }) {
     return (
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-all duration-300">
-            {/* Background Blob */}
-            <div className={`absolute -right-4 -top-4 w-24 h-24 rounded-full opacity-10 ${color} group-hover:scale-110 transition-transform`}></div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-all duration-300">
+            {/* Background Blob - Reduced */}
+            <div className={`absolute -right-4 -top-4 w-16 h-16 rounded-full opacity-10 ${color} group-hover:scale-110 transition-transform`}></div>
 
             <div className="flex justify-between items-start z-10">
-                <div className={`h-10 w-10 rounded-xl ${color} bg-opacity-10 flex items-center justify-center text-${color.replace('bg-', '')}-600`}>
-                    <Icon size={20} className={color.replace('bg-', 'text-')} />
+                <div className={`h-9 w-9 rounded-lg ${color} bg-opacity-10 flex items-center justify-center text-${color.replace('bg-', '')}-600`}>
+                    <Icon size={18} className={color.replace('bg-', 'text-')} />
                 </div>
                 {trend && (
-                    <span className="bg-green-50 text-green-600 text-[10px] font-bold px-2 py-1 rounded-full">
+                    <span className="bg-green-50 text-green-600 text-[9px] font-bold px-1.5 py-0.5 rounded-full">
                         {trend}
                     </span>
                 )}
             </div>
 
-            <div className="mt-4 z-10">
-                <span className="text-2xl font-bold text-gray-900 block tracking-tight">{value}</span>
-                <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">{title}</span>
+            <div className="mt-3 z-10">
+                <span className="text-xl font-bold text-gray-900 block tracking-tight">{value}</span>
+                <span className="text-gray-500 text-[10px] font-semibold uppercase tracking-wider">{title}</span>
             </div>
         </div>
     );
@@ -40,11 +40,9 @@ function TimeTrackerCard({ userName, userId }) {
     const [prayerInfo, setPrayerInfo] = useState({ name: '', time: '', remaining: '' });
 
     useEffect(() => {
-        // Date String
         const now = new Date();
-        setDateStr(now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }));
+        setDateStr(now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }));
 
-        // PRAYER TIMES
         const PRAYER_TIMES = [
             { name: 'Fajr', hour: 5, minute: 0 },
             { name: 'Duhur', hour: 12, minute: 0 },
@@ -53,12 +51,10 @@ function TimeTrackerCard({ userName, userId }) {
             { name: 'Isha', hour: 19, minute: 15 }
         ];
 
-        // TIME TRACKING LOGIC (Local Session Only)
         if (!userId) return;
 
         const todayKey = new Date().toDateString();
         const storageKey = `activeSeconds_${userId}_${todayKey}`;
-        let interval = null;
 
         const updateDisplay = () => {
             const totalSecs = parseInt(localStorage.getItem(storageKey) || '0');
@@ -98,83 +94,56 @@ function TimeTrackerCard({ userName, userId }) {
             }
         }
 
-        const tick = () => {
-            const current = parseInt(localStorage.getItem(storageKey) || '0');
-            localStorage.setItem(storageKey, (current + 1).toString());
-            updateDisplay();
-            updatePrayer();
-        };
-
-        const handleVisibilityChange = () => {
-            if (document.hidden) {
-                if (interval) clearInterval(interval);
-                interval = null;
-            } else {
-                if (!interval) {
-                    updateDisplay();
-                    interval = setInterval(tick, 1000);
-                }
-            }
-        };
-
+        // Just READ every second, don't write. Writing is handled by MobileLayout.
         updateDisplay();
         updatePrayer();
-        if (!document.hidden) {
-            interval = setInterval(tick, 1000);
-        }
+        const interval = setInterval(() => {
+            updateDisplay();
+            updatePrayer();
+        }, 1000);
 
-        document.addEventListener("visibilitychange", handleVisibilityChange);
-
-        return () => {
-            if (interval) clearInterval(interval);
-            document.removeEventListener("visibilitychange", handleVisibilityChange);
-        };
+        return () => clearInterval(interval);
     }, [userId]);
 
     return (
-        <div className="relative overflow-hidden rounded-3xl shadow-xl shadow-indigo-200 mb-6 group">
-            <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 animate-gradient-x"></div>
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl opacity-30 animate-pulse -translate-y-1/2 translate-x-1/3"></div>
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/20 rounded-full blur-2xl opacity-30 animate-blob"></div>
+        <div className="relative overflow-hidden rounded-2xl shadow-lg shadow-indigo-100 mb-4 group">
+            <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600"></div>
+            {/* Reduced blobs */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl opacity-20 -translate-y-1/2 translate-x-1/3"></div>
 
-            <div className="relative z-10 p-6">
-                <div className="flex justify-between items-start">
+            <div className="relative z-10 p-4">
+                <div className="flex justify-between items-center">
                     <div>
-                        <div className="flex items-center space-x-2 mb-2">
-                            <div className="relative flex h-2.5 w-2.5">
+                        <div className="flex items-center space-x-2 mb-1">
+                            <div className="relative flex h-2 w-2">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
                             </div>
-                            <span className="text-xs font-bold text-indigo-100 uppercase tracking-widest truncate max-w-[150px]">
+                            <span className="text-[10px] font-bold text-indigo-100 uppercase tracking-widest truncate max-w-[150px]">
                                 {userName ? `Mudane ${userName.split(' ')[0]}` : dateStr}
                             </span>
                         </div>
 
                         <div className="flex items-baseline space-x-1">
-                            <h2 className="text-4xl font-black text-white tracking-tight drop-shadow-sm">{timeStr}</h2>
-                            <span className="text-sm font-medium text-indigo-200 animate-pulse">
+                            <h2 className="text-2xl font-black text-white tracking-tight drop-shadow-sm">{timeStr}</h2>
+                            <span className="text-xs font-medium text-indigo-200 animate-pulse">
                                 {seconds.toString().padStart(2, '0')}s
                             </span>
                         </div>
-
-                        <p className="text-indigo-100/80 text-xs font-medium mt-1 flex items-center">
-                            <Clock size={12} className="mr-1.5" /> Time Active Today
-                        </p>
                     </div>
 
                     <div className="text-right">
-                        <div className="bg-white/10 backdrop-blur-md border border-white/20 px-3 py-2 rounded-xl flex flex-col items-center min-w-[80px]">
-                            <span className="text-[10px] text-indigo-200 font-bold uppercase mb-0.5">Next Solah</span>
+                        <div className="bg-white/10 backdrop-blur-md border border-white/20 px-2.5 py-1.5 rounded-lg flex flex-col items-center min-w-[70px]">
+                            <span className="text-[9px] text-indigo-200 font-bold uppercase mb-0.5">Next Solah</span>
                             <div className="flex items-center space-x-1">
-                                <Moon size={12} className="text-yellow-300 fill-yellow-300" />
-                                <span className="text-sm font-black text-white">{prayerInfo.name}</span>
+                                <Moon size={10} className="text-yellow-300 fill-yellow-300" />
+                                <span className="text-xs font-black text-white">{prayerInfo.name}</span>
                             </div>
-                            <span className="text-xs font-medium text-white/80">{prayerInfo.remaining}</span>
+                            <span className="text-[10px] font-medium text-white/80">{prayerInfo.remaining}</span>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-emerald-400 to-cyan-400 w-full opacity-50"></div>
         </div>
     );
 }

@@ -60,10 +60,46 @@ export default function MobileLayout() {
         checkStatus();
     }, [profile, authLoading, location.pathname]);
 
-    // 2. USAGE TRACKING (Background)
+    // 2. USAGE TRACKING (Active Time - Global)
     useEffect(() => {
-        const trackUsage = () => {
-            if (blockedState || pendingState) return;
+        if (!user || !user.uid) return;
+
+        const todayKey = new Date().toDateString();
+        const storageKey = `activeSeconds_${user.uid}_${todayKey}`;
+        let interval = null;
+
+        const tick = () => {
+            if (document.hidden) return; // Double check
+            const current = parseInt(localStorage.getItem(storageKey) || '0');
+            localStorage.setItem(storageKey, (current + 1).toString());
+        };
+
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                if (interval) clearInterval(interval);
+                interval = null;
+            } else {
+                if (!interval) interval = setInterval(tick, 1000);
+            }
+        };
+
+        // Start if currently visible
+        if (!document.hidden) {
+            interval = setInterval(tick, 1000);
+        }
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        return () => {
+            if (interval) clearInterval(interval);
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+        };
+    }, [user]);
+
+    // 3. LOG VISIT (Legacy Daily Count)
+    useEffect(() => {
+        if (blockedState || pendingState) return;
+        const trackVisit = () => {
             const today = new Date().toISOString().split('T')[0];
             const storedLogs = localStorage.getItem('usage_logs');
             let logs = {};
@@ -71,8 +107,8 @@ export default function MobileLayout() {
             logs[today] = (logs[today] || 0) + 1;
             localStorage.setItem('usage_logs', JSON.stringify(logs));
         };
-        const intervalId = setInterval(trackUsage, 60 * 1000);
-        return () => clearInterval(intervalId);
+        // Run once on mount/auth load
+        trackVisit();
     }, [blockedState, pendingState]);
 
     // Handle Extension Logic (Legacy support for now)
