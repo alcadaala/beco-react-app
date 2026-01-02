@@ -917,8 +917,9 @@ export default function Baafiye() {
                                     }}
                                     style={{ transform: `translateX(${visualOffset}px)`, transition: isSwiped ? 'none' : 'transform 0.3s ease-out' }}
                                     onClick={() => setSelectedCustomer(c)}
-                                    className={`relative bg-gradient-to-br from-white to-stone-50 p-2 rounded-[0.8rem] shadow-[0_1px_6px_-2px_rgba(0,0,0,0.05)] z-10 active:scale-[0.99] transition-all mb-px border
-                                        ${isHighRisk ? 'border-red-400 bg-red-50/30' : 'border-white'}`}
+                                    className={`relative bg-gradient-to-br from-white to-stone-50 p-1.5 rounded-xl shadow-[0_1px_4px_-1px_rgba(0,0,0,0.05)] active:scale-[0.99] transition-all mb-px border
+                                        ${isHighRisk ? 'border-red-400 bg-red-50/30' : 'border-white'}
+                                        ${expandedActionId === c.sqn ? 'z-50' : 'z-10'}`}
                                 >
                                     <div className="flex justify-between items-start">
                                         {/* Left Info */}
