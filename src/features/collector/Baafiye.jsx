@@ -917,7 +917,7 @@ export default function Baafiye() {
                                     }}
                                     style={{ transform: `translateX(${visualOffset}px)`, transition: isSwiped ? 'none' : 'transform 0.3s ease-out' }}
                                     onClick={() => setSelectedCustomer(c)}
-                                    className={`relative bg-gradient-to-br from-white to-stone-50 p-4 rounded-[1.2rem] shadow-[0_2px_12px_-4px_rgba(0,0,0,0.1)] z-10 active:scale-[0.98] transition-all mb-1 border
+                                    className={`relative bg-gradient-to-br from-white to-stone-50 p-2.5 rounded-[1rem] shadow-[0_1px_8px_-2px_rgba(0,0,0,0.08)] z-10 active:scale-[0.99] transition-all mb-0.5 border
                                         ${isHighRisk ? 'border-red-400 bg-red-50/30' : 'border-white'}`}
                                 >
                                     <div className="flex justify-between items-start">
@@ -977,10 +977,10 @@ export default function Baafiye() {
                                                                 </button>
                                                             </div>
 
-                                                            {/* BALAN DROPDOWN - INLINE */}
+                                                            {/* BALAN DROPDOWN - INLINE (MOVED TOP) */}
                                                             {balanDropdownId === c.sqn && (
-                                                                <div className="absolute top-16 left-0 bg-white shadow-2xl rounded-2xl p-4 w-[220px] border border-gray-100 animate-in slide-in-from-top-2 z-[70]">
-                                                                    <div className="absolute -top-2 left-20 w-4 h-4 bg-white rotate-45 border-t border-l border-gray-100"></div>
+                                                                <div className="absolute bottom-16 left-0 bg-white shadow-2xl rounded-2xl p-4 w-[220px] border border-gray-100 animate-in slide-in-from-bottom-2 z-[70]">
+                                                                    <div className="absolute -bottom-2 left-20 w-4 h-4 bg-white rotate-45 border-b border-r border-gray-100"></div>
                                                                     <h4 className="text-xs font-black text-gray-400 uppercase mb-2">Set Appointment</h4>
                                                                     <input
                                                                         type="date"
