@@ -1038,17 +1038,17 @@ export default function Baafiye() {
                                         </div>
 
                                         {/* Right Balance */}
-                                        <div className="text-right">
+                                        <div className="text-right flex flex-col items-end justify-center">
                                             <div
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     setViewingBalanceId(viewingBalanceId === c.sqn ? null : c.sqn);
                                                 }}
-                                                className={`text-lg font-black ${c.status === 'Paid' ? 'text-emerald-500' : 'text-gray-900'} cursor-pointer`}
+                                                className={`text-base font-black leading-tight ${c.status === 'Paid' ? 'text-emerald-500' : 'text-gray-900'} cursor-pointer`}
                                             >
                                                 ${c.balance}
                                             </div>
-                                            <div className="text-[10px] text-gray-400 font-bold uppercase">Due</div>
+                                            <div className="text-[9px] text-gray-400 font-bold uppercase leading-none mt-0.5">Due</div>
 
                                             {/* BALANCE POPUP (STYLED) */}
                                             {isBalanceOpen && (
