@@ -80,16 +80,20 @@ export default function HospitalDiscounts() {
     return (
         <div className="min-h-screen bg-stone-50 pb-24">
             {/* Header */}
-            <div className="bg-white px-6 pt-8 pb-4 shadow-sm rounded-b-[2.5rem] sticky top-0 z-20">
+            <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 px-6 pt-8 pb-4 shadow-lg rounded-b-[2.5rem] sticky top-0 z-20">
                 <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center gap-3">
-                        <button onClick={() => navigate(-1)} className="h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center -ml-2 active:scale-95 transition-transform">
+                        <button onClick={() => navigate(-1)} className="h-10 w-10 bg-white/20 text-white rounded-full flex items-center justify-center -ml-2 active:scale-95 transition-transform backdrop-blur-sm border border-white/10">
                             <ArrowLeft size={20} />
                         </button>
                         <div>
-                            <h1 className="text-2xl font-black text-gray-900">Hospital Discounts</h1>
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Healthcare Benefits</p>
+                            <h1 className="text-2xl font-black text-white tracking-tight">Hospital Discounts</h1>
+                            <p className="text-xs font-bold text-indigo-100 uppercase tracking-wide">Healthcare Benefits</p>
                         </div>
+                    </div>
+                    {/* Icon */}
+                    <div className="h-12 w-12 bg-white/10 rounded-2xl flex items-center justify-center text-white shadow-lg border border-white/10 backdrop-blur-sm">
+                        <Building2 size={24} />
                     </div>
                 </div>
 
@@ -101,34 +105,34 @@ export default function HospitalDiscounts() {
                         placeholder="Search hospitals..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3.5 pl-12 pr-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-sm text-sm"
+                        className="w-full bg-white border-none rounded-2xl py-3.5 pl-12 pr-4 font-bold text-gray-900 focus:outline-none focus:ring-4 focus:ring-white/20 transition-all shadow-lg text-sm placeholder-gray-400"
                     />
                 </div>
 
-                {/* TABS (3 SECTIONS SIDE-BY-SIDE) */}
-                <div className="flex bg-gray-100 p-1 rounded-2xl">
+                {/* TABS (3 SECTIONS) */}
+                <div className="flex bg-black/20 p-1 rounded-2xl backdrop-blur-sm">
                     <button
                         onClick={() => setActiveTab(50)}
-                        className={`flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all duration-300 active:scale-95 ${activeTab === 50 ? 'bg-white shadow-md' : 'text-gray-400 hover:text-gray-600'}`}
+                        className={`flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all duration-300 active:scale-95 ${activeTab === 50 ? 'bg-white shadow-lg' : 'text-indigo-100 hover:bg-white/10'}`}
                     >
-                        <span className={`text-xl font-black ${activeTab === 50 ? 'text-red-500' : 'text-gray-400'}`}>50%</span>
-                        <span className="text-[10px] font-bold uppercase tracking-wide">Discount</span>
+                        <span className={`text-xl font-black ${activeTab === 50 ? 'text-gray-900' : 'text-white/80'}`}>50%</span>
+                        <span className={`text-[10px] font-bold uppercase tracking-wide ${activeTab === 50 ? 'text-gray-500' : 'text-indigo-200'}`}>Discount</span>
                     </button>
 
                     <button
                         onClick={() => setActiveTab(40)}
-                        className={`flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all duration-300 active:scale-95 ${activeTab === 40 ? 'bg-white shadow-md' : 'text-gray-400 hover:text-gray-600'}`}
+                        className={`flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all duration-300 active:scale-95 ${activeTab === 40 ? 'bg-white shadow-lg' : 'text-indigo-100 hover:bg-white/10'}`}
                     >
-                        <span className={`text-xl font-black ${activeTab === 40 ? 'text-orange-500' : 'text-gray-400'}`}>40%</span>
-                        <span className="text-[10px] font-bold uppercase tracking-wide">Discount</span>
+                        <span className={`text-xl font-black ${activeTab === 40 ? 'text-gray-900' : 'text-white/80'}`}>40%</span>
+                        <span className={`text-[10px] font-bold uppercase tracking-wide ${activeTab === 40 ? 'text-gray-500' : 'text-indigo-200'}`}>Discount</span>
                     </button>
 
                     <button
                         onClick={() => setActiveTab(30)}
-                        className={`flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all duration-300 active:scale-95 ${activeTab === 30 ? 'bg-white shadow-md' : 'text-gray-400 hover:text-gray-600'}`}
+                        className={`flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all duration-300 active:scale-95 ${activeTab === 30 ? 'bg-white shadow-lg' : 'text-indigo-100 hover:bg-white/10'}`}
                     >
-                        <span className={`text-xl font-black ${activeTab === 30 ? 'text-blue-500' : 'text-gray-400'}`}>30%</span>
-                        <span className="text-[10px] font-bold uppercase tracking-wide">Discount</span>
+                        <span className={`text-xl font-black ${activeTab === 30 ? 'text-gray-900' : 'text-white/80'}`}>30%</span>
+                        <span className={`text-[10px] font-bold uppercase tracking-wide ${activeTab === 30 ? 'text-gray-500' : 'text-indigo-200'}`}>Discount</span>
                     </button>
                 </div>
             </div>
