@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Book, Heart, Receipt, ChevronRight, Upload, FileSpreadsheet, CheckCircle2, Wifi, Users, X, User, Mail, Shield, MapPin, Key } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
-import { collection, query, where, getDocs, doc, updateDoc, writeBatch } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc, writeBatch, getDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 
 export default function Services() {
@@ -24,8 +24,22 @@ export default function Services() {
         const loadUserAndAssistants = async () => {
             const userStr = localStorage.getItem('beco_current_user');
             if (userStr) {
-                const user = JSON.parse(userStr);
-                setCurrentUser(user);
+                let user = JSON.parse(userStr);
+                setCurrentUser(user); // Set initial from local
+
+                // FETCH FRESH DATA FROM DB (Source of Truth)
+                try {
+                    const userRef = doc(db, 'profiles', user.id);
+                    const userSnap = await getDoc(userRef);
+                    if (userSnap.exists()) {
+                        user = { id: userSnap.id, ...userSnap.data() };
+                        setCurrentUser(user);
+                        // Update local storage to keep it fresh
+                        localStorage.setItem('beco_current_user', JSON.stringify(user));
+                    }
+                } catch (error) {
+                    console.error("Error fetching fresh profile:", error);
+                }
 
                 if (user.role === 'Assistant') {
                     navigate('/dashboard', { replace: true });
