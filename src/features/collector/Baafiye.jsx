@@ -708,7 +708,7 @@ export default function Baafiye() {
                 ) : (
                     <>
                         <div className="flex flex-col items-center justify-center p-1">
-                            <img src="/beco_logo_final.png" alt="Beco" className="h-9 w-auto object-contain drop-shadow-md brightness-0 invert opacity-95" />
+                            <img src="/logo.png" alt="Beco" className="h-9 w-auto object-contain drop-shadow-md" />
                         </div>
                         <div className="flex gap-2">
                             <button onClick={() => navigate('/billing')} className="p-2 bg-white/10 rounded-xl"><BarChart3 size={20} /></button>
