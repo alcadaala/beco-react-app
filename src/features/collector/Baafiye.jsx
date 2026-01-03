@@ -165,6 +165,8 @@ export default function Baafiye() {
 
 
 
+    const [swipeState, setSwipeState] = useState({ id: null, startX: 0, currentX: 0, isSwiping: false });
+
     // DISCOUNT MODAL STATE
     const [discountModalCustomer, setDiscountModalCustomer] = useState(null);
     const [discountForm, setDiscountForm] = useState({ paidAmount: '' });
