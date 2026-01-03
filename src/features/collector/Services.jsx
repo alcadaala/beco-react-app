@@ -396,7 +396,9 @@ export default function Services() {
                                     </div>
                                     <div>
                                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide">Full Name</p>
-                                        <p className="text-base font-black text-gray-900">{currentUser?.name || 'N/A'}</p>
+                                        <p className="text-base font-black text-gray-900">
+                                            {currentUser?.full_name || currentUser?.name || 'N/A'}
+                                        </p>
                                     </div>
                                 </div>
 
@@ -422,7 +424,9 @@ export default function Services() {
                                     </div>
                                     <div>
                                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide">Branch Name</p>
-                                        <p className="text-sm font-bold text-gray-900">{currentUser?.branch || 'General'}</p>
+                                        <p className="text-sm font-bold text-gray-900">
+                                            {currentUser?.branch_name || currentUser?.branch || 'General'}
+                                        </p>
                                     </div>
                                 </div>
 
