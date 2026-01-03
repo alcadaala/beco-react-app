@@ -66,12 +66,13 @@ export default function Tasks() {
     };
 
     // SEARCH CUSTOMERS (Local Context + Zone Fallback)
+    // SEARCH CUSTOMERS (Strict Local Baafiye Data Only)
     const searchCustomers = async (term) => {
         if (!term) return;
         const lowerTerm = term.toLowerCase();
         let results = [];
 
-        // 1. PREFERRED: Search LOCAL BAAFIYE DATA (The active list user sees)
+        // STRICT: Only search LOCAL BAAFIYE DATA (active list) to avoid "old data" from server
         try {
             const localData = localStorage.getItem('baafiye_local_data');
             if (localData) {
@@ -85,45 +86,6 @@ export default function Tasks() {
             }
         } catch (e) {
             console.error("Local search error", e);
-        }
-
-        // 2. FALLBACK: If local invalid/empty, search FIRESTORE ZONE (Scoped to this collector)
-        if (results.length === 0 && currentUser) {
-            try {
-                const zone = currentUser.branch || 'General';
-                const capTerm = term.charAt(0).toUpperCase() + term.slice(1);
-
-                // Note: Searching text 'includes' in Firestore is hard (only prefix support).
-                // We will try simple prefix match if term is long enough, ELSE rely on local for better search.
-                // Assuming 'name' is indexed or we use SQN direct look up.
-
-                // A. Try Direct SQN in Zone
-                try {
-                    const docRef = doc(db, 'zones', zone, 'customers', term);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists() && docSnap.data().collector_id === currentUser.id) {
-                        results.push({ id: docSnap.id, ...docSnap.data() });
-                    }
-                } catch (e) { }
-
-                // B. Try Name Prefix in Zone (if results still empty)
-                if (results.length === 0) {
-                    const q = query(
-                        collection(db, 'zones', zone, 'customers'),
-                        where('collector_id', '==', currentUser.id),
-                        where('name', '>=', capTerm),
-                        where('name', '<=', capTerm + '\uf8ff'),
-                        limit(5)
-                    );
-                    const querySnapshot = await getDocs(q);
-                    querySnapshot.forEach(d => {
-                        if (!results.find(r => r.sqn === d.id)) results.push({ sqn: d.id, ...d.data() });
-                    });
-                }
-
-            } catch (e) {
-                console.error("Firestore search error", e);
-            }
         }
 
         setAvailableCustomers(results);
