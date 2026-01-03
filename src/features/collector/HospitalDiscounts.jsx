@@ -62,26 +62,20 @@ export default function HospitalDiscounts() {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedHospital, setSelectedHospital] = useState(null);
+    const [activeTab, setActiveTab] = useState(50); // Default to 50% discount
 
-    const filtered = HOSPITALS_DATA.filter(h =>
-        h.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (h.location && h.location.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-
-    // Group by Discount
-    const grouped = filtered.reduce((acc, h) => {
-        const disc = h.discount || 0;
-        if (!acc[disc]) acc[disc] = [];
-        acc[disc].push(h);
-        return acc;
-    }, {});
-
-    const discounts = Object.keys(grouped).sort((a, b) => b - a); // 50, 40, 30...
+    // Filter by Tab AND Search
+    const filtered = HOSPITALS_DATA.filter(h => {
+        const matchesTab = h.discount === activeTab;
+        const matchesSearch = h.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (h.location && h.location.toLowerCase().includes(searchTerm.toLowerCase()));
+        return matchesTab && matchesSearch;
+    });
 
     return (
         <div className="min-h-screen bg-stone-50 pb-24">
             {/* Header */}
-            <div className="bg-white px-6 pt-8 pb-6 shadow-sm rounded-b-[2.5rem] sticky top-0 z-20">
+            <div className="bg-white px-6 pt-8 pb-4 shadow-sm rounded-b-[2.5rem] sticky top-0 z-20">
                 <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center gap-3">
                         <button onClick={() => navigate(-1)} className="h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center -ml-2 active:scale-95 transition-transform">
@@ -92,87 +86,104 @@ export default function HospitalDiscounts() {
                             <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Healthcare Benefits</p>
                         </div>
                     </div>
-                    <div className="h-12 w-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 shadow-sm border border-red-100">
-                        <Building2 size={24} />
-                    </div>
                 </div>
 
                 {/* Search */}
-                <div className="relative">
+                <div className="relative mb-6">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                     <input
                         type="text"
                         placeholder="Search hospitals..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white transition-all shadow-sm"
+                        className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3.5 pl-12 pr-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-sm text-sm"
                     />
+                </div>
+
+                {/* TABS (3 SECTIONS SIDE-BY-SIDE) */}
+                <div className="flex bg-gray-100 p-1 rounded-2xl">
+                    <button
+                        onClick={() => setActiveTab(50)}
+                        className={`flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all duration-300 active:scale-95 ${activeTab === 50 ? 'bg-white shadow-md' : 'text-gray-400 hover:text-gray-600'}`}
+                    >
+                        <span className={`text-xl font-black ${activeTab === 50 ? 'text-red-500' : 'text-gray-400'}`}>50%</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wide">Discount</span>
+                    </button>
+
+                    <button
+                        onClick={() => setActiveTab(40)}
+                        className={`flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all duration-300 active:scale-95 ${activeTab === 40 ? 'bg-white shadow-md' : 'text-gray-400 hover:text-gray-600'}`}
+                    >
+                        <span className={`text-xl font-black ${activeTab === 40 ? 'text-orange-500' : 'text-gray-400'}`}>40%</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wide">Discount</span>
+                    </button>
+
+                    <button
+                        onClick={() => setActiveTab(30)}
+                        className={`flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all duration-300 active:scale-95 ${activeTab === 30 ? 'bg-white shadow-md' : 'text-gray-400 hover:text-gray-600'}`}
+                    >
+                        <span className={`text-xl font-black ${activeTab === 30 ? 'text-blue-500' : 'text-gray-400'}`}>30%</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wide">Discount</span>
+                    </button>
                 </div>
             </div>
 
-            {/* Content */}
-            <div className="p-6 space-y-8">
-                {filtered.length === 0 ? (
-                    <div className="text-center py-20">
-                        <Building2 size={48} className="mx-auto text-gray-300 mb-4" />
-                        <p className="text-gray-400 font-bold">No hospitals found.</p>
-                    </div>
-                ) : (
-                    discounts.map(disc => (
-                        <div key={disc} className="animate-in slide-in-from-bottom-4 duration-500 fade-in">
-                            {/* Small Clean Header */}
-                            <div className="flex items-center gap-2 mb-3 mt-2">
-                                <div className={`w-1.5 h-1.5 rounded-full 
-                                    ${disc >= 50 ? 'bg-red-500' : disc >= 40 ? 'bg-orange-500' : 'bg-blue-500'}`}>
-                                </div>
-                                <span className="text-xs font-black text-gray-400 uppercase tracking-widest">
-                                    {disc}% Discount
-                                </span>
-                                <div className="h-px bg-gray-100 flex-1"></div>
-                            </div>
+            {/* Content List */}
+            <div className="p-6">
+                {/* List Header Info */}
+                <div className="flex items-center justify-between mb-4 px-1">
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                        Showing {activeTab}% Off Hospitals
+                    </span>
+                    <span className="bg-gray-200 text-gray-600 text-[10px] font-black px-2 py-0.5 rounded-md">
+                        {filtered.length}
+                    </span>
+                </div>
 
-                            {/* Cards Grid */}
-                            <div className="grid gap-3">
-                                {grouped[disc].map(hospital => (
-                                    <div
-                                        key={hospital.id}
-                                        onClick={() => setSelectedHospital(hospital)}
-                                        className="bg-white p-3.5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3 active:scale-[0.98] transition-all cursor-pointer hover:shadow-md hover:border-gray-200"
-                                    >
-                                        {/* Icon Box */}
-                                        <div className="h-12 w-12 bg-stone-50 rounded-xl flex items-center justify-center text-stone-400 shrink-0 border border-stone-100 relative">
-                                            <Building2 size={20} />
-                                        </div>
-
-                                        {/* Content */}
-                                        <div className="flex-1 min-w-0">
-                                            <h3 className="font-extrabold text-gray-900 text-sm leading-tight mb-0.5 truncate">{hospital.name}</h3>
-                                            <div className="flex items-center text-[10px] font-bold text-gray-400 uppercase">
-                                                <MapPin size={9} className="mr-1" />
-                                                {hospital.location || 'Mogadishu'}
-                                            </div>
-                                        </div>
-
-                                        {/* Arrow */}
-                                        <div className="text-gray-300">
-                                            <ArrowLeft size={16} className="rotate-180" />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                <div className="space-y-3 min-h-[50vh]">
+                    {filtered.length === 0 ? (
+                        <div className="text-center py-10">
+                            <Building2 size={48} className="mx-auto text-gray-200 mb-4" />
+                            <p className="text-gray-400 font-bold text-sm">No hospitals found in this category.</p>
                         </div>
-                    ))
-                )}
+                    ) : (
+                        filtered.map(hospital => (
+                            <div
+                                key={hospital.id}
+                                onClick={() => setSelectedHospital(hospital)}
+                                className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 active:scale-[0.98] transition-all cursor-pointer hover:shadow-md hover:border-gray-200 animate-in slide-in-from-bottom-2 fade-in"
+                            >
+                                {/* Icon Box */}
+                                <div className="h-12 w-12 bg-stone-50 rounded-xl flex items-center justify-center text-stone-400 shrink-0 border border-stone-100 relative">
+                                    <Building2 size={20} />
+                                </div>
+
+                                {/* Content */}
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="font-extrabold text-gray-900 text-sm leading-tight mb-0.5 truncate">{hospital.name}</h3>
+                                    <div className="flex items-center text-[10px] font-bold text-gray-400 uppercase">
+                                        <MapPin size={10} className="mr-1" />
+                                        {hospital.location || 'Mogadishu'}
+                                    </div>
+                                </div>
+
+                                {/* Arrow */}
+                                <div className="text-gray-300">
+                                    <ArrowLeft size={18} className="rotate-180" />
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
 
             <div className="h-24"></div>
 
-            {/* DETAIL MODAL */}
+            {/* DETAIL MODAL (Unchanged Logic, just re-included) */}
             {selectedHospital && (
                 <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in" onClick={() => setSelectedHospital(null)}></div>
                     <div className="bg-white w-full max-w-md rounded-t-[2.5rem] sm:rounded-[2.5rem] p-6 relative z-10 animate-in slide-in-from-bottom duration-300">
-                        {/* Drag Handle */}
                         <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6 sm:hidden"></div>
 
                         <div className="flex justify-between items-start mb-6">
@@ -190,9 +201,7 @@ export default function HospitalDiscounts() {
                             </button>
                         </div>
 
-                        {/* Info Cards */}
                         <div className="space-y-4">
-                            {/* Location */}
                             <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
                                 <div className="bg-white p-2.5 rounded-xl text-blue-500 shadow-sm">
                                     <MapPin size={20} />
@@ -203,18 +212,16 @@ export default function HospitalDiscounts() {
                                 </div>
                             </div>
 
-                            {/* About */}
                             <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Info size={16} className="text-gray-400" />
                                     <h3 className="text-xs font-bold text-gray-400 uppercase">About Hospital</h3>
                                 </div>
                                 <p className="text-sm font-medium text-gray-600 leading-relaxed">
-                                    {selectedHospital.about || "This hospital is a verified Beco partner offering discounted healthcare services to all employees."}
+                                    {selectedHospital.about || "This hospital is a verified Beco partner."}
                                 </p>
                             </div>
 
-                            {/* Services */}
                             <div>
                                 <div className="flex items-center gap-2 mb-3 px-1">
                                     <Stethoscope size={16} className="text-indigo-500" />
@@ -234,7 +241,6 @@ export default function HospitalDiscounts() {
                             </div>
                         </div>
 
-                        {/* Action Button */}
                         <div className="mt-8">
                             {selectedHospital.phone ? (
                                 <a href={`tel:${selectedHospital.phone}`} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-center flex items-center justify-center gap-2 shadow-xl shadow-gray-200 active:scale-95 transition-transform">
