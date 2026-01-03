@@ -185,10 +185,11 @@ export default function Quran() {
 
     // Dynamic Row Click Handler
     const handleRxClick = (surah) => {
-        if (mode === 'read') {
-            openReader(surah);
-        } else {
+        if (mode === 'audio') {
             playSurah(surah);
+        } else {
+            // Read or Tafsiir -> Open Reader
+            openReader(surah);
         }
     };
 
