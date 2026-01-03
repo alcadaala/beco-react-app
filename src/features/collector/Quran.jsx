@@ -20,6 +20,35 @@ const THEMES = {
     dark: { name: 'Dark', bg: 'bg-gray-900', text: 'text-gray-100', secondary: 'bg-gray-800' }
 };
 
+// Quiz Questions
+const QUIZ_QUESTIONS = [
+    {
+        question: "Which Surah is known as the 'Heart of the Quran'?",
+        options: ["Surah Al-Fatiha", "Surah Yasin", "Surah Al-Mulk", "Surah Ar-Rahman"],
+        answer: 1 // Index of correct answer
+    },
+    {
+        question: "Which is the longest Surah in the Quran?",
+        options: ["Surah Al-Ma'idah", "Surah Al-A'raf", "Surah Al-Baqarah", "Surah An-Nisa"],
+        answer: 2
+    },
+    {
+        question: "Which Surah does not start with Bismillah?",
+        options: ["Surah At-Tawbah", "Surah Yunus", "Surah Hud", "Surah Yusuf"],
+        answer: 0
+    },
+    {
+        question: "What was the first Surah revealed to Prophet Muhammad (PBUH)?",
+        options: ["Surah Al-Fatiha", "Surah Al-Alaq", "Surah Al-Muzzammil", "Surah Al-Muddathir"],
+        answer: 1
+    },
+    {
+        question: "How many Surahs are there in the Quran?",
+        options: ["110", "112", "114", "116"],
+        answer: 2
+    }
+];
+
 export default function Quran() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -28,6 +57,29 @@ export default function Quran() {
 
     // Internal active mode state
     const [activeMode, setActiveMode] = useState(initialMode);
+
+    // Quiz State
+    const [quizStep, setQuizStep] = useState('start'); // start, question, result
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [score, setScore] = useState(0);
+
+    const handleQuizAnswer = (optionIndex) => {
+        if (optionIndex === QUIZ_QUESTIONS[currentQuestionIndex].answer) {
+            setScore(score + 1);
+        }
+
+        if (currentQuestionIndex + 1 < QUIZ_QUESTIONS.length) {
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
+        } else {
+            setQuizStep('result');
+        }
+    };
+
+    const resetQuiz = () => {
+        setScore(0);
+        setCurrentQuestionIndex(0);
+        setQuizStep('start');
+    };
 
     const [surahs, setSurahs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -233,6 +285,96 @@ export default function Quran() {
             )
         );
     };
+
+    // QUIZ VIEW
+    if (activeMode === 'quiz') {
+        const currentQuestion = QUIZ_QUESTIONS[currentQuestionIndex];
+        return (
+            <div className="flex flex-col h-full bg-white relative">
+                {/* Header Area (App Style - Simplified for Quiz) */}
+                <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 pb-6 px-6 pt-6 rounded-b-[2.5rem] sticky top-0 z-20 shadow-xl mb-4">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center space-x-3">
+                            <button onClick={() => navigate(-1)} className="p-2.5 -ml-2 bg-white/10 hover:bg-white/20 text-white rounded-xl backdrop-blur-md transition-all active:scale-95">
+                                <ArrowLeft size={20} />
+                            </button>
+                            <div className="flex flex-col">
+                                <h1 className="text-2xl font-black text-white tracking-tight">Quran Quiz</h1>
+                                <p className="text-xs text-emerald-100 font-bold uppercase tracking-wide opacity-80">Test Knowledge</p>
+                            </div>
+                        </div>
+                    </div>
+                    {/* TAB NAVIGATION */}
+                    <div className="flex p-1 bg-black/20 backdrop-blur-md rounded-2xl border border-white/10">
+                        <button onClick={() => setActiveMode('tafsiir')} className="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-white/70 hover:text-white">Tafsiir</button>
+                        <button onClick={() => setActiveMode('audio')} className="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-white/70 hover:text-white">Dhageysi</button>
+                        <button onClick={() => setActiveMode('read')} className="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-white/70 hover:text-white">Aqriso</button>
+                        <button onClick={() => setActiveMode('quiz')} className="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-white text-indigo-600 shadow-md transform scale-[1.02]">Quiz</button>
+                    </div>
+                </div>
+
+                <div className="flex-1 flex flex-col items-center justify-center p-6 pb-32">
+                    {quizStep === 'start' && (
+                        <div className="text-center space-y-6 animate-in zoom-in-95 duration-500">
+                            <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                                <BookOpen size={40} />
+                            </div>
+                            <h2 className="text-2xl font-black text-gray-900">Test Your Knowledge</h2>
+                            <p className="text-gray-500 max-w-xs mx-auto">Challenge yourself with questions about the Holy Quran. Are you ready?</p>
+                            <button
+                                onClick={() => setQuizStep('question')}
+                                className="px-8 py-3 bg-emerald-600 text-white font-bold rounded-2xl shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all active:scale-95"
+                            >
+                                Start Quiz
+                            </button>
+                        </div>
+                    )}
+
+                    {quizStep === 'question' && (
+                        <div className="w-full max-w-md space-y-6 animate-in slide-in-from-right duration-300">
+                            <div className="flex justify-between items-center text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                <span>Question {currentQuestionIndex + 1} of {QUIZ_QUESTIONS.length}</span>
+                                <span>Score: {score}</span>
+                            </div>
+                            <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-xl">
+                                <h3 className="text-lg font-bold text-gray-900 mb-6 leading-relaxed">{currentQuestion.question}</h3>
+                                <div className="space-y-3">
+                                    {currentQuestion.options.map((option, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => handleQuizAnswer(idx)}
+                                            className="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-emerald-50 hover:text-emerald-700 hover:font-bold transition-all border border-transparent hover:border-emerald-200"
+                                        >
+                                            {option}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {quizStep === 'result' && (
+                        <div className="text-center space-y-6 animate-in zoom-in-95 duration-500">
+                            <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Check size={40} />
+                            </div>
+                            <h2 className="text-3xl font-black text-gray-900">Quiz Completed!</h2>
+                            <p className="text-xl text-emerald-600 font-bold">You scored {score} out of {QUIZ_QUESTIONS.length}</p>
+                            <p className="text-gray-400">
+                                {score === QUIZ_QUESTIONS.length ? "Mashallah! Perfect Score!" : score > 2 ? "Great Job! Keep Learning." : "Good Effort! Try Again."}
+                            </p>
+                            <button
+                                onClick={resetQuiz}
+                                className="px-8 py-3 bg-gray-900 text-white font-bold rounded-2xl shadow-lg hover:bg-gray-800 transition-all active:scale-95"
+                            >
+                                Play Again
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     // READER VIEW
     if (readingSurah) {
@@ -503,6 +645,14 @@ export default function Quran() {
                         )}
                     >
                         Aqriso
+                    </button>
+                    <button
+                        onClick={() => setActiveMode('quiz')}
+                        className={cn("flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
+                            activeMode === 'quiz' ? "bg-white text-indigo-600 shadow-md transform scale-[1.02]" : "text-white/70 hover:text-white"
+                        )}
+                    >
+                        Quiz
                     </button>
                 </div>
             </div>
