@@ -861,24 +861,38 @@ export default function Baafiye() {
                     {loading && customers.length === 0 ? (
                         <div className="flex justify-center pt-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div></div>
                     ) : listToRender.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-16 px-6 text-center animate-in fade-in zoom-in duration-500">
-                            <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-6 animate-bounce shadow-lg shadow-blue-100">
-                                <Upload size={36} className="text-blue-500" strokeWidth={2.5} />
-                            </div>
-                            <h3 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">Data Not Found</h3>
-                            <p className="text-gray-500 font-medium mb-8 max-w-[280px] mx-auto leading-relaxed">
-                                Start by uploading your customer data Excel sheet to see them here.
-                            </p>
-                            <button
-                                onClick={() => navigate('/services')}
-                                className="bg-gray-900 text-white font-bold py-4 px-10 rounded-2xl shadow-xl shadow-gray-200 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group"
-                            >
-                                <span className="text-lg">Upload Now</span>
-                                <div className="bg-white/20 p-1.5 rounded-lg group-hover:bg-white/30 transition-colors">
-                                    <ChevronRight size={18} />
+                        activeTab === 'active' ? (
+                            <div className="flex flex-col items-center justify-center py-16 px-6 text-center animate-in fade-in zoom-in duration-500">
+                                <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-6 animate-bounce shadow-lg shadow-blue-100">
+                                    <Upload size={36} className="text-blue-500" strokeWidth={2.5} />
                                 </div>
-                            </button>
-                        </div>
+                                <h3 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">Data Not Found</h3>
+                                <p className="text-gray-500 font-medium mb-8 max-w-[280px] mx-auto leading-relaxed">
+                                    Start by uploading your customer data Excel sheet to see them here.
+                                </p>
+                                <button
+                                    onClick={() => navigate('/services')}
+                                    className="bg-gray-900 text-white font-bold py-4 px-10 rounded-2xl shadow-xl shadow-gray-200 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group"
+                                >
+                                    <span className="text-lg">Upload Now</span>
+                                    <div className="bg-white/20 p-1.5 rounded-lg group-hover:bg-white/30 transition-colors">
+                                        <ChevronRight size={18} />
+                                    </div>
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center py-24 px-6 text-center animate-in fade-in zoom-in duration-500">
+                                <div className="w-20 h-20 bg-gray-100/50 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm">
+                                    <FileText size={32} className="text-gray-400 opacity-50" strokeWidth={2} />
+                                </div>
+                                <h3 className="text-lg font-black text-gray-400 mb-1">Wax Data ah lama helin</h3>
+                                <p className="text-xs font-bold text-gray-300 uppercase tracking-widest">
+                                    {activeTab === 'today' ? 'No Tasks Today' :
+                                        activeTab === 'balan' ? 'No Appointments' :
+                                            activeTab === 'paid' ? 'No Payments' : 'Empty List'}
+                                </p>
+                            </div>
+                        )
                     ) : (
                         listToRender.slice(0, visibleCount).map((c, index) => {
                             const isSwiped = swipeState.id === c.sqn;
