@@ -391,22 +391,23 @@ export default function Quran() {
     // LIST VIEW
     return (
         <div className="flex flex-col h-full bg-white relative pb-32">
-            <div className="p-4 sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-gray-100 space-y-3">
-                <div className="flex items-center justify-between">
+            {/* Header Area (App Style) */}
+            <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 pb-6 px-6 pt-6 rounded-b-[2.5rem] sticky top-0 z-20 shadow-xl mb-4">
+                <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center space-x-3">
-                        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-full">
+                        <button onClick={() => navigate(-1)} className="p-2.5 -ml-2 bg-white/10 hover:bg-white/20 text-white rounded-xl backdrop-blur-md transition-all active:scale-95">
                             <ArrowLeft size={20} />
                         </button>
                         <div className="flex flex-col">
-                            <h1 className="text-xl font-bold text-gray-900">Quran Kareem</h1>
-                            <p className="text-xs text-gray-400 font-medium">Beco Islamic</p>
+                            <h1 className="text-2xl font-black text-white tracking-tight">Quran Kareem</h1>
+                            <p className="text-xs text-emerald-100 font-bold uppercase tracking-wide opacity-80">Beco Islamic</p>
                         </div>
                     </div>
                     {/* Only show Reciter Button in Audio Mode */}
                     {(activeMode === 'audio' || isPlaying) && (
                         <button
                             onClick={() => setShowReciters(!showReciters)}
-                            className="flex items-center space-x-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-100 active:scale-95 transition-all"
+                            className="flex items-center space-x-2 bg-white/10 text-white px-3 py-2 rounded-xl text-xs font-bold border border-white/20 active:scale-95 transition-all backdrop-blur-md hover:bg-white/20"
                         >
                             <Mic2 size={14} />
                             <span>{selectedReciter.name.split(' ')[0]}</span>
@@ -414,43 +415,44 @@ export default function Quran() {
                     )}
                 </div>
 
+                {/* SEARCH BAR */}
+                <div className="relative mb-5">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                    <input
+                        type="text"
+                        placeholder="Search Surah..."
+                        className="w-full pl-11 pr-4 py-3.5 bg-white text-gray-900 rounded-2xl shadow-lg border-none focus:ring-4 focus:ring-emerald-900/10 transition-all font-bold placeholder:font-medium placeholder:text-gray-400"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+
                 {/* TAB NAVIGATION */}
-                <div className="flex p-1 bg-gray-100 rounded-xl">
+                <div className="flex p-1 bg-black/20 backdrop-blur-md rounded-2xl border border-white/10">
                     <button
                         onClick={() => setActiveMode('tafsiir')}
-                        className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2",
-                            activeMode === 'tafsiir' ? "bg-white text-violet-600 shadow-sm" : "text-gray-500 hover:text-gray-900"
+                        className={cn("flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
+                            activeMode === 'tafsiir' ? "bg-white text-violet-600 shadow-md transform scale-[1.02]" : "text-white/70 hover:text-white"
                         )}
                     >
                         Tafsiir
                     </button>
                     <button
                         onClick={() => setActiveMode('audio')}
-                        className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2",
-                            activeMode === 'audio' ? "bg-white text-emerald-600 shadow-sm" : "text-gray-500 hover:text-gray-900"
+                        className={cn("flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
+                            activeMode === 'audio' ? "bg-white text-emerald-600 shadow-md transform scale-[1.02]" : "text-white/70 hover:text-white"
                         )}
                     >
                         Dhageysi
                     </button>
                     <button
                         onClick={() => setActiveMode('read')}
-                        className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2",
-                            activeMode === 'read' ? "bg-white text-teal-600 shadow-sm" : "text-gray-500 hover:text-gray-900"
+                        className={cn("flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
+                            activeMode === 'read' ? "bg-white text-teal-600 shadow-md transform scale-[1.02]" : "text-white/70 hover:text-white"
                         )}
                     >
                         Aqriso
                     </button>
-                </div>
-
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                    <input
-                        type="text"
-                        placeholder="Search Surah..."
-                        className="w-full pl-9 pr-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none font-medium text-gray-700"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
                 </div>
             </div>
 
