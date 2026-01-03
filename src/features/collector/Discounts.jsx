@@ -179,22 +179,22 @@ export default function Discounts() {
 
             {/* TOTAL SUMMARY CARD */}
             {customers.length > 0 && (
-                <div className="mx-6 mt-4 p-5 bg-gradient-to-br from-indigo-800 to-indigo-900 rounded-2xl shadow-xl text-white relative overflow-hidden ring-1 ring-white/10">
+                <div className="mx-5 mt-4 p-5 bg-gradient-to-r from-violet-600 to-blue-600 rounded-3xl shadow-lg shadow-indigo-500/20 text-white relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-10">
                         <Tag size={80} />
                     </div>
-                    <div className="flex justify-between items-end relative z-10">
-                        <div>
-                            <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Total Laga Hayo</p>
-                            <h2 className="text-2xl font-black text-emerald-400">
+                    <div className="relative z-10 flex justify-between items-end">
+                        <div className="flex flex-col">
+                            <span className="text-indigo-100 text-[10px] font-bold uppercase tracking-widest mb-1">Total Paid</span>
+                            <span className="text-3xl font-black text-white tracking-tight">
                                 ${customers.reduce((sum, c) => sum + parseFloat(c.paidAmount || 0), 0).toFixed(2)}
-                            </h2>
+                            </span>
                         </div>
-                        <div className="text-right">
-                            <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Total Discount</p>
-                            <h2 className="text-xl font-black text-white">
+                        <div className="flex flex-col items-end">
+                            <span className="text-indigo-100 text-[10px] font-bold uppercase tracking-widest mb-1">Total Discount</span>
+                            <span className="text-2xl font-black text-white/90 tracking-tight">
                                 ${customers.reduce((sum, c) => sum + parseFloat(c.discountAmount || 0), 0).toFixed(2)}
-                            </h2>
+                            </span>
                         </div>
                     </div>
                 </div>
