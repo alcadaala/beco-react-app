@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Book, Heart, Receipt, ChevronRight, ArrowRight, Upload, FileSpreadsheet, CheckCircle2, AlertCircle, Wifi, FileText, Users, X } from 'lucide-react';
+import { Book, Heart, Receipt, ChevronRight, Upload, FileSpreadsheet, CheckCircle2, Wifi, Users, X, User, Mail, Shield, MapPin, Key } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import { collection, query, where, getDocs, doc, updateDoc, writeBatch } from 'firebase/firestore';
@@ -16,8 +16,8 @@ export default function Services() {
     const [existingAssistants, setExistingAssistants] = useState([]);
     const [currentUser, setCurrentUser] = useState(null);
 
-    // PROFILE EDIT STATE
-    const [isEditingProfile, setIsEditingProfile] = useState(false);
+    // PROFILE VIEW/EDIT STATE
+    const [isViewingProfile, setIsViewingProfile] = useState(false);
     const [editForm, setEditForm] = useState({ name: '', password: '' });
 
     useEffect(() => {
@@ -37,7 +37,7 @@ export default function Services() {
                     const q = query(
                         collection(db, 'profiles'),
                         where('role', '==', 'Assistant'),
-                        where('parent_id', '==', user.id) // Ensure string/number match based on your DB schema
+                        where('parent_id', '==', user.id)
                     );
                     const querySnapshot = await getDocs(q);
                     const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -268,13 +268,13 @@ export default function Services() {
         }
     };
 
-    // Handle Profile Edit
-    const handleEditProfile = () => {
+    // Handle Profile View/Edit
+    const handleProfileClick = () => {
         setEditForm({
             name: currentUser?.name || '',
             password: currentUser?.access_code || currentUser?.password || ''
         });
-        setIsEditingProfile(true);
+        setIsViewingProfile(true);
     };
 
     const saveProfile = async () => {
@@ -286,7 +286,7 @@ export default function Services() {
             const userRef = doc(db, 'profiles', currentUser.id);
             const updates = {
                 name: editForm.name,
-                access_code: editForm.password, // Assuming 'access_code' is the password field or 'password'
+                access_code: editForm.password,
                 password: editForm.password
             };
 
@@ -297,7 +297,7 @@ export default function Services() {
             setCurrentUser(updatedUser);
             localStorage.setItem('beco_current_user', JSON.stringify(updatedUser));
 
-            setIsEditingProfile(false);
+            setIsViewingProfile(false);
             alert("Profile updated successfully!");
         } catch (e) {
             console.error("Profile update failed", e);
@@ -316,16 +316,12 @@ export default function Services() {
                             Tools & Utilities
                         </p>
                     </div>
-                    {/* User Profile Trigger */}
+                    {/* User Profile Icon */}
                     <button
-                        onClick={handleEditProfile}
-                        className="w-12 h-12 rounded-2xl border border-white/10 bg-white/10 backdrop-blur-sm p-0.5 cursor-pointer hover:bg-white/20 transition-colors flex items-center justify-center overflow-hidden shadow-lg"
+                        onClick={handleProfileClick}
+                        className="w-12 h-12 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-sm cursor-pointer hover:bg-white/20 transition-all flex items-center justify-center shadow-lg active:scale-95"
                     >
-                        <img
-                            src={`https://ui-avatars.com/api/?name=${currentUser?.name || 'User'}&background=random&color=fff&size=128`}
-                            alt="Profile"
-                            className="w-full h-full rounded-xl object-cover"
-                        />
+                        <User size={24} className="text-white" />
                     </button>
                 </div>
             </div>
@@ -353,85 +349,98 @@ export default function Services() {
                     <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".xlsx,.xls,.json,.csv" className="hidden" />
                 </div>
 
-                {/* Service Cards - No Animation, Clean Look */}
-                <ServiceCard
-                    title="Quran"
-                    icon={Book}
-                    color="bg-emerald-500"
-                    onClick={() => navigate('/quran')}
-                />
-
-                <ServiceCard
-                    title="Hospitals"
-                    icon={Heart}
-                    color="bg-rose-500"
-                    onClick={() => navigate('/hospital-discounts')}
-                />
-
-                <ServiceCard
-                    title="Reports"
-                    icon={Receipt}
-                    color="bg-violet-500"
-                    onClick={() => navigate('/billing')}
-                />
-
-                <ServiceCard
-                    title="Bundles"
-                    icon={Wifi}
-                    color="bg-cyan-500"
-                    onClick={() => navigate('/data-bundles')}
-                />
-
-                <ServiceCard
-                    title="Assistants"
-                    icon={Users}
-                    color="bg-amber-500"
-                    onClick={() => setShowAssistantModal(true)}
-                />
-
-                <ServiceCard
-                    title="Clear List"
-                    icon={FileSpreadsheet}
-                    color="bg-red-500"
-                    onClick={handleClearMyData}
-                />
+                {/* Service Cards */}
+                <ServiceCard title="Quran" icon={Book} color="bg-emerald-500" onClick={() => navigate('/quran')} />
+                <ServiceCard title="Hospitals" icon={Heart} color="bg-rose-500" onClick={() => navigate('/hospital-discounts')} />
+                <ServiceCard title="Reports" icon={Receipt} color="bg-violet-500" onClick={() => navigate('/billing')} />
+                <ServiceCard title="Bundles" icon={Wifi} color="bg-cyan-500" onClick={() => navigate('/data-bundles')} />
+                <ServiceCard title="Assistants" icon={Users} color="bg-amber-500" onClick={() => setShowAssistantModal(true)} />
+                <ServiceCard title="Clear List" icon={FileSpreadsheet} color="bg-red-500" onClick={handleClearMyData} />
 
             </div>
 
-            {/* PROFILE EDIT MODAL */}
-            {isEditingProfile && (
+            {/* PROFILE DETAIL & EDIT MODAL */}
+            {isViewingProfile && (
                 <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in">
                     <div className="bg-white/90 backdrop-blur-xl w-full max-w-sm rounded-[2.5rem] p-6 shadow-2xl border border-white/50 animate-in zoom-in-95">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-black text-gray-900">Edit Profile</h2>
-                            <button onClick={() => setIsEditingProfile(false)} className="p-2 bg-gray-100/50 rounded-full hover:bg-gray-200 transition-colors"><X size={18} /></button>
+                            <div>
+                                <h2 className="text-xl font-black text-gray-900">My Profile</h2>
+                                <p className="text-xs text-gray-500 font-bold uppercase">Account Details</p>
+                            </div>
+                            <button onClick={() => setIsViewingProfile(false)} className="p-2 bg-gray-100/50 rounded-full hover:bg-gray-200 transition-colors"><X size={18} /></button>
                         </div>
 
-                        <div className="space-y-5">
-                            <div>
-                                <label className="block text-xs font-black text-gray-400 uppercase mb-2 ml-1">Full Name</label>
-                                <input
-                                    type="text"
-                                    value={editForm.name}
-                                    onChange={e => setEditForm({ ...editForm, name: e.target.value })}
-                                    className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-4 font-bold text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all"
-                                    placeholder="Enter your name"
-                                />
+                        <div className="space-y-4">
+                            {/* READ ONLY INFO CARDS */}
+                            <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 space-y-3">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-100/50 flex items-center justify-center text-blue-600">
+                                        <Mail size={16} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase">Email</p>
+                                        <p className="text-sm font-bold text-gray-900">{currentUser?.email || 'N/A'}</p>
+                                    </div>
+                                </div>
+
+                                <div className="h-px bg-gray-200/50 w-full"></div>
+
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-indigo-100/50 flex items-center justify-center text-indigo-600">
+                                        <Shield size={16} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase">Role</p>
+                                        <p className="text-sm font-bold text-gray-900">{currentUser?.role || 'User'}</p>
+                                    </div>
+                                </div>
+
+                                <div className="h-px bg-gray-200/50 w-full"></div>
+
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-emerald-100/50 flex items-center justify-center text-emerald-600">
+                                        <MapPin size={16} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase">Branch / Zone</p>
+                                        <p className="text-sm font-bold text-gray-900">{currentUser?.branch || 'General'}</p>
+                                    </div>
+                                </div>
                             </div>
+
+                            {/* EDITABLE FIELDS */}
                             <div>
-                                <label className="block text-xs font-black text-gray-400 uppercase mb-2 ml-1">Password / Access Code</label>
-                                <input
-                                    type="text"
-                                    value={editForm.password}
-                                    onChange={e => setEditForm({ ...editForm, password: e.target.value })}
-                                    className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-4 font-bold text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-mono tracking-wider"
-                                    placeholder="Enter password"
-                                />
+                                <label className="block text-xs font-black text-gray-400 uppercase mb-2 ml-1">Update Name</label>
+                                <div className="flex items-center bg-gray-50/50 border border-gray-200 rounded-2xl px-4 py-3 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
+                                    <User size={18} className="text-gray-400 mr-3" />
+                                    <input
+                                        type="text"
+                                        value={editForm.name}
+                                        onChange={e => setEditForm({ ...editForm, name: e.target.value })}
+                                        className="bg-transparent w-full font-bold text-gray-900 focus:outline-none"
+                                        placeholder="Enter your name"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-black text-gray-400 uppercase mb-2 ml-1">Change Password</label>
+                                <div className="flex items-center bg-gray-50/50 border border-gray-200 rounded-2xl px-4 py-3 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
+                                    <Key size={18} className="text-gray-400 mr-3" />
+                                    <input
+                                        type="text"
+                                        value={editForm.password}
+                                        onChange={e => setEditForm({ ...editForm, password: e.target.value })}
+                                        className="bg-transparent w-full font-bold text-gray-900 focus:outline-none font-mono tracking-wider"
+                                        placeholder="New password"
+                                    />
+                                </div>
                             </div>
 
                             <button
                                 onClick={saveProfile}
-                                className="w-full bg-gradient-to-r from-gray-900 to-black text-white font-bold py-4 rounded-2xl shadow-xl shadow-gray-200 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-2"
+                                className="w-full bg-black text-white font-bold py-4 rounded-2xl shadow-xl shadow-gray-200 hover:scale-[1.02] active:scale-95 transition-all mt-2 flex items-center justify-center gap-2"
                             >
                                 <CheckCircle2 size={18} />
                                 Save Changes
