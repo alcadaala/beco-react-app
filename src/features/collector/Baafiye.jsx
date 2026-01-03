@@ -988,19 +988,19 @@ export default function Baafiye() {
                                                                     {/* CALL */}
                                                                     <button
                                                                         onClick={(e) => { e.stopPropagation(); setCallSelection(c); }}
-                                                                        className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm active:scale-90 transition-transform hover:bg-emerald-100"
+                                                                        className="flex flex-col items-center justify-center w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm active:scale-90 transition-transform hover:bg-emerald-100"
                                                                     >
-                                                                        <Phone size={18} fill="currentColor" className="mb-0.5" />
-                                                                        <span className="text-[9px] font-bold uppercase leading-none">Call</span>
+                                                                        <Phone size={16} fill="currentColor" className="mb-0.5" />
+                                                                        <span className="text-[8px] font-bold uppercase leading-none">Call</span>
                                                                     </button>
 
                                                                     {/* MESSAGE */}
                                                                     <button
                                                                         onClick={(e) => { e.stopPropagation(); handleMessageIconClick(c); }}
-                                                                        className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-blue-50 text-blue-600 border border-blue-100 shadow-sm active:scale-90 transition-transform hover:bg-blue-100"
+                                                                        className="flex flex-col items-center justify-center w-10 h-10 rounded-full bg-blue-50 text-blue-600 border border-blue-100 shadow-sm active:scale-90 transition-transform hover:bg-blue-100"
                                                                     >
-                                                                        <MessageCircle size={18} fill="currentColor" className="mb-0.5" />
-                                                                        <span className="text-[9px] font-bold uppercase leading-none">SMS</span>
+                                                                        <MessageCircle size={16} fill="currentColor" className="mb-0.5" />
+                                                                        <span className="text-[8px] font-bold uppercase leading-none">SMS</span>
                                                                     </button>
 
 
@@ -1012,10 +1012,10 @@ export default function Baafiye() {
                                                                             setDiscountModalCustomer(c);
                                                                             setDiscountForm({ paidAmount: '' });
                                                                         }}
-                                                                        className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-purple-50 text-purple-600 border border-purple-100 shadow-sm active:scale-90 transition-transform hover:bg-purple-100"
+                                                                        className="flex flex-col items-center justify-center w-10 h-10 rounded-full bg-purple-50 text-purple-600 border border-purple-100 shadow-sm active:scale-90 transition-transform hover:bg-purple-100"
                                                                     >
-                                                                        <Tag size={18} className="mb-0.5" />
-                                                                        <span className="text-[9px] font-bold uppercase leading-none">Disc.</span>
+                                                                        <Tag size={16} className="mb-0.5" />
+                                                                        <span className="text-[8px] font-bold uppercase leading-none">Disc.</span>
                                                                     </button>
 
                                                                     {/* BALAN (TOGGLES DROPDOWN) */}
@@ -1025,11 +1025,11 @@ export default function Baafiye() {
                                                                             setBalanDropdownId(balanDropdownId === c.sqn ? null : c.sqn);
                                                                             setActiveFormData({ date: '', note: '' });
                                                                         }}
-                                                                        className={`flex flex-col items-center justify-center w-12 h-12 rounded-full border shadow-sm active:scale-90 transition-transform
+                                                                        className={`flex flex-col items-center justify-center w-10 h-10 rounded-full border shadow-sm active:scale-90 transition-transform
                                                                         ${balanDropdownId === c.sqn ? 'bg-orange-500 text-white border-orange-500 ring-2 ring-orange-200' : 'bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100'}`}
                                                                     >
-                                                                        <Calendar size={18} className="mb-0.5" />
-                                                                        <span className="text-[9px] font-bold uppercase leading-none">Balan</span>
+                                                                        <Calendar size={16} className="mb-0.5" />
+                                                                        <span className="text-[8px] font-bold uppercase leading-none">Balan</span>
                                                                     </button>
                                                                 </div>
 
