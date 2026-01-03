@@ -13,6 +13,80 @@ export default function SuperAdminHospitals() {
     const [searchTerm, setSearchTerm] = useState('');
     const [saving, setSaving] = useState(false);
 
+    const DEFAULT_HOSPITALS = [
+        // 50% DISCOUNT
+        { name: 'Horyaal Hospital', location: 'Tarabuunka Road, Hodan', phone: '+252 614 269 444', discount: 50, status: 'Active' },
+        { name: 'Hodan Hospital', location: 'Hodan District', phone: '', discount: 50, status: 'Active' },
+        { name: 'Somali Sudanese Hospital', location: 'Hodan, Soona key', phone: '+252 61 323 3333', discount: 50, status: 'Active' },
+        { name: 'Wadajir Hospital', location: 'Wadajir', phone: '', discount: 50, status: 'Active' },
+        { name: 'Somali Syrian Hospital', location: 'Mogadishu', phone: '', discount: 50, status: 'Active' },
+        { name: 'Somali Egyptian Hospital', location: 'Mogadishu', phone: '', discount: 50, status: 'Active' },
+
+        // 40% DISCOUNT
+        { name: 'Kalkaal Specialty Hospital', location: 'Digfer Road, Hodan', phone: '+252 617 633 661', discount: 40, status: 'Active' },
+        { name: 'Ibnu Sinaa Hospital', location: 'Mogadishu', phone: '', discount: 40, status: 'Active' },
+        { name: 'Dalmar Specialist Hospital', location: 'Agagaarka KM5', phone: '+252 61 391 7070', discount: 40, status: 'Active' },
+        { name: 'Adan Cade Hospital', location: 'Mogadishu', phone: '', discount: 40, status: 'Active' },
+        { name: 'Horseed Hospital', location: 'Agagaarka KM5, Zoobe', phone: '+252 610 405 080', discount: 40, status: 'Active' },
+        { name: 'Macaani Hospital', location: 'KM13, Mogadishu', phone: '+252 61 502 4277', discount: 40, status: 'Active' },
+        { name: 'Darul Shifaa Hospital', location: 'Mogadishu', phone: '', discount: 40, status: 'Active' },
+        { name: 'Samakaal Hospital', location: 'Mogadishu', phone: '', discount: 40, status: 'Active' },
+        { name: 'Androcare Hospital', location: 'Mogadishu', phone: '', discount: 40, status: 'Active' },
+        { name: 'Al Casima Hospital', location: 'Mogadishu', phone: '', discount: 40, status: 'Active' },
+
+        // 30% DISCOUNT
+        { name: 'Horjoog Hospital', location: 'Mogadishu', phone: '', discount: 30, status: 'Active' },
+        { name: 'Jazeera Specialist Hospital', location: 'Mogadishu', phone: '', discount: 30, status: 'Active' },
+        { name: 'Duco Community Hospital', location: 'Mogadishu', phone: '', discount: 30, status: 'Active' },
+        { name: 'Abuu Bashiir Hospital', location: 'Mogadishu', phone: '', discount: 30, status: 'Active' },
+        { name: 'Daarusalaam Hospital', location: 'Mogadishu', phone: '', discount: 30, status: 'Active' },
+        { name: 'Welcare Hospital', location: 'Mogadishu', phone: '', discount: 30, status: 'Active' },
+        { name: 'Kaafi Hospital', location: 'Mogadishu', phone: '', discount: 30, status: 'Active' },
+        { name: 'Darajaat Hospital', location: 'Mogadishu', phone: '', discount: 30, status: 'Active' },
+        { name: 'Somali Pakistani Hospital', location: 'Mogadishu', phone: '', discount: 30, status: 'Active' },
+        { name: 'Eye Community Hospital', location: 'Mogadishu', phone: '', discount: 30, status: 'Active' },
+        { name: 'Al Zahra Hospital', location: 'Mogadishu', phone: '', discount: 30, status: 'Active' },
+        { name: 'Royal Hospital', location: 'Mogadishu', phone: '', discount: 30, status: 'Active' },
+        { name: 'Somali Specialist Hospital', location: 'Mogadishu', phone: '', discount: 30, status: 'Active' },
+        { name: 'Muqdisho Specialist Hospital', location: 'Yaaqshiid', phone: '+252 61 187 8787', discount: 30, status: 'Active' },
+        { name: 'Amoore Hospital', location: 'Mogadishu', phone: '', discount: 30, status: 'Active' },
+    ];
+
+    const handleSeedData = async () => {
+        if (!confirm("Add missing default hospitals to database?")) return;
+        setSaving(true);
+        try {
+            const batch = writeBatch(db);
+            const hospitalsRef = collection(db, 'hospitals');
+            let addedCount = 0;
+
+            // Check existing to avoid duplicates (Client side check for simplicity)
+            const existingNames = new Set(hospitals.map(h => h.name.toLowerCase()));
+
+            DEFAULT_HOSPITALS.forEach(h => {
+                if (!existingNames.has(h.name.toLowerCase())) {
+                    const docRef = doc(hospitalsRef);
+                    batch.set(docRef, { ...h, created_at: new Date().toISOString() });
+                    addedCount++;
+                }
+            });
+
+            if (addedCount > 0) {
+                await batch.commit();
+                await fetchHospitals();
+                alert(`Added ${addedCount} new hospitals.`);
+            } else {
+                alert("All default hospitals already exist.");
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert("Error seeding data: " + error.message);
+        } finally {
+            setSaving(false);
+        }
+    };
+
     useEffect(() => {
         fetchHospitals();
     }, []);
@@ -194,6 +268,13 @@ export default function SuperAdminHospitals() {
                     <p className="text-gray-500 text-xs font-bold uppercase tracking-wider">Database Integrated</p>
                 </div>
                 <div className="flex space-x-2">
+                    <button
+                        onClick={handleSeedData}
+                        className="bg-indigo-600 text-white p-3 px-4 rounded-2xl shadow-lg hover:bg-indigo-700 transition-colors flex items-center justify-center text-xs font-bold gap-2"
+                        title="Add Default Hospitals"
+                    >
+                        <Building2 size={16} /> Sync DB
+                    </button>
                     {hospitals.length > 0 && (
                         <button
                             onClick={handleDeleteAll}
