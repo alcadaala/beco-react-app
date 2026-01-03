@@ -35,25 +35,31 @@ export default function Tasks() {
 
     // FETCH TASKS
     const fetchTasks = async () => {
+        if (!currentUser || !currentUser.id) return;
+
         try {
             setLoading(true);
-            // Ensure composite index exists for created_at desc, or use client sort if small data
-            // For now, simple query. If index missing, console will scream (and we can fix or remove orderby)
-            const q = query(collection(db, 'tickets'), orderBy('created_at', 'desc'));
-            const querySnapshot = await getDocs(q);
+            // 1. ISOLATION: Filter by user_id
+            // 2. SORTING: Sort client-side to avoid complex index requirements on 'user_id' + 'created_at'
+            const q = query(
+                collection(db, 'tickets'),
+                where('user_id', '==', currentUser.id)
+            );
 
+            const querySnapshot = await getDocs(q);
             const data = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+
+            // Sort by Created At Descending (Newest First)
+            data.sort((a, b) => {
+                const dateA = new Date(a.created_at || 0);
+                const dateB = new Date(b.created_at || 0);
+                return dateB - dateA;
+            });
+
             setTasks(data);
         } catch (err) {
             console.error("Error fetching tasks:", err);
-            // Fallback if index missing
-            try {
-                const q = query(collection(db, 'tickets'));
-                const querySnapshot = await getDocs(q);
-                const data = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                setTasks(data);
-            } catch (e) { console.error("Retry failed", e); }
+            // Redundant fallback removed as the main query is now simple enough
         } finally {
             setLoading(false);
         }
@@ -110,7 +116,7 @@ export default function Tasks() {
 
     useEffect(() => {
         fetchTasks();
-    }, []);
+    }, [currentUser?.id]);
 
     const updateTask = async (taskId, updates) => {
         // Optimistic Update
@@ -210,7 +216,7 @@ export default function Tasks() {
                         <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-200 transition-colors" />
                         <input
                             type="text"
-                            placeholder="Find tickets..."
+                            placeholder="Search Name or SQN..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full bg-white/10 hover:bg-white/20 pl-11 pr-4 py-3 rounded-2xl text-sm font-bold text-white placeholder-indigo-200 focus:outline-none focus:ring-2 focus:ring-white/20 focus:bg-white/20 transition-all shadow-inner border border-white/5 backdrop-blur-sm"
