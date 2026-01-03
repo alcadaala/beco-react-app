@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Play, Pause, SkipForward, SkipBack, Search, Loader2, BookOpen, X, Volume2, Mic2, Check, Settings, Moon, Sun, Type, LucideTextCursorInput } from 'lucide-react';
+import { ArrowLeft, Play, Pause, SkipForward, SkipBack, Search, Loader2, BookOpen, X, Volume2, Mic2, Check, Settings, Moon, Sun, Type, LucideTextCursorInput, Headphones } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '../../lib/utils';
 
