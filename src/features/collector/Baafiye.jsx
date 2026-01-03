@@ -391,28 +391,73 @@ export default function Baafiye() {
         }
     };
 
-    // CLEAR TODAY LOGIC (Local Storage Only)
+    // CLEAR TODAY LOGIC (With Firestore Batch Persistence)
     const handleClearToday = async (force = false) => {
         if (!force && !window.confirm("Ma hubtaa inaad tirtirto jadwalka maanta (Clear Today)?")) return;
 
-        // Update State
+        // 1. Calculate New State (Optimistic)
+        const customersToUpdate = [];
         const newCustomers = customers.map(c => {
             const f = (c.fahfahin || '').toLowerCase();
             const isToday = f.includes('caawa') || f.includes('galabta') || f.includes('galbta') || f.includes('duhur');
 
             // Clear 'Today' tasks AND Unpin (Favorite=false) to return to main list
             if (isToday || c.isFavorite) {
+                // Prepare update payload
+                const updatePayload = {
+                    fahfahin: isToday ? '' : (c.fahfahin || ''),
+                    is_favorite: false
+                };
+
+                customersToUpdate.push({
+                    id: c.sqn || c.id,
+                    path: c._collectionPath,
+                    ...updatePayload
+                });
+
                 return {
                     ...c,
-                    fahfahin: isToday ? '' : c.fahfahin, // Remove time-specific note
-                    isFavorite: false // UNPIN
+                    fahfahin: updatePayload.fahfahin, // Remove time-specific note
+                    isFavorite: false, // UNPIN
+                    is_favorite: false
                 };
             }
             return c;
         });
 
+        // 2. Update Local State Immediately
         setCustomers(newCustomers);
         localStorage.setItem('baafiye_local_data', JSON.stringify(newCustomers));
+
+        // 3. Persist to Firestore (Batch)
+        if (customersToUpdate.length > 0) {
+            try {
+                const CHUNK_SIZE = 450;
+                for (let i = 0; i < customersToUpdate.length; i += CHUNK_SIZE) {
+                    const chunk = customersToUpdate.slice(i, i + CHUNK_SIZE);
+                    const batch = writeBatch(db);
+
+                    let hasOps = false;
+                    chunk.forEach(item => {
+                        if (item.id && item.path) {
+                            const ref = doc(db, item.path, String(item.id));
+                            batch.update(ref, {
+                                fahfahin: item.fahfahin,
+                                is_favorite: false
+                            });
+                            hasOps = true;
+                        }
+                    });
+
+                    if (hasOps) {
+                        await batch.commit();
+                        console.log(`Batch cleared ${chunk.length} items from cloud.`);
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to sync Clear Today to Firestore", e);
+            }
+        }
     };
 
     // AUTOMATIC DAILY RESET (12:00 AM Logic)
