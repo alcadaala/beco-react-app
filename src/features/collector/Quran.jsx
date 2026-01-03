@@ -20,34 +20,7 @@ const THEMES = {
     dark: { name: 'Dark', bg: 'bg-gray-900', text: 'text-gray-100', secondary: 'bg-gray-800' }
 };
 
-// Quiz Questions
-const QUIZ_QUESTIONS = [
-    {
-        question: "Which Surah is known as the 'Heart of the Quran'?",
-        options: ["Surah Al-Fatiha", "Surah Yasin", "Surah Al-Mulk", "Surah Ar-Rahman"],
-        answer: 1 // Index of correct answer
-    },
-    {
-        question: "Which is the longest Surah in the Quran?",
-        options: ["Surah Al-Ma'idah", "Surah Al-A'raf", "Surah Al-Baqarah", "Surah An-Nisa"],
-        answer: 2
-    },
-    {
-        question: "Which Surah does not start with Bismillah?",
-        options: ["Surah At-Tawbah", "Surah Yunus", "Surah Hud", "Surah Yusuf"],
-        answer: 0
-    },
-    {
-        question: "What was the first Surah revealed to Prophet Muhammad (PBUH)?",
-        options: ["Surah Al-Fatiha", "Surah Al-Alaq", "Surah Al-Muzzammil", "Surah Al-Muddathir"],
-        answer: 1
-    },
-    {
-        question: "How many Surahs are there in the Quran?",
-        options: ["110", "112", "114", "116"],
-        answer: 2
-    }
-];
+import { QUIZ_DATA } from './data/quizData';
 
 export default function Quran() {
     const navigate = useNavigate();
@@ -59,26 +32,58 @@ export default function Quran() {
     const [activeMode, setActiveMode] = useState(initialMode);
 
     // Quiz State
-    const [quizStep, setQuizStep] = useState('start'); // start, question, result
+    const [quizStep, setQuizStep] = useState('setup'); // setup, question, result
+    const [quizSettings, setQuizSettings] = useState({ language: 'so', difficulty: 'easy' });
+    const [activeQuestions, setActiveQuestions] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
+    const [selectedAnswer, setSelectedAnswer] = useState(null); // To show feedback before moving next
+    const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
+
+    const startQuiz = () => {
+        // Filter questions based on settings
+        const filtered = QUIZ_DATA.filter(q =>
+            q.language === quizSettings.language &&
+            q.difficulty === quizSettings.difficulty
+        );
+
+        // Shuffle questions (Fisher-Yates shuffle)
+        for (let i = filtered.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [filtered[i], filtered[j]] = [filtered[j], filtered[i]];
+        }
+
+        setActiveQuestions(filtered);
+        setCurrentQuestionIndex(0);
+        setScore(0);
+        setQuizStep('question');
+    };
 
     const handleQuizAnswer = (optionIndex) => {
-        if (optionIndex === QUIZ_QUESTIONS[currentQuestionIndex].answer) {
-            setScore(score + 1);
-        }
+        const currentQ = activeQuestions[currentQuestionIndex];
+        const isCorrect = optionIndex === currentQ.answer;
 
-        if (currentQuestionIndex + 1 < QUIZ_QUESTIONS.length) {
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
-        } else {
-            setQuizStep('result');
-        }
+        setSelectedAnswer(optionIndex);
+        setIsAnswerCorrect(isCorrect);
+        if (isCorrect) setScore(prev => prev + 1);
+
+        // Wait a moment to show feedback
+        setTimeout(() => {
+            setSelectedAnswer(null);
+            setIsAnswerCorrect(null);
+            if (currentQuestionIndex + 1 < activeQuestions.length) {
+                setCurrentQuestionIndex(prev => prev + 1);
+            } else {
+                setQuizStep('result');
+            }
+        }, 1200);
     };
 
     const resetQuiz = () => {
         setScore(0);
         setCurrentQuestionIndex(0);
-        setQuizStep('start');
+        setQuizStep('setup');
+        setActiveQuestions([]);
     };
 
     const [surahs, setSurahs] = useState([]);
@@ -288,7 +293,9 @@ export default function Quran() {
 
     // QUIZ VIEW
     if (activeMode === 'quiz') {
-        const currentQuestion = QUIZ_QUESTIONS[currentQuestionIndex];
+        const currentQuestion = activeQuestions[currentQuestionIndex];
+        const isRTL = quizSettings.language === 'ar' || quizSettings.language === 'so'; // Somali can be RTL ish or LTR, but titles are LTR. Content is RTL for Arabic.
+
         return (
             <div className="flex flex-col h-full bg-white relative">
                 {/* Header Area (App Style - Simplified for Quiz) */}
@@ -303,6 +310,11 @@ export default function Quran() {
                                 <p className="text-xs text-emerald-100 font-bold uppercase tracking-wide opacity-80">Test Knowledge</p>
                             </div>
                         </div>
+                        {quizStep === 'question' && (
+                            <div className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-bold border border-white/10">
+                                {currentQuestionIndex + 1}/{activeQuestions.length}
+                            </div>
+                        )}
                     </div>
                     {/* TAB NAVIGATION */}
                     <div className="flex p-1 bg-black/20 backdrop-blur-md rounded-2xl border border-white/10">
@@ -314,58 +326,148 @@ export default function Quran() {
                 </div>
 
                 <div className="flex-1 flex flex-col items-center justify-center p-6 pb-32">
-                    {quizStep === 'start' && (
-                        <div className="text-center space-y-6 animate-in zoom-in-95 duration-500">
-                            <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-                                <BookOpen size={40} />
+
+                    {/* SETUP STEP */}
+                    {quizStep === 'setup' && (
+                        <div className="w-full max-w-sm space-y-8 animate-in zoom-in-95 duration-500">
+                            <div className="text-center space-y-2">
+                                <h2 className="text-2xl font-black text-gray-900">Quiz Settings</h2>
+                                <p className="text-sm text-gray-500">Customize your challenge</p>
                             </div>
-                            <h2 className="text-2xl font-black text-gray-900">Test Your Knowledge</h2>
-                            <p className="text-gray-500 max-w-xs mx-auto">Challenge yourself with questions about the Holy Quran. Are you ready?</p>
+
+                            {/* Language Selection */}
+                            <div className="space-y-3">
+                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block pl-1">Language</label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button
+                                        onClick={() => setQuizSettings({ ...quizSettings, language: 'so' })}
+                                        className={cn("p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2",
+                                            quizSettings.language === 'so' ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-gray-100 hover:bg-gray-50 text-gray-600"
+                                        )}
+                                    >
+                                        <span className="text-2xl">🇸🇴</span>
+                                        <span className="font-bold text-sm">Somali</span>
+                                    </button>
+                                    <button
+                                        onClick={() => setQuizSettings({ ...quizSettings, language: 'ar' })}
+                                        className={cn("p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2",
+                                            quizSettings.language === 'ar' ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-gray-100 hover:bg-gray-50 text-gray-600"
+                                        )}
+                                    >
+                                        <span className="text-2xl">🇸🇦</span>
+                                        <span className="font-bold text-sm">Arabic</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Difficulty Selection */}
+                            <div className="space-y-3">
+                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block pl-1">Difficulty</label>
+                                <div className="flex bg-gray-100 p-1.5 rounded-2xl">
+                                    {['easy', 'normal', 'hard'].map((lvl) => (
+                                        <button
+                                            key={lvl}
+                                            onClick={() => setQuizSettings({ ...quizSettings, difficulty: lvl })}
+                                            className={cn("flex-1 py-3 rounded-xl text-xs font-bold transition-all capitalize",
+                                                quizSettings.difficulty === lvl ? "bg-white shadow-sm text-gray-900" : "text-gray-500 hover:text-gray-900"
+                                            )}
+                                        >
+                                            {lvl}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
                             <button
-                                onClick={() => setQuizStep('question')}
-                                className="px-8 py-3 bg-emerald-600 text-white font-bold rounded-2xl shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all active:scale-95"
+                                onClick={startQuiz}
+                                className="w-full py-4 bg-gray-900 text-white font-bold rounded-2xl shadow-xl hover:bg-gray-800 transition-all active:scale-95 flex items-center justify-center gap-2"
                             >
-                                Start Quiz
+                                <Play size={18} fill="currentColor" />
+                                Start Challenge
                             </button>
                         </div>
                     )}
 
-                    {quizStep === 'question' && (
+                    {/* QUESTION STEP */}
+                    {quizStep === 'question' && currentQuestion && (
                         <div className="w-full max-w-md space-y-6 animate-in slide-in-from-right duration-300">
-                            <div className="flex justify-between items-center text-xs font-bold text-gray-400 uppercase tracking-widest">
-                                <span>Question {currentQuestionIndex + 1} of {QUIZ_QUESTIONS.length}</span>
-                                <span>Score: {score}</span>
-                            </div>
-                            <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-xl">
-                                <h3 className="text-lg font-bold text-gray-900 mb-6 leading-relaxed">{currentQuestion.question}</h3>
+                            {/* Score/Progress Indicator can go here */}
+                            <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-xl relative overflow-hidden">
+                                <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100">
+                                    <div
+                                        className="h-full bg-emerald-500 transition-all duration-300"
+                                        style={{ width: `${((currentQuestionIndex + 1) / activeQuestions.length) * 100}%` }}
+                                    ></div>
+                                </div>
+                                <h3
+                                    className={cn("text-xl font-bold text-gray-900 mb-8 leading-relaxed", quizSettings.language === 'ar' ? 'font-amiri text-2xl text-right' : 'text-center')}
+                                    dir={quizSettings.language === 'ar' ? "rtl" : "ltr"}
+                                >
+                                    {currentQuestion.question}
+                                </h3>
                                 <div className="space-y-3">
-                                    {currentQuestion.options.map((option, idx) => (
-                                        <button
-                                            key={idx}
-                                            onClick={() => handleQuizAnswer(idx)}
-                                            className="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-emerald-50 hover:text-emerald-700 hover:font-bold transition-all border border-transparent hover:border-emerald-200"
-                                        >
-                                            {option}
-                                        </button>
-                                    ))}
+                                    {currentQuestion.options.map((option, idx) => {
+                                        let btnClass = "bg-gray-50 border-transparent hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 text-gray-700";
+
+                                        // Feedback Logic
+                                        if (selectedAnswer !== null) {
+                                            if (idx === currentQuestion.answer) {
+                                                btnClass = "bg-emerald-500 text-white border-emerald-500"; // Correct
+                                            } else if (idx === selectedAnswer) {
+                                                btnClass = "bg-red-500 text-white border-red-500"; // Wrong selected
+                                            } else {
+                                                btnClass = "bg-gray-50 text-gray-400 opacity-50"; // Others
+                                            }
+                                        }
+
+                                        return (
+                                            <button
+                                                key={idx}
+                                                disabled={selectedAnswer !== null}
+                                                onClick={() => handleQuizAnswer(idx)}
+                                                className={cn(
+                                                    "w-full p-4 rounded-xl text-left font-medium transition-all border-2 flex items-center justify-between",
+                                                    btnClass,
+                                                    quizSettings.language === 'ar' ? "text-right flex-row-reverse" : "text-left"
+                                                )}
+                                            >
+                                                <span>{option}</span>
+                                                {selectedAnswer !== null && idx === currentQuestion.answer && <Check size={18} />}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
                     )}
 
+                    {/* Empty State / Error Wrapper if no questions found */}
+                    {quizStep === 'question' && !currentQuestion && (
+                        <div className="text-center p-8 bg-gray-50 rounded-3xl">
+                            <p className="text-gray-500 font-bold mb-4">No questions found for this category.</p>
+                            <button onClick={resetQuiz} className="text-emerald-600 font-bold underline">Go Back</button>
+                        </div>
+                    )}
+
+                    {/* RESULT STEP */}
                     {quizStep === 'result' && (
                         <div className="text-center space-y-6 animate-in zoom-in-95 duration-500">
-                            <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Check size={40} />
+                            <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-emerald-50">
+                                <Check size={40} className="stroke-[3px]" />
                             </div>
-                            <h2 className="text-3xl font-black text-gray-900">Quiz Completed!</h2>
-                            <p className="text-xl text-emerald-600 font-bold">You scored {score} out of {QUIZ_QUESTIONS.length}</p>
-                            <p className="text-gray-400">
-                                {score === QUIZ_QUESTIONS.length ? "Mashallah! Perfect Score!" : score > 2 ? "Great Job! Keep Learning." : "Good Effort! Try Again."}
-                            </p>
+                            <div>
+                                <h2 className="text-3xl font-black text-gray-900 mb-2">Quiz Completed!</h2>
+                                <p className="text-gray-400 font-medium">You have finished the challenge</p>
+                            </div>
+
+                            <div className="bg-emerald-50 p-6 rounded-3xl border border-emerald-100">
+                                <p className="text-sm font-bold text-emerald-800 uppercase tracking-widest mb-1">Your Score</p>
+                                <p className="text-5xl font-black text-emerald-600">{score}<span className="text-2xl text-emerald-300">/{activeQuestions.length}</span></p>
+                            </div>
+
                             <button
                                 onClick={resetQuiz}
-                                className="px-8 py-3 bg-gray-900 text-white font-bold rounded-2xl shadow-lg hover:bg-gray-800 transition-all active:scale-95"
+                                className="px-10 py-4 bg-gray-900 text-white font-bold rounded-2xl shadow-lg hover:bg-gray-800 transition-all active:scale-95"
                             >
                                 Play Again
                             </button>
