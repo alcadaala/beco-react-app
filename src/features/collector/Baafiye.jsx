@@ -391,10 +391,13 @@ export default function Baafiye() {
             const f = (c.fahfahin || '').toLowerCase();
             const isToday = f.includes('caawa') || f.includes('galabta') || f.includes('galbta') || f.includes('duhur');
 
-            // Only clear the note if it's a "Today" task.
-            // DO NOT UNPIN (keep isFavorite as is).
-            if (isToday) {
-                return { ...c, fahfahin: '' };
+            // Clear 'Today' tasks AND Unpin (Favorite=false) to return to main list
+            if (isToday || c.isFavorite) {
+                return {
+                    ...c,
+                    fahfahin: isToday ? '' : c.fahfahin, // Remove time-specific note
+                    isFavorite: false // UNPIN
+                };
             }
             return c;
         });
@@ -412,17 +415,18 @@ export default function Baafiye() {
             if (lastResetDate !== todayStr && customers.length > 0) {
                 console.log("New Day Detected! Running Daily Reset...");
 
-                // Logic duplicates handleClearToday but purely for finding items to reset
-                // We calculate new state here to avoid dependency issues with handleClearToday function identity
                 let hasChanges = false;
                 const newCustomers = customers.map(c => {
                     const f = (c.fahfahin || '').toLowerCase();
                     const isToday = f.includes('caawa') || f.includes('galabta') || f.includes('galbta') || f.includes('duhur');
 
-                    if (isToday) {
+                    if (isToday || c.isFavorite) {
                         hasChanges = true;
-                        return { ...c, fahfahin: '' }; // Clear "Today" notes
-                        // Note: We keep isFavorite (Pins) as per user request
+                        return {
+                            ...c,
+                            fahfahin: isToday ? '' : c.fahfahin,
+                            isFavorite: false // UNPIN for daily reset too
+                        };
                     }
                     return c;
                 });
