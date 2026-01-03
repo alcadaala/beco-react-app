@@ -19,6 +19,7 @@ export default function CustomerEditModal({ customer, onClose, onSave }) {
     const [fahfahin, setFahfahin] = useState(customer?.fahfahin || '');
     const [isCustomFahfahin, setIsCustomFahfahin] = useState(false); // New state for custom input mode
     const [discountAmount, setDiscountAmount] = useState(customer?.discountAmount || '');
+    const [paidAmount, setPaidAmount] = useState(customer?.paidAmount || '');
     const [balanDate, setBalanDate] = useState('');
 
     // --- GPS STATE ---
@@ -62,7 +63,19 @@ export default function CustomerEditModal({ customer, onClose, onSave }) {
 
         const safeDate = (status === 'Balan' ? finalDate : customer.date) || null;
         const safePaidDate = (status === 'Paid' ? new Date().toISOString() : customer.paidDate) || null;
-        const safeDiscount = status === 'Discount' ? (discountAmount || '0') : null;
+
+        // DISCOUNT LOGIC
+        let safeDiscount = null;
+        let safePaid = null;
+
+        if (status === 'Discount') {
+            const originalBal = parseFloat(balance || 0);
+            const paid = parseFloat(paidAmount || 0);
+            const discount = originalBal - paid;
+
+            safeDiscount = discount.toFixed(2);
+            safePaid = paid.toFixed(2);
+        }
 
         const updatedCustomer = {
             ...customer,
@@ -74,6 +87,7 @@ export default function CustomerEditModal({ customer, onClose, onSave }) {
             status: status || 'Normal',
             fahfahin: fahfahin || '',
             discountAmount: safeDiscount,
+            paidAmount: safePaid,
             date: safeDate,
             paidDate: safePaidDate,
             location: gpsLocation, // Include GPS
@@ -286,21 +300,44 @@ export default function CustomerEditModal({ customer, onClose, onSave }) {
                         </div>
                     </div>
 
-                    {/* Conditional Discount Input */}
+
+
+
+
+
+
+
+
+                    {/* Conditional Discount Input - NEW LOGIC */}
                     {status === 'Discount' && (
-                        <div className="animate-in slide-in-from-top-2 fade-in">
-                            <label className="text-xs font-bold text-yellow-600 uppercase ml-1 mb-1.5 flex items-center">
-                                <DollarSign size={12} className="mr-1" />
-                                Meqa waaye Discount-ga?
-                            </label>
-                            <input
-                                type="number"
-                                value={discountAmount}
-                                onChange={(e) => setDiscountAmount(e.target.value)}
-                                placeholder="Enter amount..."
-                                className="w-full bg-yellow-50/50 border border-yellow-200 text-gray-900 font-bold rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400/50 placeholder-yellow-300"
-                                autoFocus
-                            />
+                        <div className="animate-in slide-in-from-top-2 fade-in space-y-3">
+                            <div>
+                                <label className="text-xs font-bold text-indigo-900 uppercase ml-1 mb-1.5 flex items-center">
+                                    <DollarSign size={12} className="mr-1" />
+                                    Waxa la dhiibay (Paid Amount)
+                                </label>
+                                <div className="relative">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                                    <input
+                                        type="number"
+                                        value={paidAmount}
+                                        onChange={(e) => setPaidAmount(e.target.value)}
+                                        placeholder="0.00"
+                                        className="w-full bg-indigo-50/50 border border-indigo-200 text-gray-900 font-bold rounded-xl pl-8 pr-4 py-3 outline-none focus:ring-2 focus:ring-indigo-400/50 text-lg"
+                                        autoFocus
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Calculation Display */}
+                            {paidAmount && (
+                                <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100 flex justify-between items-center">
+                                    <span className="text-xs font-bold text-indigo-400">Calculated Discount:</span>
+                                    <span className="text-xl font-black text-indigo-600">
+                                        ${(parseFloat(balance || 0) - parseFloat(paidAmount || 0)).toFixed(2)}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     )}
 
