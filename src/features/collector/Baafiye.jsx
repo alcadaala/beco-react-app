@@ -1234,36 +1234,38 @@ export default function Baafiye() {
                                     {/* SQN / TEEL OPTION - DIRECT DIAL */}
                                     {/* SQN - DIRECT DIAL (Updated per user request) */}
                                     <div
-                                        className="flex items-center justify-between w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl group hover:bg-green-50 hover:border-green-200 transition-all cursor-pointer active:scale-95"
+                                        className="flex items-center justify-between w-full p-3 bg-gray-50 border border-gray-100 rounded-xl group hover:bg-green-50 hover:border-green-200 transition-all cursor-pointer active:scale-95"
                                         onClick={() => {
                                             logActivity('call', 'SQN_Dial', callSelection.name, callSelection.sqn);
                                             window.location.href = `tel:${callSelection.sqn}`;
+                                            setTimeout(() => setCallSelection(null), 500); // Close modal after action
                                         }}
                                     >
                                         <div className="text-left">
-                                            <div className="text-xs font-bold text-gray-400 uppercase mb-0.5">Account / SQN</div>
-                                            <div className="font-black text-2xl text-gray-900 tracking-wider">{callSelection.sqn}</div>
+                                            <div className="text-[10px] font-bold text-gray-400 uppercase mb-0.5">Account / SQN</div>
+                                            <div className="font-black text-xl text-gray-900 tracking-wider">{callSelection.sqn}</div>
                                         </div>
-                                        <div className="bg-white p-2.5 rounded-full shadow-sm text-gray-400 group-hover:text-green-600 transition-colors">
-                                            <Phone size={20} />
+                                        <div className="bg-white p-2 rounded-full shadow-sm text-gray-400 group-hover:text-green-600 transition-colors">
+                                            <Phone size={16} />
                                         </div>
                                     </div>
 
                                     {/* MOBILE / PHONE OPTION - DIRECT DIAL */}
                                     {callSelection.phone && callSelection.phone !== callSelection.tell && (
                                         <div
-                                            className="flex items-center justify-between w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl group hover:bg-blue-50 hover:border-blue-200 transition-all cursor-pointer active:scale-95"
+                                            className="flex items-center justify-between w-full p-3 bg-gray-50 border border-gray-100 rounded-xl group hover:bg-blue-50 hover:border-blue-200 transition-all cursor-pointer active:scale-95"
                                             onClick={() => {
                                                 logActivity('call', 'Mobile', callSelection.name, callSelection.sqn);
                                                 window.location.href = `tel:${callSelection.phone}`;
+                                                setTimeout(() => setCallSelection(null), 500); // Close modal after action
                                             }}
                                         >
                                             <div className="text-left">
-                                                <div className="text-xs font-bold text-gray-400 uppercase mb-0.5">Mobile Number</div>
-                                                <div className="font-black text-lg text-gray-900">{callSelection.phone}</div>
+                                                <div className="text-[10px] font-bold text-gray-400 uppercase mb-0.5">Mobile Number</div>
+                                                <div className="font-black text-base text-gray-900">{callSelection.phone}</div>
                                             </div>
-                                            <div className="bg-white p-2.5 rounded-full shadow-sm text-gray-400 group-hover:text-blue-600 transition-colors">
-                                                <Phone size={20} />
+                                            <div className="bg-white p-2 rounded-full shadow-sm text-gray-400 group-hover:text-blue-600 transition-colors">
+                                                <Phone size={16} />
                                             </div>
                                         </div>
                                     )}
@@ -1327,11 +1329,23 @@ export default function Baafiye() {
                             <div className="space-y-5">
                                 <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
                                     <div className="flex justify-between items-center mb-1">
-                                        <span className="text-xs font-bold text-gray-400 uppercase">Customer Balance</span>
-                                        <span className="text-lg font-black text-gray-900">${discountModalCustomer.balance}</span>
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Prev Balance</span>
+                                            <span className="text-sm font-black text-gray-600">${discountModalCustomer.prev_balance || '0'}</span>
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Current Balance</span>
+                                            <span className="text-lg font-black text-gray-900">${discountModalCustomer.balance}</span>
+                                        </div>
                                     </div>
                                     <div className="w-full bg-gray-200 h-1.5 rounded-full mt-2 overflow-hidden">
                                         <div className="bg-indigo-500 h-full w-full"></div>
+                                    </div>
+                                    <div className="mt-2 text-center border-t border-gray-100 pt-2">
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase">Total to Pay</span>
+                                        <div className="text-xl font-black text-indigo-700">
+                                            ${(parseFloat(String(discountModalCustomer.prev_balance || '0').replace(/[^0-9.-]+/g, "")) + parseFloat(String(discountModalCustomer.balance || '0').replace(/[^0-9.-]+/g, ""))).toFixed(2)}
+                                        </div>
                                     </div>
                                 </div>
 
