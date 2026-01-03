@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Book, Heart, Receipt, ChevronRight, Upload, FileSpreadsheet, CheckCircle2, Wifi, Users, X, User, Mail, Shield, MapPin, Key, Headphones, BookOpen } from 'lucide-react';
+import { Book, Heart, Receipt, ChevronRight, Upload, FileSpreadsheet, CheckCircle2, Wifi, Users, X, User, Mail, Shield, MapPin, Key, Headphones, BookOpen, BookText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import { collection, query, where, getDocs, doc, updateDoc, writeBatch, getDoc } from 'firebase/firestore';
@@ -437,6 +437,26 @@ export default function Services() {
                                 <span className="font-black text-gray-900">Aqriso</span>
                                 <span className="text-[10px] uppercase font-bold text-teal-600 bg-teal-100 px-2 py-0.5 rounded-md">Read</span>
                             </button>
+
+                            <div className="col-span-2">
+                                <button
+                                    onClick={() => navigate('/quran', { state: { mode: 'tafsiir' } })}
+                                    className="w-full flex items-center justify-between p-4 rounded-3xl bg-violet-50 border-2 border-violet-100 hover:bg-violet-100 active:scale-95 transition-all group"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-violet-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-violet-200">
+                                            <BookText size={24} />
+                                        </div>
+                                        <div className="text-left">
+                                            <span className="block font-black text-gray-900 text-lg">Tafsiir</span>
+                                            <span className="text-[10px] uppercase font-bold text-violet-600 bg-violet-100 px-2 py-0.5 rounded-md">Somali Translation</span>
+                                        </div>
+                                    </div>
+                                    <div className="bg-white p-2 rounded-full text-violet-600 shadow-sm group-hover:translate-x-1 transition-transform">
+                                        <ChevronRight size={20} />
+                                    </div>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -124,22 +124,42 @@ export default function Quran() {
         setLoadingText(true);
 
         // Auto-play audio if not already playing this surah (ONLY IN AUDIO MODE or Explicit Trigger)
-        // If mode is 'read', we don't auto-play unless user wants to.
+        // If mode is 'read' or 'tafsiir', we don't auto-play unless user wants to.
         if (mode === 'audio' && currentSurah?.id !== surah.id) {
             playSurah(surah);
         }
 
         // Fetch Arabic Text - Using Quran.com API V4 (Reliable)
-        fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${surah.id}`)
-            .then(res => res.json())
-            .then(data => {
+        const fetchArabic = fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${surah.id}`);
+
+        // Fetch Translation if Tafsiir Mode (ID 199 = Somali)
+        const fetchTranslation = mode === 'tafsiir'
+            ? fetch(`https://api.quran.com/api/v4/quran/translations/199?chapter_number=${surah.id}`)
+            : Promise.resolve(null);
+
+        Promise.all([fetchArabic, fetchTranslation])
+            .then(async ([resArabic, resTrans]) => {
+                const dataArabic = await resArabic.json();
+                const dataTrans = resTrans ? await resTrans.json() : null;
+
                 // Map Quran.com structure to our app's structure
-                if (data.verses) {
-                    const formattedAyahs = data.verses.map(v => ({
-                        number: v.id,
-                        text: v.text_uthmani,
-                        numberInSurah: v.verse_key.split(':')[1]
-                    }));
+                if (dataArabic.verses) {
+                    const formattedAyahs = dataArabic.verses.map((v, index) => {
+                        // Find matching translation if available
+                        // Note: Translations usually return 'translations' array, ensuring index match or verse_key match
+                        let translationText = null;
+                        if (dataTrans?.translations) {
+                            // Option A: Direct Index Match (Usually reliable for translations by chapter)
+                            translationText = dataTrans.translations[index]?.text;
+                        }
+
+                        return {
+                            number: v.id,
+                            text: v.text_uthmani,
+                            numberInSurah: v.verse_key.split(':')[1],
+                            translation: translationText // Add translation field
+                        };
+                    });
                     setAyahs(formattedAyahs);
                 } else {
                     // Fallback mechanism if main API fails (rare)
@@ -315,20 +335,34 @@ export default function Quran() {
                                 ) : (
                                     <div className="quran-text text-right" dir="rtl" style={{ textAlign: 'justify', textAlignLast: 'center' }}>
                                         {ayahs.map((ayah, i) => (
-                                            <span key={ayah.number} className="inline group">
-                                                <span
-                                                    className={cn("inline transition-colors hover:text-[#d4af37] cursor-pointer", activeTheme.text)}
-                                                    style={{ fontFamily: 'Amiri, serif', fontSize: `${fontSize}px` }}
-                                                    onClick={() => {
-                                                        // Optional: Play specific ayah (requires more logic, skipping for now)
-                                                    }}
-                                                >
-                                                    {ayah.text.replace('بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ', '')}
-                                                </span>
-                                                {/* Ornamental Ayah Marker */}
-                                                <span className="ayah-end-symbol text-[#d4af37] mx-2 select-none" data-number={Number(ayah.numberInSurah).toLocaleString('ar-EG')} style={{ fontSize: `${Math.max(12, fontSize * 0.45)}px` }}>
-                                                </span>
-                                            </span>
+                                            <div key={ayah.number} className="mb-6 border-b border-dashed border-gray-200 pb-2 last:border-none">
+                                                {/* Arabic Text */}
+                                                <div className="mb-3">
+                                                    <span
+                                                        className={cn("inline transition-colors hover:text-[#d4af37] cursor-pointer leading-[2.5]", activeTheme.text)}
+                                                        style={{ fontFamily: 'Amiri, serif', fontSize: `${fontSize}px` }}
+                                                        onClick={() => {
+                                                            // Optional: Play specific ayah
+                                                        }}
+                                                    >
+                                                        {ayah.text.replace('بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ', '')}
+                                                    </span>
+                                                    {/* Ornamental Ayah Marker */}
+                                                    <span className="ayah-end-symbol text-[#d4af37] mx-2 select-none" data-number={Number(ayah.numberInSurah).toLocaleString('ar-EG')} style={{ fontSize: `${Math.max(12, fontSize * 0.45)}px` }}>
+                                                    </span>
+                                                </div>
+
+                                                {/* Translation Text (Tafsiir) */}
+                                                {ayah.translation && (
+                                                    <div
+                                                        className={cn("text-center text-sm sm:text-base font-medium px-4 leading-relaxed font-sans",
+                                                            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                                                        )}
+                                                        dir="ltr"
+                                                        dangerouslySetInnerHTML={{ __html: ayah.translation }}
+                                                    />
+                                                )}
+                                            </div>
                                         ))}
                                     </div>
                                 )}
@@ -350,7 +384,7 @@ export default function Quran() {
                             <ArrowLeft size={20} />
                         </button>
                         <div className="flex flex-col">
-                            <h1 className="text-xl font-bold text-gray-900">Quran {mode === 'read' ? 'Reader' : 'Audio'}</h1>
+                            <h1 className="text-xl font-bold text-gray-900">Quran {mode === 'read' ? 'Reader' : mode === 'tafsiir' ? 'Tafsiir' : 'Audio'}</h1>
                             <p className="text-xs text-gray-400 font-medium">Beco Islamic</p>
                         </div>
                     </div>
