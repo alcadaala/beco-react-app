@@ -28,6 +28,48 @@
         "answer": 2
     },
     {
+        "id": "quran-so-e-3",
+        "category": "quran",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Suurada kaliya ee aan ku bilaaban Bisinka?",
+        "options": [
+            "Towbah",
+            "Yuusuf",
+            "Huud",
+            "Naxl"
+        ],
+        "answer": 0
+    },
+    {
+        "id": "quran-so-e-4",
+        "category": "quran",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Waa kuma saxaabiga kaliya ee magaciisa Quraanka lagu sheegay?",
+        "options": [
+            "Abu Bakar",
+            "Zayd bin Xaaritha",
+            "Cumar",
+            "Cusmaan"
+        ],
+        "answer": 1
+    },
+    {
+        "id": "quran-so-e-5",
+        "category": "quran",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Waa tuma suurada udhiganta sadex meelood meel Quraanka?",
+        "options": [
+            "Al-Falaq",
+            "An-Naas",
+            "Al-Ikhlaas",
+            "Al-Kaaifruun"
+        ],
+        "answer": 2
+    },
+    {
         "id": "quran-so-n-1",
         "category": "quran",
         "language": "so",
@@ -40,6 +82,104 @@
             "Suurada An-Nisaa"
         ],
         "answer": 2
+    },
+    {
+        "id": "quran-so-n-2",
+        "category": "quran",
+        "language": "so",
+        "difficulty": "normal",
+        "question": "Imisa aayadood ayay ka kooban tahay Luqmaan?",
+        "options": [
+            "30",
+            "34",
+            "33",
+            "40"
+        ],
+        "answer": 1
+    },
+    {
+        "id": "quran-so-n-3",
+        "category": "quran",
+        "language": "so",
+        "difficulty": "normal",
+        "question": "Sheeg magaca suurada macnaheedu yahay 'Birta'?",
+        "options": [
+            "Al-Xadiid",
+            "Al-Dahab",
+            "Al-Fidda",
+            "An-Naxl"
+        ],
+        "answer": 0
+    },
+    {
+        "id": "quran-so-n-4",
+        "category": "quran",
+        "language": "so",
+        "difficulty": "normal",
+        "question": "Suuradee ayaa ku dhamaata laba nabi magacood?",
+        "options": [
+            "Al-Acla",
+            "Al-Gaashiya",
+            "Al-Fajr",
+            "Al-Balad"
+        ],
+        "answer": 0
+    },
+    {
+        "id": "quran-so-n-5",
+        "category": "quran",
+        "language": "so",
+        "difficulty": "normal",
+        "question": "Quraanka imisa xisbi waaye?",
+        "options": [
+            "30",
+            "60",
+            "120",
+            "240"
+        ],
+        "answer": 1
+    },
+    {
+        "id": "quran-so-h-1",
+        "category": "quran",
+        "language": "so",
+        "difficulty": "hard",
+        "question": "Suuradee ayaa leh laba Bismillah?",
+        "options": [
+            "An-Naml",
+            "An-Naxl",
+            "Al-Isra",
+            "Al-Xajj"
+        ],
+        "answer": 0
+    },
+    {
+        "id": "quran-so-h-2",
+        "category": "quran",
+        "language": "so",
+        "difficulty": "hard",
+        "question": "Imisa meelood ayuu 'Sajuud' kaga jiraa Quraanka?",
+        "options": [
+            "14",
+            "15",
+            "13",
+            "12"
+        ],
+        "answer": 1
+    },
+    {
+        "id": "quran-so-h-3",
+        "category": "quran",
+        "language": "so",
+        "difficulty": "hard",
+        "question": "Kalimada ugu dheer Quraanka waa tee?",
+        "options": [
+            "Fa-asqaynaakumuuhu",
+            "Fasayakfiikahumu",
+            "Lastakhlifannahum",
+            "Anulzimukumuuh"
+        ],
+        "answer": 0
     },
     {
         "id": "hadith-so-e-1",
@@ -70,6 +210,48 @@
         "answer": 1
     },
     {
+        "id": "hadith-so-e-3",
+        "category": "hadith",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Xadiiska koowaad ee Arbacuunka An-Nawawi maxuu ka hadlayaa?",
+        "options": [
+            "Niyada",
+            "Salaada",
+            "Xajka",
+            "Soonka"
+        ],
+        "answer": 0
+    },
+    {
+        "id": "hadith-so-e-4",
+        "category": "hadith",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Buuga Riyaadusu Saalixiina yaa qoray?",
+        "options": [
+            "Imaam Nawaawi",
+            "Ibnu Taymiya",
+            "Ibnu Qayim",
+            "Imaam Shaafici"
+        ],
+        "answer": 0
+    },
+    {
+        "id": "hadith-so-e-5",
+        "category": "hadith",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Waa maxay macnaha 'Muttafaqun Calayhi'?",
+        "options": [
+            "Bukhaari iyo Muslim",
+            "Abuu Daa'uud iyo Tirmidi",
+            "Axmed iyo Maalik",
+            "Muslim kaliya"
+        ],
+        "answer": 0
+    },
+    {
         "id": "hadith-so-n-1",
         "category": "hadith",
         "language": "so",
@@ -78,10 +260,38 @@
         "options": [
             "Axaad",
             "Mutawaatir",
-            "Disko",
+            "Ghariib",
             "Xasan"
         ],
         "answer": 0
+    },
+    {
+        "id": "hadith-so-n-2",
+        "category": "hadith",
+        "language": "so",
+        "difficulty": "normal",
+        "question": "Kutubta lixda ah (Kutub As-Sitta) waxaa ka mid ah?",
+        "options": [
+            "Muwada Maalik",
+            "Sunan Ibnu Maajah",
+            "Musnad Axmed",
+            "Sunan Ad-Daarimi"
+        ],
+        "answer": 1
+    },
+    {
+        "id": "hadith-so-n-3",
+        "category": "hadith",
+        "language": "so",
+        "difficulty": "normal",
+        "question": "Waa kuma saxaabigii ugu danbeeyay ee dhinta?",
+        "options": [
+            "Anas bin Maalik",
+            "Abuu Dufayl Caamir bin Waasila",
+            "Cabdullahi bin Cumar",
+            "Jaabir bin Cabdullahi"
+        ],
+        "answer": 1
     },
     {
         "id": "salat-so-e-1",
@@ -112,6 +322,48 @@
         "answer": 1
     },
     {
+        "id": "salat-so-e-3",
+        "category": "salat",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Salaada la tukado qoraxda marka ay soo baxdo?",
+        "options": [
+            "Ducluu",
+            "Maqrib",
+            "Cisha",
+            "Casir"
+        ],
+        "answer": 0
+    },
+    {
+        "id": "salat-so-e-4",
+        "category": "salat",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Salaada Jimcaha imisa rakco waaye?",
+        "options": [
+            "2 Rakco",
+            "4 Rakco",
+            "3 Rakco",
+            "1 Rakco"
+        ],
+        "answer": 0
+    },
+    {
+        "id": "salat-so-e-5",
+        "category": "salat",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Takbiirta koowaad ee salaada waxaa loo yaqaan?",
+        "options": [
+            "Takbiiratul Ixraam",
+            "Takbiiratul Intiqaal",
+            "Takbiiratul Ciid",
+            "Takbiira"
+        ],
+        "answer": 0
+    },
+    {
         "id": "salat-so-n-1",
         "category": "salat",
         "language": "so",
@@ -124,6 +376,20 @@
             "Sida ay tahay"
         ],
         "answer": 1
+    },
+    {
+        "id": "salat-so-n-2",
+        "category": "salat",
+        "language": "so",
+        "difficulty": "normal",
+        "question": "Hadii imaamka uu iloobo rakco, maxaa la dhahaa?",
+        "options": [
+            "Subxaanallah",
+            "Allahu Akbar",
+            "Waad qaldantay",
+            "Amiin"
+        ],
+        "answer": 0
     },
     {
         "id": "general-so-e-1",
@@ -150,6 +416,48 @@
             "Cabdullahi bin Maktuum",
             "Zayd bin Saabit",
             "Saclaba"
+        ],
+        "answer": 0
+    },
+    {
+        "id": "general-so-e-3",
+        "category": "general",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Gabadhii ugu horeysay ee Islaamka u shahiida?",
+        "options": [
+            "Sumaya",
+            "Khadiiga",
+            "Faaduma",
+            "Caasha"
+        ],
+        "answer": 0
+    },
+    {
+        "id": "general-so-e-4",
+        "category": "general",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Malaga Suurka afuufaya magaciis?",
+        "options": [
+            "Israafiil",
+            "Jibriil",
+            "Mikaa'iil",
+            "Malakul Mowt"
+        ],
+        "answer": 0
+    },
+    {
+        "id": "general-so-e-5",
+        "category": "general",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Bisha Ramadaan ka dib bisha xigta waa tee?",
+        "options": [
+            "Shawaal",
+            "Safar",
+            "Muxarram",
+            "Rajab"
         ],
         "answer": 0
     },

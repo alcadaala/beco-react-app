@@ -434,18 +434,48 @@ export default function Quran() {
                             {/* Question Count Selection */}
                             <div className="space-y-3">
                                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block pl-1">Questions</label>
-                                <div className="flex bg-gray-100 p-1.5 rounded-2xl">
-                                    {[5, 10, 'all'].map((count) => (
-                                        <button
-                                            key={count}
-                                            onClick={() => setQuizSettings({ ...quizSettings, questionLimit: count })}
-                                            className={cn("flex-1 py-3 rounded-xl text-xs font-bold transition-all capitalize",
-                                                quizSettings.questionLimit === count ? "bg-white shadow-sm text-gray-900" : "text-gray-500 hover:text-gray-900"
-                                            )}
-                                        >
-                                            {count === 'all' ? 'All' : count}
-                                        </button>
-                                    ))}
+                                <div className="space-y-2">
+                                    <div className="flex bg-gray-100 p-1.5 rounded-2xl">
+                                        {[5, 10, 'custom', 'all'].map((count) => {
+                                            const isCustom = count === 'custom';
+                                            const isActive = isCustom
+                                                ? (typeof quizSettings.questionLimit === 'number' && ![5, 10].includes(quizSettings.questionLimit))
+                                                : quizSettings.questionLimit === count;
+
+                                            return (
+                                                <button
+                                                    key={count}
+                                                    onClick={() => {
+                                                        if (isCustom) {
+                                                            setQuizSettings({ ...quizSettings, questionLimit: 15 });
+                                                        } else {
+                                                            setQuizSettings({ ...quizSettings, questionLimit: count });
+                                                        }
+                                                    }}
+                                                    className={cn("flex-1 py-3 rounded-xl text-xs font-bold transition-all capitalize",
+                                                        isActive ? "bg-white shadow-sm text-gray-900" : "text-gray-500 hover:text-gray-900"
+                                                    )}
+                                                >
+                                                    {isCustom ? 'Custom' : (count === 'all' ? 'All' : count)}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                    {/* Custom Input */}
+                                    {(typeof quizSettings.questionLimit === 'number' && ![5, 10].includes(quizSettings.questionLimit)) && (
+                                        <div className="animate-in slide-in-from-top-2 fade-in">
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                max="100"
+                                                value={quizSettings.questionLimit}
+                                                onChange={(e) => setQuizSettings({ ...quizSettings, questionLimit: Number(e.target.value) })}
+                                                placeholder="Enter number..."
+                                                className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-200 text-center font-bold outline-none focus:ring-2 focus:ring-emerald-500/20 text-gray-900"
+                                            />
+                                            <p className="text-[10px] text-center text-gray-400 mt-1">Enter desired number of questions</p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
