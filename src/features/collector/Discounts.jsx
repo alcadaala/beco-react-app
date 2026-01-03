@@ -123,6 +123,15 @@ export default function Discounts() {
         }
     };
 
+    const selectAll = () => {
+        if (selectedIds.size === customers.length) {
+            setSelectedIds(new Set());
+        } else {
+            const allIds = new Set(customers.map(c => c.sqn));
+            setSelectedIds(allIds);
+        }
+    };
+
     const handleSaveDiscount = async (updatedCustomer) => {
         try {
             // Update Firestore
