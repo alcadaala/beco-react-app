@@ -335,40 +335,67 @@ export default function Quran() {
                 {showSettings && <div className="absolute inset-0 z-20 bg-black/5" onClick={() => setShowSettings(false)}></div>}
 
                 {/* Content - Mushaf Mode Container */}
+                {/* Content - Modern Reader */}
                 <div className="flex-1 overflow-y-auto" style={pageStyle}>
                     <div className={cn("min-h-full p-4 md:p-8 flex flex-col items-center", activeTheme.text)}>
-                        <div className={cn("w-full max-w-3xl border-2 rounded-[2px] p-1 shadow-sm", theme === 'dark' ? 'border-gray-700' : 'border-[#d4af37]/30')}>
-                            <div className={cn("w-full h-full border rounded-[1px] p-6 mobile:p-4 min-h-[80vh]", theme === 'dark' ? 'border-gray-800' : 'border-[#d4af37]/20')}>
-                                <div className="text-center py-6 mb-8 border-b border-[#d4af37]/20 relative">
-                                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-16 h-[1px] bg-gradient-to-r from-transparent to-[#d4af37]/50 hidden sm:block"></span>
-                                    <span className="absolute right-0 top-1/2 -translate-y-1/2 w-16 h-[1px] bg-gradient-to-l from-transparent to-[#d4af37]/50 hidden sm:block"></span>
-                                    <div className="block font-amiri text-3xl sm:text-4xl" style={{ fontFamily: 'Amiri, serif' }}>
-                                        بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
-                                    </div>
-                                </div>
-                                {loadingText ? (
-                                    <div className="flex justify-center py-20">
-                                        <Loader2 className="animate-spin text-[#d4af37]" size={32} />
-                                    </div>
-                                ) : (
-                                    <div className="quran-text text-right" dir="rtl" style={{ textAlign: 'justify', textAlignLast: 'center' }}>
-                                        {ayahs.map((ayah, i) => (
-                                            <div key={ayah.number} className="mb-6 border-b border-dashed border-gray-200 pb-2 last:border-none">
-                                                <div className="mb-3">
+
+                        {/* Bismillah Header */}
+                        <div className="w-full max-w-3xl text-center py-8 mb-4 relative">
+                            {/* Decorative lines */}
+                            <div className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-current to-transparent opacity-20"></div>
+                            <div className="relative inline-block px-4 bg-transparent">
+                                <span className="block font-amiri text-3xl sm:text-4xl leading-relaxed" style={{ fontFamily: 'Amiri, serif' }}>
+                                    بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
+                                </span>
+                            </div>
+                        </div>
+
+                        {loadingText ? (
+                            <div className="flex justify-center py-20">
+                                <Loader2 className="animate-spin opacity-50" size={32} />
+                            </div>
+                        ) : (
+                            <div className="w-full max-w-3xl mx-auto pb-32">
+                                {activeMode === 'tafsiir' ? (
+                                    // TAFSIIR VIEW: Modern Cards
+                                    <div className="space-y-6">
+                                        {ayahs.map((ayah) => (
+                                            <div
+                                                key={ayah.number}
+                                                className={cn(
+                                                    "rounded-3xl p-6 transition-all border",
+                                                    theme === 'dark'
+                                                        ? "bg-gray-800/50 border-gray-700/50 hover:bg-gray-800"
+                                                        : "bg-white border-gray-100 shadow-sm hover:shadow-md"
+                                                )}
+                                            >
+                                                {/* Header: Ayah Number */}
+                                                <div className="flex justify-between items-center mb-4">
+                                                    <span className={cn("text-xs font-bold px-2 py-1 rounded-lg opacity-60",
+                                                        theme === 'dark' ? "bg-gray-700 text-gray-300" : "bg-gray-100 text-gray-600"
+                                                    )}>
+                                                        Ayah {ayah.numberInSurah}
+                                                    </span>
+                                                </div>
+
+                                                {/* Arabic Text */}
+                                                <div className="text-right mb-6" dir="rtl">
                                                     <span
-                                                        className={cn("inline transition-colors hover:text-[#d4af37] cursor-pointer leading-[2.5]", activeTheme.text)}
+                                                        className={cn("leading-[2.2] tracking-wide", activeTheme.text)}
                                                         style={{ fontFamily: 'Amiri, serif', fontSize: `${fontSize}px` }}
                                                     >
                                                         {ayah.text.replace('بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ', '')}
                                                     </span>
-                                                    <span className="ayah-end-symbol text-[#d4af37] mx-2 select-none" data-number={Number(ayah.numberInSurah).toLocaleString('ar-EG')} style={{ fontSize: `${Math.max(12, fontSize * 0.45)}px` }}>
-                                                    </span>
                                                 </div>
-                                                {/* Only show translation if we have text AND we are in Tafsiir mode OR just broadly if translation exists (since only fetched in tafsiir) */}
+
+                                                {/* Divider */}
+                                                <div className={cn("h-px w-full my-4", theme === 'dark' ? "bg-gray-700" : "bg-gray-100")}></div>
+
+                                                {/* Translation */}
                                                 {ayah.translation && (
                                                     <div
-                                                        className={cn("text-center text-sm sm:text-base font-medium px-4 leading-relaxed font-sans",
-                                                            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                                                        className={cn("text-left text-base sm:text-lg leading-relaxed font-sans opacity-90",
+                                                            theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                                                         )}
                                                         dir="ltr"
                                                         dangerouslySetInnerHTML={{ __html: ayah.translation }}
@@ -377,9 +404,33 @@ export default function Quran() {
                                             </div>
                                         ))}
                                     </div>
+                                ) : (
+                                    // READ/AUDIO MODE: Continuous Mushaf Style
+                                    <div
+                                        className="quran-text text-right leading-[2.8]"
+                                        dir="rtl"
+                                        style={{ textAlign: 'justify', textAlignLast: 'center' }}
+                                    >
+                                        {ayahs.map((ayah) => (
+                                            <span key={ayah.number} className="inline group">
+                                                <span
+                                                    className={cn("inline transition-colors cursor-pointer hover:opacity-80", activeTheme.text)}
+                                                    style={{ fontFamily: 'Amiri, serif', fontSize: `${fontSize}px` }}
+                                                >
+                                                    {ayah.text.replace('بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ', '')}
+                                                </span>
+                                                <span
+                                                    className="ayah-end-symbol mx-2 select-none inline-flex items-center justify-center opacity-80"
+                                                    data-number={Number(ayah.numberInSurah).toLocaleString('ar-EG')}
+                                                    style={{ fontSize: `${Math.max(12, fontSize * 0.45)}px` }}
+                                                >
+                                                </span>
+                                            </span>
+                                        ))}
+                                    </div>
                                 )}
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
                 {/* Global Player in Reader View */}
