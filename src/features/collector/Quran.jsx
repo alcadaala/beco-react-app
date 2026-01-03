@@ -24,7 +24,10 @@ export default function Quran() {
     const navigate = useNavigate();
     const location = useLocation();
     // Default to 'audio' if no state passed
-    const { mode } = location.state || { mode: 'audio' };
+    const { mode: initialMode } = location.state || { mode: 'audio' };
+
+    // Internal active mode state
+    const [activeMode, setActiveMode] = useState(initialMode);
 
     const [surahs, setSurahs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -125,7 +128,7 @@ export default function Quran() {
 
         // Auto-play audio if not already playing this surah (ONLY IN AUDIO MODE or Explicit Trigger)
         // If mode is 'read' or 'tafsiir', we don't auto-play unless user wants to.
-        if (mode === 'audio' && currentSurah?.id !== surah.id) {
+        if (activeMode === 'audio' && currentSurah?.id !== surah.id) {
             playSurah(surah);
         }
 
@@ -133,7 +136,7 @@ export default function Quran() {
         const fetchArabic = fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${surah.id}&per_page=300`);
 
         // Fetch Translation if Tafsiir Mode (ID 46 = Somali - Mahmud Abduh)
-        const fetchTranslation = mode === 'tafsiir'
+        const fetchTranslation = activeMode === 'tafsiir'
             ? fetch(`https://api.quran.com/api/v4/quran/translations/46?chapter_number=${surah.id}&per_page=300`)
             : Promise.resolve(null);
 
@@ -185,7 +188,7 @@ export default function Quran() {
 
     // Dynamic Row Click Handler
     const handleRxClick = (surah) => {
-        if (mode === 'audio') {
+        if (activeMode === 'audio') {
             playSurah(surah);
         } else {
             // Read or Tafsiir -> Open Reader
@@ -195,7 +198,7 @@ export default function Quran() {
 
     // COMPONENTS
     const FloatingPlayer = () => {
-        if (mode === 'tafsiir') return null;
+        if (activeMode === 'tafsiir') return null;
 
         return (
             currentSurah && (
@@ -276,7 +279,9 @@ export default function Quran() {
                         </button>
                         <div>
                             <h1 className={cn("text-lg font-bold", activeTheme.text)}>{readingSurah.name_simple}</h1>
-                            <p className={cn("text-xs opacity-70", activeTheme.text)}>{selectedReciter.name}</p>
+                            <p className={cn("text-xs opacity-70", activeTheme.text)}>
+                                {activeMode === 'tafsiir' ? 'Tafsiir (Somali)' : selectedReciter.name}
+                            </p>
                         </div>
                     </div>
                     <div className="flex items-center space-x-1">
@@ -354,6 +359,7 @@ export default function Quran() {
                                                     <span className="ayah-end-symbol text-[#d4af37] mx-2 select-none" data-number={Number(ayah.numberInSurah).toLocaleString('ar-EG')} style={{ fontSize: `${Math.max(12, fontSize * 0.45)}px` }}>
                                                     </span>
                                                 </div>
+                                                {/* Only show translation if we have text AND we are in Tafsiir mode OR just broadly if translation exists (since only fetched in tafsiir) */}
                                                 {ayah.translation && (
                                                     <div
                                                         className={cn("text-center text-sm sm:text-base font-medium px-4 leading-relaxed font-sans",
@@ -380,18 +386,19 @@ export default function Quran() {
     // LIST VIEW
     return (
         <div className="flex flex-col h-full bg-white relative pb-32">
-            <div className="p-4 sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-gray-100">
-                <div className="flex items-center justify-between mb-4">
+            <div className="p-4 sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-gray-100 space-y-3">
+                <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-full">
                             <ArrowLeft size={20} />
                         </button>
                         <div className="flex flex-col">
-                            <h1 className="text-xl font-bold text-gray-900">Quran {mode === 'read' ? 'Reader' : mode === 'tafsiir' ? 'Tafsiir' : 'Audio'}</h1>
+                            <h1 className="text-xl font-bold text-gray-900">Quran Kareem</h1>
                             <p className="text-xs text-gray-400 font-medium">Beco Islamic</p>
                         </div>
                     </div>
-                    {(mode === 'audio' || isPlaying) && (
+                    {/* Only show Reciter Button in Audio Mode */}
+                    {(activeMode === 'audio' || isPlaying) && (
                         <button
                             onClick={() => setShowReciters(!showReciters)}
                             className="flex items-center space-x-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-100 active:scale-95 transition-all"
@@ -401,6 +408,35 @@ export default function Quran() {
                         </button>
                     )}
                 </div>
+
+                {/* TAB NAVIGATION */}
+                <div className="flex p-1 bg-gray-100 rounded-xl">
+                    <button
+                        onClick={() => setActiveMode('tafsiir')}
+                        className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2",
+                            activeMode === 'tafsiir' ? "bg-white text-violet-600 shadow-sm" : "text-gray-500 hover:text-gray-900"
+                        )}
+                    >
+                        Tafsiir
+                    </button>
+                    <button
+                        onClick={() => setActiveMode('audio')}
+                        className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2",
+                            activeMode === 'audio' ? "bg-white text-emerald-600 shadow-sm" : "text-gray-500 hover:text-gray-900"
+                        )}
+                    >
+                        Dhageysi
+                    </button>
+                    <button
+                        onClick={() => setActiveMode('read')}
+                        className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2",
+                            activeMode === 'read' ? "bg-white text-teal-600 shadow-sm" : "text-gray-500 hover:text-gray-900"
+                        )}
+                    >
+                        Aqriso
+                    </button>
+                </div>
+
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                     <input
@@ -414,7 +450,7 @@ export default function Quran() {
             </div>
 
             {showReciters && (
-                <div className="absolute top-[80px] right-4 left-4 z-30 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 animate-in slide-in-from-top-4 fade-in">
+                <div className="absolute top-[145px] right-4 left-4 z-30 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 animate-in slide-in-from-top-4 fade-in">
                     <div className="grid grid-cols-1 gap-1">
                         {RECITERS.map(r => (
                             <button
@@ -456,7 +492,7 @@ export default function Quran() {
                                     "h-10 w-10 min-w-[2.5rem] rounded-full flex items-center justify-center text-sm font-bold border-2",
                                     currentSurah?.id === surah.id
                                         ? "bg-emerald-500 border-emerald-500 text-white"
-                                        : "bg-gray-50 border-gray-100 text-gray-400"
+                                        : "bg-gray-50 border-gray-100 text-gray-100" // Use lighter text in inactive state
                                 )}>
                                     {surah.id}
                                 </div>
@@ -468,20 +504,21 @@ export default function Quran() {
                                 </div>
                             </div>
                             <div className="flex items-center space-x-3">
-                                {mode === 'audio' ? (
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); openReader(surah); }}
-                                        className="px-3 py-1.5 bg-stone-100 text-stone-600 rounded-lg hover:bg-stone-200 active:scale-95 transition-all text-xs font-bold flex items-center"
-                                    >
-                                        <BookOpen size={14} className="mr-1.5" />
-                                        Read
-                                    </button>
-                                ) : (
+                                {activeMode === 'audio' ? (
                                     <button
                                         onClick={(e) => { e.stopPropagation(); playSurah(surah); }}
                                         className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 transition-colors"
                                     >
                                         <Play size={14} className="fill-current ml-0.5" />
+                                    </button>
+                                ) : (
+                                    // Icon for both Read and Tafsiir modes to signify "Open"
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); openReader(surah); }}
+                                        className="px-3 py-1.5 bg-stone-100 text-stone-600 rounded-lg hover:bg-stone-200 active:scale-95 transition-all text-xs font-bold flex items-center"
+                                    >
+                                        <BookOpen size={14} className="mr-1.5" />
+                                        {activeMode === 'tafsiir' ? 'View' : 'Read'}
                                     </button>
                                 )}
                                 <span className="font-amiri text-xl text-gray-400 leading-none hidden sm:block" style={{ fontFamily: 'serif' }}>
