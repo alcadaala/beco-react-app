@@ -1329,23 +1329,11 @@ export default function Baafiye() {
                             <div className="space-y-5">
                                 <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
                                     <div className="flex justify-between items-center mb-1">
-                                        <div className="flex flex-col">
-                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Prev Balance</span>
-                                            <span className="text-sm font-black text-gray-600">${discountModalCustomer.prev_balance || '0'}</span>
-                                        </div>
-                                        <div className="flex flex-col items-end">
-                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Current Balance</span>
-                                            <span className="text-lg font-black text-gray-900">${discountModalCustomer.balance}</span>
-                                        </div>
+                                        <span className="text-xs font-bold text-gray-400 uppercase">Customer Balance</span>
+                                        <span className="text-lg font-black text-gray-900">${discountModalCustomer.balance}</span>
                                     </div>
                                     <div className="w-full bg-gray-200 h-1.5 rounded-full mt-2 overflow-hidden">
                                         <div className="bg-indigo-500 h-full w-full"></div>
-                                    </div>
-                                    <div className="mt-2 text-center border-t border-gray-100 pt-2">
-                                        <span className="text-[10px] font-bold text-gray-400 uppercase">Total to Pay</span>
-                                        <div className="text-xl font-black text-indigo-700">
-                                            ${(parseFloat(String(discountModalCustomer.prev_balance || '0').replace(/[^0-9.-]+/g, "")) + parseFloat(String(discountModalCustomer.balance || '0').replace(/[^0-9.-]+/g, ""))).toFixed(2)}
-                                        </div>
                                     </div>
                                 </div>
 
