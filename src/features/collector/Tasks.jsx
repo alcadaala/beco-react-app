@@ -65,44 +65,71 @@ export default function Tasks() {
         }
     };
 
-    // SEARCH CUSTOMERS (Firestore)
+    // SEARCH CUSTOMERS (Local Context + Zone Fallback)
     const searchCustomers = async (term) => {
         if (!term) return;
+        const lowerTerm = term.toLowerCase();
+        let results = [];
+
+        // 1. PREFERRED: Search LOCAL BAAFIYE DATA (The active list user sees)
         try {
-            const results = [];
+            const localData = localStorage.getItem('baafiye_local_data');
+            if (localData) {
+                const parsed = JSON.parse(localData);
+                const matches = parsed.filter(c =>
+                    (c.name && c.name.toLowerCase().includes(lowerTerm)) ||
+                    (c.sqn && String(c.sqn).includes(lowerTerm))
+                ).slice(0, 10);
 
-            // 1. Try SQN Look up (Direct ID) - assuming SQN is document ID
-            try {
-                const docRef = doc(db, 'customers', term);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    results.push({ sqn: docSnap.id, ...docSnap.data() });
-                }
-            } catch (e) { }
-
-            // 2. Name Prefix Search
-            // Firestore is case sensitive. We iterate if needed or rely on proper case.
-            // Searching capitalized version
-            const capTerm = term.charAt(0).toUpperCase() + term.slice(1);
-            const q = query(
-                collection(db, 'customers'),
-                where('name', '>=', capTerm),
-                where('name', '<=', capTerm + '\uf8ff'),
-                limit(10)
-            );
-
-            const nameSnaps = await getDocs(q);
-            nameSnaps.forEach(d => {
-                if (!results.find(r => r.sqn === d.id)) {
-                    results.push({ sqn: d.id, ...d.data() });
-                }
-            });
-
-            setAvailableCustomers(results);
+                results = [...matches];
+            }
         } catch (e) {
-            console.error(e);
+            console.error("Local search error", e);
         }
+
+        // 2. FALLBACK: If local invalid/empty, search FIRESTORE ZONE (Scoped to this collector)
+        if (results.length === 0 && currentUser) {
+            try {
+                const zone = currentUser.branch || 'General';
+                const capTerm = term.charAt(0).toUpperCase() + term.slice(1);
+
+                // Note: Searching text 'includes' in Firestore is hard (only prefix support).
+                // We will try simple prefix match if term is long enough, ELSE rely on local for better search.
+                // Assuming 'name' is indexed or we use SQN direct look up.
+
+                // A. Try Direct SQN in Zone
+                try {
+                    const docRef = doc(db, 'zones', zone, 'customers', term);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists() && docSnap.data().collector_id === currentUser.id) {
+                        results.push({ id: docSnap.id, ...docSnap.data() });
+                    }
+                } catch (e) { }
+
+                // B. Try Name Prefix in Zone (if results still empty)
+                if (results.length === 0) {
+                    const q = query(
+                        collection(db, 'zones', zone, 'customers'),
+                        where('collector_id', '==', currentUser.id),
+                        where('name', '>=', capTerm),
+                        where('name', '<=', capTerm + '\uf8ff'),
+                        limit(5)
+                    );
+                    const querySnapshot = await getDocs(q);
+                    querySnapshot.forEach(d => {
+                        if (!results.find(r => r.sqn === d.id)) results.push({ sqn: d.id, ...d.data() });
+                    });
+                }
+
+            } catch (e) {
+                console.error("Firestore search error", e);
+            }
+        }
+
+        setAvailableCustomers(results);
     };
+
+
 
     // Debounced search effect
     useEffect(() => {
