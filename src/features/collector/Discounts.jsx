@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BadgePercent, Phone, Calendar, Search, Tag, AlertCircle, Share2, CheckCircle2, Copy } from 'lucide-react';
 import { MOCK_CUSTOMERS } from '../../lib/mockData';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 
 export default function Discounts() {
@@ -12,12 +12,13 @@ export default function Discounts() {
     const currentUser = JSON.parse(localStorage.getItem('beco_current_user') || 'null');
 
     useEffect(() => {
-        const loadDiscounts = async () => {
-            if (!currentUser || !currentUser.id) return;
+        if (!currentUser || !currentUser.id) return;
 
+        let unsubscribe = () => { };
+
+        const setupRealtimeListener = async () => {
             try {
                 // 1. ISOLATION: Fetch only this collector's 'Discount' customers from Firestore
-                // This ensures data persists on refresh and is private to them.
                 const zone = currentUser.branch || 'General';
                 const q = query(
                     collection(db, 'zones', zone, 'customers'),
@@ -25,36 +26,39 @@ export default function Discounts() {
                     where('status', '==', 'Discount')
                 );
 
-                const snapshot = await getDocs(q);
-                const dbDiscounts = snapshot.docs.map(doc => ({
-                    id: doc.id, // Ensure ID is captured
-                    sqn: doc.id, // Map ID to SQN if that's the convention
-                    ...doc.data()
-                }));
+                // REAL-TIME LISTENER
+                unsubscribe = onSnapshot(q, (snapshot) => {
+                    const dbDiscounts = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        sqn: doc.id,
+                        ...doc.data()
+                    }));
 
-                // 2. MERGE with Local Storage (Optimization/Offline support)
-                // We prioritize DB result but fill gaps if needed, or strictly use DB as requested ("xogtana aysan bixin karin").
-                // User said "Active Discounts", so DB is best source of truth.
-
-                if (dbDiscounts.length > 0) {
-                    setCustomers(dbDiscounts);
-                } else {
-                    // Fallback check on localStorage purely for immediate UI if DB is empty but local has pending writes
+                    if (dbDiscounts.length > 0) {
+                        setCustomers(dbDiscounts);
+                    } else {
+                        // Fallback to local if DB is empty
+                        const localData = JSON.parse(localStorage.getItem('baafiye_local_data') || '[]');
+                        const localDiscounts = localData.filter(c => c.status === 'Discount');
+                        setCustomers(localDiscounts);
+                    }
+                }, (error) => {
+                    console.error("Error in discount listener:", error);
+                    // Fallback to local on error
                     const localData = JSON.parse(localStorage.getItem('baafiye_local_data') || '[]');
                     const localDiscounts = localData.filter(c => c.status === 'Discount');
                     setCustomers(localDiscounts);
-                }
+                });
 
             } catch (e) {
-                console.error("Error loading discounts", e);
-                // Last resort fallback to local
-                const localData = JSON.parse(localStorage.getItem('baafiye_local_data') || '[]');
-                const localDiscounts = localData.filter(c => c.status === 'Discount');
-                setCustomers(localDiscounts);
+                console.error("Error setting up listener", e);
             }
         };
 
-        loadDiscounts();
+        setupRealtimeListener();
+
+        // Cleanup
+        return () => unsubscribe();
     }, [currentUser?.id]);
 
     const toggleSelection = (sqn) => {
@@ -71,25 +75,28 @@ export default function Discounts() {
         const selectedCustomers = customers.filter(c => selectedIds.has(c.sqn));
         if (selectedCustomers.length === 0) return;
 
-        // Custom "Beautiful" Formatter - SIMPLIFIED
-        let text = "📋 *Discount Approvals Requested*\n\n";
+        // Custom "Beautiful" Formatter - SOMALI VERSION
+        let text = "📋 *Warbixinta Discount-ka (Discount Requests)*\n\n";
 
         selectedCustomers.forEach((c, idx) => {
             const discount = parseFloat(c.discountAmount || 0);
+            const paid = parseFloat(c.paidAmount || 0);
+            const balance = parseFloat(c.balance || 0);
 
             text += `${idx + 1}. *${c.name}*\n`;
             text += `   🆔 SQN: ${c.sqn}\n`;
-            if (discount > 0) {
-                text += `   🏷️ Discount: $${discount}\n`;
-            } else {
-                text += `   🏷️ Discount: (Not specified)\n`;
-            }
+            text += `   💰 Balance: $${balance}\n`;
+            text += `   💵 Laga Hayo: $${paid}\n`;
+            text += `   🏷️ Discount: $${discount}\n`;
             text += "\n";
         });
 
-        const totalAmount = selectedCustomers.reduce((sum, c) => sum + parseFloat(c.discountAmount || 0), 0);
+        const totalPaid = selectedCustomers.reduce((sum, c) => sum + parseFloat(c.paidAmount || 0), 0);
+        const totalDiscount = selectedCustomers.reduce((sum, c) => sum + parseFloat(c.discountAmount || 0), 0);
+
         text += "------------------\n";
-        text += `Total Discounts: $${totalAmount}`;
+        text += `📉 Total Laga Hayo: $${totalPaid.toFixed(2)}\n`;
+        text += `🏷️ Total Discount: $${totalDiscount.toFixed(2)}`;
 
         // Share API
         if (navigator.share) {
@@ -141,7 +148,30 @@ export default function Discounts() {
                 </div>
             </div>
 
-            <div className="space-y-3 overflow-y-auto px-4 pt-4 pb-20">
+            {/* TOTAL SUMMARY CARD */}
+            {customers.length > 0 && (
+                <div className="mx-6 mt-4 p-5 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-xl text-white relative overflow-hidden ring-1 ring-white/10">
+                    <div className="absolute top-0 right-0 p-4 opacity-10">
+                        <Tag size={80} />
+                    </div>
+                    <div className="flex justify-between items-end relative z-10">
+                        <div>
+                            <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Total Laga Hayo</p>
+                            <h2 className="text-2xl font-black text-emerald-400">
+                                ${customers.reduce((sum, c) => sum + parseFloat(c.paidAmount || 0), 0).toFixed(2)}
+                            </h2>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Total Discount</p>
+                            <h2 className="text-xl font-black text-white">
+                                ${customers.reduce((sum, c) => sum + parseFloat(c.discountAmount || 0), 0).toFixed(2)}
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="space-y-3 overflow-y-auto px-6 pt-4 pb-24">
                 {customers.length === 0 ? (
                     <div className="text-center py-20 flex flex-col items-center text-gray-400">
                         <Tag size={48} className="mb-3 opacity-20" />
@@ -155,40 +185,43 @@ export default function Discounts() {
                             <div
                                 key={`${customer.sqn}-${i}`}
                                 onClick={() => toggleSelection(customer.sqn)}
-                                className={`rounded-2xl p-4 shadow-sm border relative overflow-hidden group transition-all cursor-pointer active:scale-98 ${isSelected ? 'bg-blue-50 border-blue-500 ring-1 ring-blue-500' : 'bg-white border-gray-100'}`}
+                                className={`rounded-3xl p-5 shadow-sm border relative overflow-hidden group transition-all cursor-pointer active:scale-95 ${isSelected ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-500' : 'bg-white border-gray-100 hover:shadow-md'}`}
                             >
                                 {/* Selection Indicator */}
-                                <div className={`absolute top-3 right-3 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${isSelected ? 'bg-blue-600 border-blue-600' : 'border-gray-200 bg-white'}`}>
-                                    {isSelected && <CheckCircle2 size={12} className="text-white" />}
+                                <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${isSelected ? 'bg-indigo-600 border-indigo-600' : 'border-gray-200 bg-white'}`}>
+                                    {isSelected && <CheckCircle2 size={14} className="text-white" />}
                                 </div>
 
-                                <div className="flex justify-between items-start relative z-10 pr-8">
-                                    <div className="flex items-start space-x-3">
-                                        <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-lg shadow-inner transition-colors ${isSelected ? 'bg-blue-200 text-blue-700' : 'bg-purple-50 text-purple-600'}`}>
+                                <div className="pr-8">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-lg shadow-sm ${isSelected ? 'bg-indigo-200 text-indigo-700' : 'bg-gray-100 text-gray-500'}`}>
                                             %
                                         </div>
                                         <div>
-                                            <h3 className="font-bold text-gray-900 line-clamp-1">{customer.name}</h3>
-                                            <p className="text-xs text-gray-400 font-mono inline-block mt-0.5">SQN: {customer.sqn}</p>
+                                            <h3 className="font-bold text-gray-900 line-clamp-1 text-sm">{customer.name}</h3>
+                                            <p className="text-[10px] text-gray-400 font-mono font-bold bg-gray-50 px-1.5 py-0.5 rounded inline-block">SQN: {customer.sqn}</p>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="mt-3 pl-[52px] pr-2">
-                                    <div className="flex justify-between items-end">
-                                        <div>
-                                            {customer.discountAmount && (
-                                                <div className="text-xs font-medium text-red-500">
-                                                    Discount: -${customer.discountAmount}
-                                                </div>
-                                            )}
-                                            <div className="text-sm font-bold text-gray-900">
-                                                Balance: ${customer.balance}
-                                            </div>
+                                    {/* DATA GRID */}
+                                    <div className="grid grid-cols-3 gap-2 mt-2 bg-gray-50/50 p-3 rounded-2xl border border-gray-50">
+
+                                        {/* BALANCE */}
+                                        <div className="flex flex-col">
+                                            <span className="text-[9px] font-bold text-gray-400 uppercase">Balance</span>
+                                            <span className="text-xs font-black text-gray-800">${customer.balance}</span>
                                         </div>
 
-                                        <div className="text-[10px] text-gray-400 font-medium">
-                                            {customer.date || 'Today'}
+                                        {/* LAGA HAYO */}
+                                        <div className="flex flex-col border-l border-gray-200 pl-3">
+                                            <span className="text-[9px] font-bold text-emerald-600 uppercase">Laga Hayo</span>
+                                            <span className="text-xs font-black text-emerald-600">${customer.paidAmount || '0'}</span>
+                                        </div>
+
+                                        {/* DISCOUNT */}
+                                        <div className="flex flex-col border-l border-gray-200 pl-3">
+                                            <span className="text-[9px] font-bold text-red-500 uppercase">Discount</span>
+                                            <span className="text-xs font-black text-red-500">-${customer.discountAmount || '0'}</span>
                                         </div>
                                     </div>
                                 </div>
