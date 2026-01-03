@@ -1,37 +1,61 @@
 import { useState, useEffect } from 'react';
 import { BadgePercent, Phone, Calendar, Search, Tag, AlertCircle, Share2, CheckCircle2, Copy } from 'lucide-react';
 import { MOCK_CUSTOMERS } from '../../lib/mockData';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '../../lib/firebase';
 
 export default function Discounts() {
     const [customers, setCustomers] = useState([]);
     const [selectedIds, setSelectedIds] = useState(new Set());
 
+    // AUTH CONTEXT
+    const currentUser = JSON.parse(localStorage.getItem('beco_current_user') || 'null');
+
     useEffect(() => {
-        const loadDiscounts = () => {
-            const storedDiscounts = JSON.parse(localStorage.getItem('discountCustomers') || '[]');
-            const mainData = JSON.parse(localStorage.getItem('baafiyeData') || '[]');
-            const mainDiscounts = mainData.filter(c =>
-                c.status === 'Discount' || String(c.status).toLowerCase().includes('discount')
-            );
+        const loadDiscounts = async () => {
+            if (!currentUser || !currentUser.id) return;
 
-            const merged = [...storedDiscounts, ...mainDiscounts];
-            const uniqueMap = new Map();
-            merged.forEach(c => uniqueMap.set(c.sqn, c));
+            try {
+                // 1. ISOLATION: Fetch only this collector's 'Discount' customers from Firestore
+                // This ensures data persists on refresh and is private to them.
+                const zone = currentUser.branch || 'General';
+                const q = query(
+                    collection(db, 'zones', zone, 'customers'),
+                    where('collector_id', '==', currentUser.id),
+                    where('status', '==', 'Discount')
+                );
 
-            const finalDiscounts = Array.from(uniqueMap.values());
+                const snapshot = await getDocs(q);
+                const dbDiscounts = snapshot.docs.map(doc => ({
+                    id: doc.id, // Ensure ID is captured
+                    sqn: doc.id, // Map ID to SQN if that's the convention
+                    ...doc.data()
+                }));
 
-            if (finalDiscounts.length === 0) {
-                const mockDiscounts = MOCK_CUSTOMERS.filter(c => c.status === 'Discount');
-                setCustomers(mockDiscounts);
-            } else {
-                setCustomers(finalDiscounts);
+                // 2. MERGE with Local Storage (Optimization/Offline support)
+                // We prioritize DB result but fill gaps if needed, or strictly use DB as requested ("xogtana aysan bixin karin").
+                // User said "Active Discounts", so DB is best source of truth.
+
+                if (dbDiscounts.length > 0) {
+                    setCustomers(dbDiscounts);
+                } else {
+                    // Fallback check on localStorage purely for immediate UI if DB is empty but local has pending writes
+                    const localData = JSON.parse(localStorage.getItem('baafiye_local_data') || '[]');
+                    const localDiscounts = localData.filter(c => c.status === 'Discount');
+                    setCustomers(localDiscounts);
+                }
+
+            } catch (e) {
+                console.error("Error loading discounts", e);
+                // Last resort fallback to local
+                const localData = JSON.parse(localStorage.getItem('baafiye_local_data') || '[]');
+                const localDiscounts = localData.filter(c => c.status === 'Discount');
+                setCustomers(localDiscounts);
             }
         };
 
         loadDiscounts();
-        window.addEventListener('storage', loadDiscounts);
-        return () => window.removeEventListener('storage', loadDiscounts);
-    }, []);
+    }, [currentUser?.id]);
 
     const toggleSelection = (sqn) => {
         const newSet = new Set(selectedIds);
