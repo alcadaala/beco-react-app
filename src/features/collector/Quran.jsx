@@ -33,7 +33,7 @@ export default function Quran() {
 
     // Quiz State
     const [quizStep, setQuizStep] = useState('setup'); // setup, question, result
-    const [quizSettings, setQuizSettings] = useState({ language: 'so', difficulty: 'easy' });
+    const [quizSettings, setQuizSettings] = useState({ language: 'so', difficulty: 'easy', questionLimit: 5 });
     const [activeQuestions, setActiveQuestions] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
@@ -53,7 +53,12 @@ export default function Quran() {
             [filtered[i], filtered[j]] = [filtered[j], filtered[i]];
         }
 
-        setActiveQuestions(filtered);
+        // Apply slice limit if specific number selected
+        const finalQuestions = quizSettings.questionLimit === 'all'
+            ? filtered
+            : filtered.slice(0, quizSettings.questionLimit);
+
+        setActiveQuestions(finalQuestions);
         setCurrentQuestionIndex(0);
         setScore(0);
         setQuizStep('question');
@@ -373,6 +378,24 @@ export default function Quran() {
                                             )}
                                         >
                                             {lvl}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Question Count Selection */}
+                            <div className="space-y-3">
+                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block pl-1">Questions</label>
+                                <div className="flex bg-gray-100 p-1.5 rounded-2xl">
+                                    {[5, 10, 'all'].map((count) => (
+                                        <button
+                                            key={count}
+                                            onClick={() => setQuizSettings({ ...quizSettings, questionLimit: count })}
+                                            className={cn("flex-1 py-3 rounded-xl text-xs font-bold transition-all capitalize",
+                                                quizSettings.questionLimit === count ? "bg-white shadow-sm text-gray-900" : "text-gray-500 hover:text-gray-900"
+                                            )}
+                                        >
+                                            {count === 'all' ? 'All' : count}
                                         </button>
                                     ))}
                                 </div>
