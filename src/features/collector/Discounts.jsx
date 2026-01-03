@@ -80,7 +80,7 @@ export default function Discounts() {
         if (selectedCustomers.length === 0) return;
 
         // Custom "Beautiful" Formatter - SOMALI VERSION
-        let text = "📋 *Warbixinta Discount-ka (Discount Requests)*\n\n";
+        let text = "📋 *Maamule Discount ii xali*\n\n";
 
         selectedCustomers.forEach((c, idx) => {
             const discount = parseFloat(c.discountAmount || 0);
@@ -156,18 +156,21 @@ export default function Discounts() {
 
     return (
         <div className="flex flex-col h-full bg-gray-50 pb-24 relative font-sans">
-            {/* Header - PREMIUM GRADIENT THEME */}
-            <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 px-6 py-5 border-b border-indigo-500/30 shadow-lg sticky top-0 z-20">
+            {/* Header - PREMIUM GRADIENT THEME (Tasks Style) */}
+            <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 px-5 py-4 border-b border-indigo-500/30 shadow-lg sticky top-0 z-20">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-xl font-black text-white tracking-tight">Active Discounts</h1>
-                        <p className="text-xs text-indigo-100 font-bold mt-1">
-                            {customers.length} request{customers.length !== 1 ? 's' : ''} pending approval
-                        </p>
+                        <h1 className="text-2xl font-black text-white tracking-tight">Active Discounts</h1>
+                        <div className="flex items-center space-x-1 mt-0.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <p className="text-xs text-indigo-100 font-bold uppercase tracking-wide">
+                                {customers.length} Request{customers.length !== 1 ? 's' : ''}
+                            </p>
+                        </div>
                     </div>
                     <button
                         onClick={selectAll}
-                        className="text-xs font-bold text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl active:scale-95 transition-all backdrop-blur-sm border border-white/10 shadow-sm"
+                        className="text-xs font-bold text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg active:scale-95 transition-all backdrop-blur-sm border border-white/10 shadow-sm"
                     >
                         {selectedIds.size === customers.length ? 'Deselect All' : 'Select All'}
                     </button>
@@ -210,14 +213,14 @@ export default function Discounts() {
                         return (
                             <div
                                 key={`${customer.sqn}-${i}`}
-                                className={`rounded-3xl p-5 shadow-sm border relative overflow-hidden group transition-all active:scale-95 ${isSelected ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-500' : 'bg-white border-gray-100 hover:shadow-md'}`}
+                                className={`rounded-2xl p-3 shadow-sm border relative overflow-hidden group transition-all active:scale-95 ${isSelected ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-500' : 'bg-white border-gray-100 hover:shadow-md'}`}
                             >
                                 {/* Selection Indicator (Click to Toggle) */}
                                 <div
                                     onClick={(e) => { e.stopPropagation(); toggleSelection(customer.sqn); }}
-                                    className={`absolute top-4 right-4 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors z-20 cursor-pointer ${isSelected ? 'bg-indigo-600 border-indigo-600' : 'border-gray-200 bg-white hover:border-indigo-400'}`}
+                                    className={`absolute top-3 right-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors z-20 cursor-pointer ${isSelected ? 'bg-indigo-600 border-indigo-600' : 'border-gray-200 bg-white hover:border-indigo-400'}`}
                                 >
-                                    {isSelected && <CheckCircle2 size={16} className="text-white" />}
+                                    {isSelected && <CheckCircle2 size={12} className="text-white" />}
                                 </div>
                                 <div
                                     onClick={(e) => {
@@ -225,36 +228,36 @@ export default function Discounts() {
                                         setDiscountModalCustomer(customer);
                                         setDiscountForm({ paidAmount: customer.paidAmount || '' });
                                     }}
-                                    className="pr-8"
+                                    className="pr-6"
                                 >
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-lg shadow-sm ${isSelected ? 'bg-indigo-200 text-indigo-700' : 'bg-gray-100 text-gray-500'}`}>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${isSelected ? 'bg-indigo-200 text-indigo-700' : 'bg-gray-100 text-gray-500'}`}>
                                             %
                                         </div>
                                         <div>
                                             <h3 className="font-bold text-gray-900 line-clamp-1 text-sm">{customer.name}</h3>
-                                            <p className="text-[10px] text-gray-400 font-mono font-bold bg-gray-50 px-1.5 py-0.5 rounded inline-block">SQN: {customer.sqn}</p>
+                                            <p className="text-[10px] text-gray-400 font-mono font-bold bg-gray-50 px-1 py-0.5 rounded inline-block">SQN: {customer.sqn}</p>
                                         </div>
                                     </div>
 
                                     {/* DATA GRID */}
-                                    <div className="grid grid-cols-3 gap-2 mt-2 bg-gray-50/50 p-3 rounded-2xl border border-gray-50">
+                                    <div className="grid grid-cols-3 gap-1 mt-1 bg-gray-50/50 p-2 rounded-xl border border-gray-50">
 
                                         {/* BALANCE */}
                                         <div className="flex flex-col">
-                                            <span className="text-[9px] font-bold text-gray-400 uppercase">Balance</span>
+                                            <span className="text-[8px] font-bold text-gray-400 uppercase">Balance</span>
                                             <span className="text-xs font-black text-gray-800">${customer.balance}</span>
                                         </div>
 
                                         {/* LAGA HAYO */}
-                                        <div className="flex flex-col border-l border-gray-200 pl-3">
-                                            <span className="text-[9px] font-bold text-emerald-600 uppercase">Laga Hayo</span>
+                                        <div className="flex flex-col border-l border-gray-200 pl-2">
+                                            <span className="text-[8px] font-bold text-emerald-600 uppercase">Laga Hayo</span>
                                             <span className="text-xs font-black text-emerald-600">${customer.paidAmount || '0'}</span>
                                         </div>
 
                                         {/* DISCOUNT */}
-                                        <div className="flex flex-col border-l border-gray-200 pl-3">
-                                            <span className="text-[9px] font-bold text-red-500 uppercase">Discount</span>
+                                        <div className="flex flex-col border-l border-gray-200 pl-2">
+                                            <span className="text-[8px] font-bold text-red-500 uppercase">Discount</span>
                                             <span className="text-xs font-black text-red-500">-${customer.discountAmount || '0'}</span>
                                         </div>
                                     </div>
