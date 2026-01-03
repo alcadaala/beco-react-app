@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Book, Heart, Receipt, ChevronRight, Upload, FileSpreadsheet, CheckCircle2, Wifi, Users, X, User, Mail, Shield, MapPin, Key } from 'lucide-react';
+import { Book, Heart, Receipt, ChevronRight, Upload, FileSpreadsheet, CheckCircle2, Wifi, Users, X, User, Mail, Shield, MapPin, Key, Headphones, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import { collection, query, where, getDocs, doc, updateDoc, writeBatch, getDoc } from 'firebase/firestore';
@@ -381,7 +381,21 @@ export default function Services() {
                 </div>
 
                 {/* Service Cards */}
-                <ServiceCard title="Quran" icon={Book} color="bg-emerald-500" onClick={() => navigate('/quran')} />
+
+                <ServiceCard
+                    title="Quran Audio"
+                    icon={Headphones}
+                    color="bg-emerald-500"
+                    onClick={() => navigate('/quran', { state: { mode: 'audio' } })}
+                />
+
+                <ServiceCard
+                    title="Quran Read"
+                    icon={BookOpen}
+                    color="bg-teal-500"
+                    onClick={() => navigate('/quran', { state: { mode: 'read' } })}
+                />
+
                 <ServiceCard title="Hospitals" icon={Heart} color="bg-rose-500" onClick={() => navigate('/hospital-discounts')} />
                 <ServiceCard title="Reports" icon={Receipt} color="bg-violet-500" onClick={() => navigate('/billing')} />
                 <ServiceCard title="Bundles" icon={Wifi} color="bg-cyan-500" onClick={() => navigate('/data-bundles')} />

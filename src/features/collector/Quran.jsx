@@ -23,6 +23,9 @@ const THEMES = {
 export default function Quran() {
     const navigate = useNavigate();
     const location = useLocation();
+    // Default to 'audio' if no state passed
+    const { mode } = location.state || { mode: 'audio' };
+
     const [surahs, setSurahs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentSurah, setCurrentSurah] = useState(null);
@@ -120,8 +123,9 @@ export default function Quran() {
         setReadingSurah(surah);
         setLoadingText(true);
 
-        // Auto-play audio if not already playing this surah
-        if (currentSurah?.id !== surah.id) {
+        // Auto-play audio if not already playing this surah (ONLY IN AUDIO MODE or Explicit Trigger)
+        // If mode is 'read', we don't auto-play unless user wants to.
+        if (mode === 'audio' && currentSurah?.id !== surah.id) {
             playSurah(surah);
         }
 
@@ -160,6 +164,15 @@ export default function Quran() {
         s?.name_simple?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         String(s?.id).includes(searchTerm)
     );
+
+    // Dynamic Row Click Handler
+    const handleRxClick = (surah) => {
+        if (mode === 'read') {
+            openReader(surah);
+        } else {
+            playSurah(surah);
+        }
+    };
 
     // READER VIEW
     if (readingSurah) {
@@ -336,17 +349,22 @@ export default function Quran() {
                         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-full">
                             <ArrowLeft size={20} />
                         </button>
-                        <h1 className="text-xl font-bold text-gray-900">Holy Quran</h1>
+                        <div className="flex flex-col">
+                            <h1 className="text-xl font-bold text-gray-900">Quran {mode === 'read' ? 'Reader' : 'Audio'}</h1>
+                            <p className="text-xs text-gray-400 font-medium">Beco Islamic</p>
+                        </div>
                     </div>
 
-                    {/* Reciter Toggle */}
-                    <button
-                        onClick={() => setShowReciters(!showReciters)}
-                        className="flex items-center space-x-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-100 active:scale-95 transition-all"
-                    >
-                        <Mic2 size={14} />
-                        <span>{selectedReciter.name.split(' ')[0]}</span>
-                    </button>
+                    {/* Reciter Toggle - Only show in Audio mode or if playing */}
+                    {(mode === 'audio' || isPlaying) && (
+                        <button
+                            onClick={() => setShowReciters(!showReciters)}
+                            className="flex items-center space-x-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-100 active:scale-95 transition-all"
+                        >
+                            <Mic2 size={14} />
+                            <span>{selectedReciter.name.split(' ')[0]}</span>
+                        </button>
+                    )}
                 </div>
 
                 <div className="relative">
@@ -402,9 +420,10 @@ export default function Quran() {
                                     ? "bg-emerald-50 border-emerald-100 shadow-sm"
                                     : "bg-white border-transparent hover:bg-gray-50"
                             )}
+                            onClick={() => handleRxClick(surah)} // Use dynamic handler
                         >
-                            {/* Meta Info - Click to Play */}
-                            <div className="flex items-center space-x-4 flex-1" onClick={() => playSurah(surah)}>
+                            {/* Meta Info */}
+                            <div className="flex items-center space-x-4 flex-1">
                                 <div className={cn(
                                     "h-10 w-10 min-w-[2.5rem] rounded-full flex items-center justify-center text-sm font-bold border-2",
                                     currentSurah?.id === surah.id
@@ -421,15 +440,26 @@ export default function Quran() {
                                 </div>
                             </div>
 
-                            {/* Actions - Click to Read */}
+                            {/* Actions - Contextual */}
                             <div className="flex items-center space-x-3">
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); openReader(surah); }}
-                                    className="px-3 py-1.5 bg-stone-100 text-stone-600 rounded-lg hover:bg-stone-200 active:scale-95 transition-all text-xs font-bold flex items-center"
-                                >
-                                    <BookOpen size={14} className="mr-1.5" />
-                                    Read
-                                </button>
+                                {mode === 'audio' ? (
+                                    // AUDIO MODE: Secondary is Read
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); openReader(surah); }}
+                                        className="px-3 py-1.5 bg-stone-100 text-stone-600 rounded-lg hover:bg-stone-200 active:scale-95 transition-all text-xs font-bold flex items-center"
+                                    >
+                                        <BookOpen size={14} className="mr-1.5" />
+                                        Read
+                                    </button>
+                                ) : (
+                                    // READ MODE: Secondary is Play
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); playSurah(surah); }}
+                                        className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 transition-colors"
+                                    >
+                                        <Play size={14} className="fill-current ml-0.5" />
+                                    </button>
+                                )}
 
                                 <span className="font-amiri text-xl text-gray-400 leading-none hidden sm:block" style={{ fontFamily: 'serif' }}>
                                     {surah.name_arabic}
