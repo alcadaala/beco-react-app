@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { Search, Filter, Phone, Calendar, MessageCircle, MessageSquare, ChevronDown, MapPin, X, User, FileText, CheckCircle2, Send, Users, Copy, Edit, ArrowRight, AlertCircle, Lock, MoreHorizontal, Plus, Clock, ChevronRight, Bell, Trash2, Upload, BarChart3, CircleUser, Heart, Pin, RefreshCw, Receipt } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { Search, Filter, Phone, Calendar, MessageCircle, MessageSquare, ChevronDown, MapPin, X, User, FileText, CheckCircle2, Send, Users, Copy, Edit, ArrowRight, AlertCircle, Lock, MoreHorizontal, Plus, Clock, ChevronRight, Bell, Trash2, Upload, BarChart3, CircleUser, Heart, Pin, RefreshCw, Receipt, Tag } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { cn } from '../../lib/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -163,8 +164,12 @@ export default function Baafiye() {
     const [historyLoading, setHistoryLoading] = useState(false);
     const [activeFormData, setActiveFormData] = useState({ date: '', note: '' });
 
-    // SWIPE LOGIC STATE
-    const [swipeState, setSwipeState] = useState({ id: null, startX: 0, currentX: 0, isSwiping: false });
+
+
+    // DISCOUNT MODAL STATE
+    const [discountModalCustomer, setDiscountModalCustomer] = useState(null);
+    const [discountForm, setDiscountForm] = useState({ paidAmount: '' });
+
 
     // MESSAGE PREVIEW FLOW
     const [messageFlow, setMessageFlow] = useState({ step: 'idle', customer: null, channel: null, text: '' });
@@ -1000,6 +1005,21 @@ export default function Baafiye() {
                                                                         <span className="text-[9px] font-bold uppercase leading-none">SMS</span>
                                                                     </button>
 
+
+
+                                                                    {/* DISCOUNT (Newly Added) */}
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setDiscountModalCustomer(c);
+                                                                            setDiscountForm({ paidAmount: '' });
+                                                                        }}
+                                                                        className="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-purple-50 text-purple-600 border border-purple-100 shadow-sm active:scale-90 transition-transform hover:bg-purple-100"
+                                                                    >
+                                                                        <Tag size={18} className="mb-0.5" />
+                                                                        <span className="text-[9px] font-bold uppercase leading-none">Disc.</span>
+                                                                    </button>
+
                                                                     {/* BALAN (TOGGLES DROPDOWN) */}
                                                                     <button
                                                                         onClick={(e) => {
@@ -1294,9 +1314,92 @@ export default function Baafiye() {
                     </div>
                 )}
 
-                {/* End of Scrollable Wrapper */}
-            </div>
+                {/* DISCOUNT CALCULATION MODAL */}
+                {discountModalCustomer && (
+                    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in" onClick={() => setDiscountModalCustomer(null)}>
+                        <div onClick={e => e.stopPropagation()} className="bg-white rounded-[2rem] w-full max-w-sm p-6 shadow-2xl animate-in zoom-in-95">
+                            <div className="flex justify-between items-center mb-6">
+                                <div>
+                                    <h3 className="text-xl font-black text-gray-900">Apply Discount</h3>
+                                    <p className="text-xs font-bold text-gray-400">Calculate & Save</p>
+                                </div>
+                                <button onClick={() => setDiscountModalCustomer(null)} className="p-2 bg-gray-100 rounded-full text-gray-400"><X size={20} /></button>
+                            </div>
 
+                            <div className="space-y-5">
+                                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="text-xs font-bold text-gray-400 uppercase">Customer Balance</span>
+                                        <span className="text-lg font-black text-gray-900">${discountModalCustomer.balance}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 h-1.5 rounded-full mt-2 overflow-hidden">
+                                        <div className="bg-indigo-500 h-full w-full"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="text-xs font-black text-gray-900 uppercase ml-1 mb-2 block">
+                                        Waxa la dhiibay (Paid Amount)
+                                    </label>
+                                    <div className="relative">
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                                        <input
+                                            type="number"
+                                            autoFocus
+                                            value={discountForm.paidAmount}
+                                            onChange={(e) => setDiscountForm({ ...discountForm, paidAmount: e.target.value })}
+                                            className="w-full pl-8 pr-4 py-4 bg-white border-2 border-indigo-100 focus:border-indigo-500 rounded-2xl font-black text-lg focus:outline-none transition-colors"
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Calculation Display */}
+                                {discountForm.paidAmount && (
+                                    <div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 animate-in slide-in-from-top-2">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <span className="text-xs font-bold text-indigo-400 uppercase">Calculated Discount</span>
+                                        </div>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-2xl font-black text-indigo-600">
+                                                ${(parseFloat(discountModalCustomer.balance || 0) - parseFloat(discountForm.paidAmount || 0)).toFixed(2)}
+                                            </span>
+                                            <span className="text-xs font-bold text-indigo-400">will be discounted</span>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <button
+                                    onClick={() => {
+                                        const originalBal = parseFloat(discountModalCustomer.balance || 0);
+                                        const paid = parseFloat(discountForm.paidAmount || 0);
+                                        const discount = originalBal - paid;
+
+                                        if (paid < 0 || paid > originalBal) {
+                                            alert("Please enter a valid amount (0 - Balance).");
+                                            return;
+                                        }
+
+                                        handleSaveCustomer({
+                                            ...discountModalCustomer,
+                                            status: 'Discount',
+                                            discountAmount: discount.toFixed(2),
+                                            paidAmount: paid.toFixed(2),
+                                            fahfahin: `Discount Request: $${discount.toFixed(2)} (Paid $${paid})`
+                                        });
+                                        setDiscountModalCustomer(null);
+                                        setExpandedActionId(null);
+                                    }}
+                                    className="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-indigo-200 active:scale-95 transition-all text-sm uppercase tracking-wide flex justify-center gap-2"
+                                >
+                                    <CheckCircle2 size={18} />
+                                    <span>Confirm Discount</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
