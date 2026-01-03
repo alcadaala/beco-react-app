@@ -399,6 +399,22 @@ export default function Baafiye() {
         }
     };
 
+    // CLEAR ALL DATA LOGIC (Global Reset)
+    const handleClearAllData = async () => {
+        if (!window.confirm("MA HUBTAA INAAD TIRTIRTO BAAFIYAHA?\n\n(Are you sure you want to clear ALL data?)")) return;
+
+        // Clear State
+        setCustomers([]);
+
+        // Clear Local Storage
+        try {
+            localStorage.removeItem('baafiye_local_data');
+            console.log("Baafiye local data cleared.");
+        } catch (e) {
+            console.error("Failed to clear local storage", e);
+        }
+    };
+
     // --- FILTER & SORT LOGIC ---
     const [sortOrder, setSortOrder] = useState('asc');
 
@@ -715,6 +731,12 @@ export default function Baafiye() {
                         </div>
                         <div className="flex gap-2">
                             <button onClick={() => navigate('/billing')} className="p-2 bg-white/10 rounded-xl"><BarChart3 size={20} /></button>
+
+                            {/* Clear ALL Data Icon (Global) */}
+                            <button onClick={handleClearAllData} className="p-2 bg-red-500/20 text-red-100 rounded-xl border border-red-500/30 hover:bg-red-500/40 transition-colors">
+                                <Trash2 size={20} />
+                            </button>
+
                             <button onClick={() => setIsSearchActive(true)} className="p-2 bg-white/10 rounded-xl"><Search size={20} /></button>
                             <button onClick={() => fetchCustomers()} className="p-2 bg-white/10 rounded-xl"><RefreshCw size={20} className={loading ? 'animate-spin' : ''} /></button>
                             <button onClick={() => setIsFilterOpen(!isFilterOpen)} className="p-2 bg-white/10 rounded-xl"><Filter size={20} /></button>
@@ -794,6 +816,7 @@ export default function Baafiye() {
             {/* SCROLLABLE CONTENT AREA */}
             <div className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50/50 pb-24 no-scrollbar">
 
+                {/* CLEAR TODAY BAR REMOVED - Moved to Header */}
                 {/* CLEAR TODAY BAR */}
                 {activeTab === 'today' && todayCount > 0 && (
                     <div className="bg-yellow-50 px-4 py-2 flex justify-between items-center border-b border-yellow-200">
