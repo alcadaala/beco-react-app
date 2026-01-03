@@ -505,27 +505,30 @@ export default function Quran() {
             </div>
 
             {currentSurah && !readingSurah && (
-                <div className="absolute bottom-6 left-4 right-4 bg-gray-900 rounded-[2rem] p-4 shadow-2xl z-20 flex items-center justify-between animate-in slide-in-from-bottom duration-500">
-                    <div className="flex items-center space-x-4 flex-1 overflow-hidden" onClick={() => openReader(currentSurah)}>
-                        <div className="h-12 w-12 rounded-full bg-white/10 flex items-center justify-center animate-pulse-slow cursor-pointer">
-                            <div className="h-2 w-2 bg-emerald-400 rounded-full animate-ping" />
+                <div className="absolute bottom-8 left-6 right-6 z-30 animate-in slide-in-from-bottom duration-500">
+                    <div className="bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-2 pl-4 pr-2 shadow-2xl shadow-black/50 flex items-center justify-between">
+                        <div className="flex items-center space-x-4 flex-1 overflow-hidden group cursor-pointer" onClick={() => openReader(currentSurah)}>
+                            <div className="relative h-11 w-11 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+                                {isPlaying && <div className="absolute inset-0 bg-emerald-500/30 rounded-full animate-ping opacity-75"></div>}
+                                <Headphones size={18} className="text-emerald-400 relative z-10" />
+                            </div>
+                            <div className="min-w-0">
+                                <h3 className="font-bold text-white truncate text-sm leading-tight mb-0.5">{currentSurah.name_simple}</h3>
+                                <p className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">Now Playing</p>
+                            </div>
                         </div>
-                        <div className="min-w-0 cursor-pointer">
-                            <h3 className="font-bold text-white truncate">{currentSurah.name_simple}</h3>
-                            <p className="text-xs text-gray-400">Reciter: {selectedReciter.name}</p>
-                        </div>
-                    </div>
 
-                    <div className="flex items-center space-x-4 pl-4">
-                        <button
-                            onClick={togglePlay}
-                            className="h-12 w-12 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform"
-                        >
-                            {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-0.5" />}
-                        </button>
+                        <div className="flex items-center pl-2">
+                            <button
+                                onClick={togglePlay}
+                                className="h-12 w-12 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg hover:shadow-xl hover:bg-emerald-50"
+                            >
+                                {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
+                            </button>
+                        </div>
                     </div>
                 </div>
-            )}
+            )} as const
         </div>
     );
 }
