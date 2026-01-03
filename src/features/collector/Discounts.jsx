@@ -89,7 +89,7 @@ export default function Discounts() {
 
             text += `${idx + 1}. *${c.name}*\n`;
             text += `   🆔 SQN: ${c.sqn}\n`;
-            text += `   💰 Balance: $${balance}\n`;
+            // text += `   💰 Balance: $${balance}\n`; // Removed per user request
             text += `   💵 Laga Hayo: $${paid}\n`;
             text += `   🏷️ Discount: $${discount}\n`;
             text += "\n";
@@ -179,7 +179,7 @@ export default function Discounts() {
 
             {/* TOTAL SUMMARY CARD */}
             {customers.length > 0 && (
-                <div className="mx-6 mt-4 p-5 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-xl text-white relative overflow-hidden ring-1 ring-white/10">
+                <div className="mx-6 mt-4 p-5 bg-gradient-to-br from-indigo-800 to-indigo-900 rounded-2xl shadow-xl text-white relative overflow-hidden ring-1 ring-white/10">
                     <div className="absolute top-0 right-0 p-4 opacity-10">
                         <Tag size={80} />
                     </div>
@@ -213,14 +213,14 @@ export default function Discounts() {
                         return (
                             <div
                                 key={`${customer.sqn}-${i}`}
-                                className={`rounded-2xl p-3 shadow-sm border relative overflow-hidden group transition-all active:scale-95 ${isSelected ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-500' : 'bg-white border-gray-100 hover:shadow-md'}`}
+                                className={`rounded-xl p-3 shadow border relative overflow-hidden group transition-all active:scale-95 ${isSelected ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500' : 'bg-white border-gray-200/60 hover:shadow-md'}`}
                             >
                                 {/* Selection Indicator (Click to Toggle) */}
                                 <div
                                     onClick={(e) => { e.stopPropagation(); toggleSelection(customer.sqn); }}
-                                    className={`absolute top-3 right-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors z-20 cursor-pointer ${isSelected ? 'bg-indigo-600 border-indigo-600' : 'border-gray-200 bg-white hover:border-indigo-400'}`}
+                                    className={`absolute top-2.5 right-2.5 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors z-20 cursor-pointer ${isSelected ? 'bg-indigo-600 border-indigo-600' : 'border-gray-200 bg-white hover:border-indigo-400'}`}
                                 >
-                                    {isSelected && <CheckCircle2 size={12} className="text-white" />}
+                                    {isSelected && <CheckCircle2 size={10} className="text-white" />}
                                 </div>
                                 <div
                                     onClick={(e) => {
@@ -230,35 +230,35 @@ export default function Discounts() {
                                     }}
                                     className="pr-6"
                                 >
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${isSelected ? 'bg-indigo-200 text-indigo-700' : 'bg-gray-100 text-gray-500'}`}>
+                                    <div className="flex items-center gap-2.5 mb-2.5">
+                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm ${isSelected ? 'bg-indigo-200 text-indigo-700' : 'bg-gray-100/50 text-gray-500 border border-gray-100'}`}>
                                             %
                                         </div>
                                         <div>
-                                            <h3 className="font-bold text-gray-900 line-clamp-1 text-sm">{customer.name}</h3>
-                                            <p className="text-[10px] text-gray-400 font-mono font-bold bg-gray-50 px-1 py-0.5 rounded inline-block">SQN: {customer.sqn}</p>
+                                            <h3 className="font-bold text-gray-900 line-clamp-1 text-sm leading-tight">{customer.name}</h3>
+                                            <p className="text-[10px] text-gray-400 font-mono font-bold mt-0.5">SQN: <span className="text-gray-600">{customer.sqn}</span></p>
                                         </div>
                                     </div>
 
                                     {/* DATA GRID */}
-                                    <div className="grid grid-cols-3 gap-1 mt-1 bg-gray-50/50 p-2 rounded-xl border border-gray-50">
+                                    <div className="flex items-center divide-x divide-gray-200 bg-gray-50/50 rounded-lg border border-gray-100 overflow-hidden">
 
                                         {/* BALANCE */}
-                                        <div className="flex flex-col">
-                                            <span className="text-[8px] font-bold text-gray-400 uppercase">Balance</span>
-                                            <span className="text-xs font-black text-gray-800">${customer.balance}</span>
+                                        <div className="flex-1 p-2 text-center">
+                                            <span className="text-[7px] font-bold text-gray-400 uppercase block tracking-wider mb-0.5">Balance</span>
+                                            <span className="text-xs font-black text-gray-700 block">${customer.balance}</span>
                                         </div>
 
                                         {/* LAGA HAYO */}
-                                        <div className="flex flex-col border-l border-gray-200 pl-2">
-                                            <span className="text-[8px] font-bold text-emerald-600 uppercase">Laga Hayo</span>
-                                            <span className="text-xs font-black text-emerald-600">${customer.paidAmount || '0'}</span>
+                                        <div className="flex-1 p-2 text-center bg-emerald-50/30">
+                                            <span className="text-[7px] font-bold text-emerald-600/70 uppercase block tracking-wider mb-0.5">Paid</span>
+                                            <span className="text-xs font-black text-emerald-600 block">${customer.paidAmount || '0'}</span>
                                         </div>
 
                                         {/* DISCOUNT */}
-                                        <div className="flex flex-col border-l border-gray-200 pl-2">
-                                            <span className="text-[8px] font-bold text-red-500 uppercase">Discount</span>
-                                            <span className="text-xs font-black text-red-500">-${customer.discountAmount || '0'}</span>
+                                        <div className="flex-1 p-2 text-center bg-red-50/30">
+                                            <span className="text-[7px] font-bold text-red-500/70 uppercase block tracking-wider mb-0.5">Discount</span>
+                                            <span className="text-xs font-black text-red-500 block">-${customer.discountAmount || '0'}</span>
                                         </div>
                                     </div>
                                 </div>
