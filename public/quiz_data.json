@@ -1,0 +1,198 @@
+[
+    {
+        "id": "quran-so-e-1",
+        "category": "quran",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Waa tuma suurada loogu yeero 'Qalbige Quraanka'?",
+        "options": [
+            "Suurada Al-Faatixah",
+            "Suurada Yaasiin",
+            "Suurada Al-Mulk",
+            "Suurada Ar-Raxmaan"
+        ],
+        "answer": 1
+    },
+    {
+        "id": "quran-so-e-2",
+        "category": "quran",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Imisa Suuradood ayaa Quraanka ka kooban yahay?",
+        "options": [
+            "110",
+            "112",
+            "114",
+            "116"
+        ],
+        "answer": 2
+    },
+    {
+        "id": "quran-so-n-1",
+        "category": "quran",
+        "language": "so",
+        "difficulty": "normal",
+        "question": "Waa tee suurada ugu dheer Quraanka Kariimka ah?",
+        "options": [
+            "Suurada Al-Maa'idah",
+            "Suurada Al-Acraaf",
+            "Suurada Al-Baqarah",
+            "Suurada An-Nisaa"
+        ],
+        "answer": 2
+    },
+    {
+        "id": "hadith-so-e-1",
+        "category": "hadith",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Sheeg Saxaabigii ugu Xadiiska badnaa asaxaabta?",
+        "options": [
+            "Cumar bin Khadaab",
+            "Abuu Hureyra",
+            "Cali bin Abi Daalib",
+            "Cabdullahi bin Cumar"
+        ],
+        "answer": 1
+    },
+    {
+        "id": "hadith-so-e-2",
+        "category": "hadith",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Waa kuma Imaamka soo aruuriyay Xadiiska Saxiixa ah ee ugu caansan?",
+        "options": [
+            "Imaam Muslim",
+            "Imaam Al-Bukhaari",
+            "Imaam Abu Daauud",
+            "Imaam At-Tirmidi"
+        ],
+        "answer": 1
+    },
+    {
+        "id": "hadith-so-n-1",
+        "category": "hadith",
+        "language": "so",
+        "difficulty": "normal",
+        "question": "Xadiiska uu wariyo hal qof kaliya silsilada oo idil waxaa loo yaqaan?",
+        "options": [
+            "Axaad",
+            "Mutawaatir",
+            "Disko",
+            "Xasan"
+        ],
+        "answer": 0
+    },
+    {
+        "id": "salat-so-e-1",
+        "category": "salat",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Salaada Subax imisa rakco waaye?",
+        "options": [
+            "2 Rakco",
+            "3 Rakco",
+            "4 Rakco",
+            "1 Rakco"
+        ],
+        "answer": 0
+    },
+    {
+        "id": "salat-so-e-2",
+        "category": "salat",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Waa tee salaada kaliya ee la oogo iyadoo aan la sujuudeyn, la rukuuceyn?",
+        "options": [
+            "Salaada Ciida",
+            "Salaada Janaasada",
+            "Salaada Vitriga",
+            "Salaada Ducluhu"
+        ],
+        "answer": 1
+    },
+    {
+        "id": "salat-so-n-1",
+        "category": "salat",
+        "language": "so",
+        "difficulty": "normal",
+        "question": "Salaada ay banaan tahay in la gaabiyo (Qasri) safarka, imisa rakco ayaa laga dhigaa?",
+        "options": [
+            "1 Rakco",
+            "2 Rakco",
+            "3 Rakco",
+            "Sida ay tahay"
+        ],
+        "answer": 1
+    },
+    {
+        "id": "general-so-e-1",
+        "category": "general",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Waa kuma Nabigii Liqay nibiriga (Huuud)?",
+        "options": [
+            "Nabi Muuse",
+            "Nabi Yuunus",
+            "Nabi Ibraahim",
+            "Nabi Ciise"
+        ],
+        "answer": 1
+    },
+    {
+        "id": "general-so-e-2",
+        "category": "general",
+        "language": "so",
+        "difficulty": "easy",
+        "question": "Saxaabigii ugu horeeyay ee Aadaana (Mu'addin) Islaamka?",
+        "options": [
+            "Bilaal bin Rabaax",
+            "Cabdullahi bin Maktuum",
+            "Zayd bin Saabit",
+            "Saclaba"
+        ],
+        "answer": 0
+    },
+    {
+        "id": "ar-quran-e-1",
+        "category": "quran",
+        "language": "ar",
+        "difficulty": "easy",
+        "question": "ما هي السورة التي تسمى 'قلب القرآن'؟",
+        "options": [
+            "سورة الفاتحة",
+            "سورة يس",
+            "سورة الملك",
+            "سورة الرحمن"
+        ],
+        "answer": 1
+    },
+    {
+        "id": "ar-hadith-e-1",
+        "category": "hadith",
+        "language": "ar",
+        "difficulty": "easy",
+        "question": "من هو راوي الحديث المكثر من الصحابة؟",
+        "options": [
+            "أبو بكر الصديق",
+            "أبو هريرة",
+            "أنس بن مالك",
+            "عائشة رضي الله عنها"
+        ],
+        "answer": 1
+    },
+    {
+        "id": "ar-salat-e-1",
+        "category": "salat",
+        "language": "ar",
+        "difficulty": "easy",
+        "question": "كم عدد ركعات صلاة المغرب؟",
+        "options": [
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "answer": 1
+    }
+]

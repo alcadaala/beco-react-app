@@ -20,7 +20,7 @@ const THEMES = {
     dark: { name: 'Dark', bg: 'bg-gray-900', text: 'text-gray-100', secondary: 'bg-gray-800' }
 };
 
-import { QUIZ_DATA } from './data/quizData';
+// import { QUIZ_DATA } from './data/quizData';
 
 export default function Quran() {
     const navigate = useNavigate();
@@ -33,35 +33,56 @@ export default function Quran() {
 
     // Quiz State
     const [quizStep, setQuizStep] = useState('setup'); // setup, question, result
-    const [quizSettings, setQuizSettings] = useState({ language: 'so', difficulty: 'easy', questionLimit: 5 });
+    const [quizSettings, setQuizSettings] = useState({ language: 'so', difficulty: 'easy', questionLimit: 5, category: 'all' });
     const [activeQuestions, setActiveQuestions] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState(null); // To show feedback before moving next
     const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
+    const [isQuizLoading, setIsQuizLoading] = useState(false);
 
-    const startQuiz = () => {
-        // Filter questions based on settings
-        const filtered = QUIZ_DATA.filter(q =>
-            q.language === quizSettings.language &&
-            q.difficulty === quizSettings.difficulty
-        );
+    const startQuiz = async () => {
+        setIsQuizLoading(true);
+        try {
+            // Fetch questions from Public JSON (Simulated API)
+            const response = await fetch('/quiz_data.json');
+            if (!response.ok) throw new Error("Failed to fetch questions");
+            const allQuestions = await response.json();
 
-        // Shuffle questions (Fisher-Yates shuffle)
-        for (let i = filtered.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [filtered[i], filtered[j]] = [filtered[j], filtered[i]];
+            // Filter questions based on settings
+            const filtered = allQuestions.filter(q =>
+                q.language === quizSettings.language &&
+                q.difficulty === quizSettings.difficulty &&
+                (quizSettings.category === 'all' || q.category === quizSettings.category)
+            );
+
+            // Shuffle questions (Fisher-Yates shuffle)
+            for (let i = filtered.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [filtered[i], filtered[j]] = [filtered[j], filtered[i]];
+            }
+
+            // Apply slice limit if specific number selected
+            const finalQuestions = quizSettings.questionLimit === 'all'
+                ? filtered
+                : filtered.slice(0, quizSettings.questionLimit);
+
+            if (finalQuestions.length === 0) {
+                alert("No questions found for this category/difficulty.");
+                setIsQuizLoading(false);
+                return;
+            }
+
+            setActiveQuestions(finalQuestions);
+            setCurrentQuestionIndex(0);
+            setScore(0);
+            setQuizStep('question');
+        } catch (error) {
+            console.error(error);
+            alert("Error loading quiz data. Please try again.");
+        } finally {
+            setIsQuizLoading(false);
         }
-
-        // Apply slice limit if specific number selected
-        const finalQuestions = quizSettings.questionLimit === 'all'
-            ? filtered
-            : filtered.slice(0, quizSettings.questionLimit);
-
-        setActiveQuestions(finalQuestions);
-        setCurrentQuestionIndex(0);
-        setScore(0);
-        setQuizStep('question');
     };
 
     const handleQuizAnswer = (optionIndex) => {
@@ -340,6 +361,33 @@ export default function Quran() {
                                 <p className="text-sm text-gray-500">Customize your challenge</p>
                             </div>
 
+                            {/* Category Selection */}
+                            <div className="space-y-3">
+                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block pl-1">Category</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {[
+                                        { id: 'all', label: 'Dhamaan', icon: '🌍' },
+                                        { id: 'quran', label: 'Quraan', icon: '📖' },
+                                        { id: 'hadith', label: 'Xadiis', icon: '📜' },
+                                        { id: 'salat', label: 'Salaad', icon: '🤲' },
+                                        { id: 'general', label: 'Aqoon Guud', icon: '💡' }
+                                    ].map((cat) => (
+                                        <button
+                                            key={cat.id}
+                                            onClick={() => setQuizSettings({ ...quizSettings, category: cat.id })}
+                                            className={cn("p-3 rounded-2xl border transition-all flex items-center gap-2 text-left",
+                                                quizSettings.category === cat.id
+                                                    ? "bg-emerald-50 border-emerald-500 text-emerald-800"
+                                                    : "bg-white border-gray-100 text-gray-600 hover:bg-gray-50"
+                                            )}
+                                        >
+                                            <span className="text-lg">{cat.icon}</span>
+                                            <span className="font-bold text-xs">{cat.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
                             {/* Language Selection */}
                             <div className="space-y-3">
                                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block pl-1">Language</label>
@@ -403,10 +451,11 @@ export default function Quran() {
 
                             <button
                                 onClick={startQuiz}
-                                className="w-full py-4 bg-gray-900 text-white font-bold rounded-2xl shadow-xl hover:bg-gray-800 transition-all active:scale-95 flex items-center justify-center gap-2"
+                                disabled={isQuizLoading}
+                                className="w-full py-4 bg-gray-900 text-white font-bold rounded-2xl shadow-xl hover:bg-gray-800 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
-                                <Play size={18} fill="currentColor" />
-                                Start Challenge
+                                {isQuizLoading ? <Loader2 size={18} className="animate-spin" /> : <Play size={18} fill="currentColor" />}
+                                {isQuizLoading ? 'Loading Quiz...' : 'Start Challenge'}
                             </button>
                         </div>
                     )}
