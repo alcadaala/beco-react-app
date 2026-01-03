@@ -120,14 +120,15 @@ export default function HospitalDiscounts() {
                 ) : (
                     discounts.map(disc => (
                         <div key={disc} className="animate-in slide-in-from-bottom-4 duration-500 fade-in">
-                            {/* Discount Header */}
-                            <div className="flex items-center gap-3 mb-4 sticky top-40 z-10">
-                                <div className={`font-black text-xs px-4 py-2 rounded-xl shadow-lg transform -skew-x-6 text-white tracking-widest border-2 border-white
-                                    ${disc >= 50 ? 'bg-gradient-to-r from-red-600 to-rose-500' : disc >= 40 ? 'bg-gradient-to-r from-orange-500 to-amber-500' : 'bg-gradient-to-r from-blue-500 to-indigo-500'}
-                                `}>
-                                    {disc}% OFF
+                            {/* Small Clean Header */}
+                            <div className="flex items-center gap-2 mb-3 mt-2">
+                                <div className={`w-1.5 h-1.5 rounded-full 
+                                    ${disc >= 50 ? 'bg-red-500' : disc >= 40 ? 'bg-orange-500' : 'bg-blue-500'}`}>
                                 </div>
-                                <div className="h-0.5 bg-gray-100 flex-1 rounded-full"></div>
+                                <span className="text-xs font-black text-gray-400 uppercase tracking-widest">
+                                    {disc}% Discount
+                                </span>
+                                <div className="h-px bg-gray-100 flex-1"></div>
                             </div>
 
                             {/* Cards Grid */}
@@ -136,34 +137,25 @@ export default function HospitalDiscounts() {
                                     <div
                                         key={hospital.id}
                                         onClick={() => setSelectedHospital(hospital)}
-                                        className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 active:scale-[0.98] transition-all cursor-pointer hover:shadow-md hover:border-gray-200"
+                                        className="bg-white p-3.5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3 active:scale-[0.98] transition-all cursor-pointer hover:shadow-md hover:border-gray-200"
                                     >
                                         {/* Icon Box */}
-                                        <div className="h-14 w-14 bg-stone-50 rounded-2xl flex items-center justify-center text-stone-400 shrink-0 border border-stone-100 overflow-hidden relative">
-                                            <Building2 size={24} />
-                                            <div className={`absolute top-0 right-0 px-1.5 py-0.5 text-[8px] font-black text-white rounded-bl-lg shadow-sm
-                                                ${disc >= 50 ? 'bg-red-600' : disc >= 40 ? 'bg-orange-500' : 'bg-blue-500'}`}>
-                                                {disc}%
-                                            </div>
+                                        <div className="h-12 w-12 bg-stone-50 rounded-xl flex items-center justify-center text-stone-400 shrink-0 border border-stone-100 relative">
+                                            <Building2 size={20} />
                                         </div>
 
                                         {/* Content */}
                                         <div className="flex-1 min-w-0">
-                                            <div className="flex justify-between items-start">
-                                                <h3 className="font-extrabold text-gray-900 text-sm leading-tight mb-1 truncate pr-2">{hospital.name}</h3>
-                                            </div>
-
-                                            <div className="space-y-1">
-                                                <div className="flex items-center text-[10px] font-bold text-gray-400 uppercase">
-                                                    <MapPin size={10} className="mr-1" />
-                                                    {hospital.location || 'Mogadishu'}
-                                                </div>
+                                            <h3 className="font-extrabold text-gray-900 text-sm leading-tight mb-0.5 truncate">{hospital.name}</h3>
+                                            <div className="flex items-center text-[10px] font-bold text-gray-400 uppercase">
+                                                <MapPin size={9} className="mr-1" />
+                                                {hospital.location || 'Mogadishu'}
                                             </div>
                                         </div>
 
-                                        {/* Arrow / Action Hint */}
-                                        <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300">
-                                            <ArrowLeft size={14} className="rotate-180" />
+                                        {/* Arrow */}
+                                        <div className="text-gray-300">
+                                            <ArrowLeft size={16} className="rotate-180" />
                                         </div>
                                     </div>
                                 ))}
