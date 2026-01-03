@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Book, Heart, Receipt, ChevronRight, Upload, FileSpreadsheet, CheckCircle2, Wifi, Users, X, User, Mail, Shield, MapPin, Key, Headphones, BookOpen, BookText } from 'lucide-react';
+import { Book, Heart, Receipt, ChevronRight, Upload, CheckCircle2, Wifi, Users, X, User, Mail, Shield, MapPin, Key, Headphones, BookOpen, BookText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import { collection, query, where, getDocs, doc, updateDoc, writeBatch, getDoc } from 'firebase/firestore';
@@ -250,54 +250,7 @@ export default function Services() {
         }
     };
 
-    const handleClearMyData = async () => {
-        const confirmDelete = window.confirm("Are you sure you want to DELETE ALL your uploaded customer data? This cannot be undone.");
-        if (!confirmDelete) return;
 
-        const confirmDouble = window.confirm("Please confirm again: DELETE ALL DATA?");
-        if (!confirmDouble) return;
-
-        try {
-            setMessage("Deleting data...");
-            const userStr = localStorage.getItem('beco_current_user');
-            const user = userStr ? JSON.parse(userStr) : null;
-            if (!user) return;
-
-            const zone = user.branch || 'General';
-            const q = query(
-                collection(db, 'zones', zone, 'customers'),
-                where('collector_id', '==', user.id)
-            );
-            const snapshot = await getDocs(q);
-
-            if (snapshot.empty) {
-                alert("No data found in your Zone (" + zone + ") to delete.");
-                setMessage("");
-                return;
-            }
-
-            const CHUNK_SIZE = 450;
-            const chunks = [];
-            for (let i = 0; i < snapshot.docs.length; i += CHUNK_SIZE) {
-                chunks.push(snapshot.docs.slice(i, i + CHUNK_SIZE));
-            }
-
-            for (const chunk of chunks) {
-                const batch = writeBatch(db);
-                chunk.forEach(doc => { batch.delete(doc.ref); });
-                await batch.commit();
-            }
-
-            localStorage.removeItem('baafiye_local_data');
-            setMessage("Data deleted successfully.");
-            alert("All your data has been deleted from " + zone + ".");
-            navigate('/baafiye');
-
-        } catch (e) {
-            console.error("Delete failed", e);
-            alert("Error deleting data: " + e.message);
-        }
-    };
 
     // Handle Profile View/Edit
     const handleProfileClick = () => {
@@ -398,7 +351,7 @@ export default function Services() {
                 <ServiceCard title="Reports" icon={Receipt} color="bg-violet-500" onClick={() => navigate('/billing')} />
                 <ServiceCard title="Bundles" icon={Wifi} color="bg-cyan-500" onClick={() => navigate('/data-bundles')} />
                 <ServiceCard title="Assistants" icon={Users} color="bg-amber-500" onClick={() => setShowAssistantModal(true)} />
-                <ServiceCard title="Clear List" icon={FileSpreadsheet} color="bg-red-500" onClick={handleClearMyData} />
+
 
             </div>
 
