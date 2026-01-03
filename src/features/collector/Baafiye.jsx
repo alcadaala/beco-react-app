@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { cn } from '../../lib/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CustomerEditModal from '../../components/CustomerEditModal';
-import { collection, query, where, getDocs, doc, updateDoc, addDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc, addDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 
 // SAFE HELPERS
@@ -184,88 +184,85 @@ export default function Baafiye() {
     // FETCH CUSTOMERS (Local Storage with Firestore Fallback)
     const [isQuotaExceeded, setIsQuotaExceeded] = useState(false);
 
-    const fetchCustomers = async () => {
-        try {
-            setLoading(true);
-            const userStr = localStorage.getItem('beco_current_user');
-            const user = userStr ? JSON.parse(userStr) : null;
-
-            if (!user) {
-                setLoading(false);
-                return;
-            }
-
-            const zone = user.branch || 'General';
-            console.log("Fetching customers from Zone:", zone, "for:", user.id);
-
-            // QUERY LOGIC REFACTOR:
-            // 1. Fetch by Zone Path AND collector_id
-            const q = query(
-                collection(db, 'zones', zone, 'customers'),
-                where('collector_id', '==', user.id)
-            );
-            const querySnapshot = await getDocs(q);
-            let data = querySnapshot.docs.map(doc => ({
-                sqn: doc.id,
-                _collectionPath: `zones/${zone}/customers`,
-                ...doc.data()
-            }));
-
-            // LEGACY FALLBACK (Only check if main query is empty)
-            // If empty, check generic 'customers' just in case data wasn't migrated but user is old.
-            // But we prioritize Zone data.
-            if (data.length === 0 && zone === 'General') {
-                // Try reading from old collection ONLY if user has no specific zone
-                // This helps transition.
-                const legacyQ = query(collection(db, 'customers'), where('collector_id', '==', user.id));
-                const legacySnap = await getDocs(legacyQ);
-                if (!legacySnap.empty) {
-                    data = legacySnap.docs.map(doc => ({ sqn: doc.id, _collectionPath: 'customers', ...doc.data() }));
-                }
-            }
-
-            if (data && data.length > 0) {
-                const mapped = data.map(c => ({
-                    ...c,
-                    sqn: c.sqn || c.id,
-                    isFavorite: c.is_favorite ?? c.isFavorite ?? false,
-                    is_favorite: c.is_favorite ?? c.isFavorite ?? false
-                }));
-                mapped.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-
-                setCustomers(mapped);
-                localStorage.setItem('baafiye_local_data', JSON.stringify(mapped));
-                setIsQuotaExceeded(false); // Reset if successful
-            } else {
-                setCustomers([]);
-                if (navigator.onLine) {
-                    localStorage.removeItem('baafiye_local_data');
-                }
-            }
-        } catch (err) {
-            console.error("Error fetching customers:", err);
-
-            // CHECK FOR QUOTA ERROR
-            if (err.message && (err.message.includes('quota') || err.message.includes('resource-exhausted'))) {
-                setIsQuotaExceeded(true);
-                console.warn("Quota exceeded. Switching to fully offline mode for reads.");
-            }
-
-            // Offline Fallback
-            const localData = localStorage.getItem('baafiye_local_data');
-            if (localData) setCustomers(JSON.parse(localData));
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    // REAL-TIME LISTENER SETUP
     useEffect(() => {
-        fetchCustomers();
+        let unsubscribe = () => { };
+
+        const setupListener = async () => {
+            try {
+                setLoading(true);
+                const userStr = localStorage.getItem('beco_current_user');
+                const user = userStr ? JSON.parse(userStr) : null;
+
+                if (!user) {
+                    setLoading(false);
+                    return;
+                }
+
+                const zone = user.branch || 'General';
+                console.log("Setting up listener for Zone:", zone, "User:", user.id);
+
+                // QUERY LOGIC
+                // We use onSnapshot for real-time updates
+                const q = query(
+                    collection(db, 'zones', zone, 'customers'),
+                    where('collector_id', '==', user.id)
+                );
+
+                unsubscribe = onSnapshot(q, (snapshot) => {
+                    const data = snapshot.docs.map(doc => ({
+                        sqn: doc.id,
+                        _collectionPath: `zones/${zone}/customers`,
+                        ...doc.data()
+                    }));
+
+                    if (data.length > 0) {
+                        const mapped = data.map(c => ({
+                            ...c,
+                            sqn: c.sqn || c.id,
+                            isFavorite: c.is_favorite ?? c.isFavorite ?? false,
+                            is_favorite: c.is_favorite ?? c.isFavorite ?? false
+                        }));
+                        mapped.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
+                        setCustomers(mapped);
+                        localStorage.setItem('baafiye_local_data', JSON.stringify(mapped));
+                        setIsQuotaExceeded(false);
+                        setLoading(false);
+                    } else {
+                        // If empty, we might want to check legacy or just clear.
+                        // For simplicity in this robust update, we clear if snapshot is empty.
+                        setCustomers([]);
+                        // If offline/error triggers empty snapshot (unlikely), valid data stays in local?
+                        // Actually onSnapshot usually returns cached data if offline.
+                        setLoading(false);
+                    }
+                }, (err) => {
+                    console.error("Error in Baafiye listener:", err);
+                    if (err.message && (err.message.includes('quota') || err.message.includes('resource-exhausted'))) {
+                        setIsQuotaExceeded(true);
+                    }
+                    // Offline Fallback
+                    const localData = localStorage.getItem('baafiye_local_data');
+                    if (localData) setCustomers(JSON.parse(localData));
+                    setLoading(false);
+                });
+
+            } catch (err) {
+                console.error("Error setting up listener:", err);
+                setLoading(false);
+            }
+        };
+
+        setupListener();
+
         // Restore custom notes
         const savedNotes = localStorage.getItem('baafiye_custom_notes');
         if (savedNotes) {
             try { setCustomNotes(JSON.parse(savedNotes)); } catch (e) { }
         }
+
+        return () => unsubscribe();
     }, []);
 
     // DASHBOARD INTEGRATION (Filter via Location State)
