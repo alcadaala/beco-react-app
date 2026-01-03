@@ -359,7 +359,7 @@ export default function Services() {
 
             </div>
 
-            {/* PROFILE DETAIL & EDIT MODAL */}
+            {/* PROFILE DETAIL MODAL (Read Only) */}
             {isViewingProfile && (
                 <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in">
                     <div className="bg-white/90 backdrop-blur-xl w-full max-w-sm rounded-[2.5rem] p-6 shadow-2xl border border-white/50 animate-in zoom-in-95">
@@ -372,79 +372,66 @@ export default function Services() {
                         </div>
 
                         <div className="space-y-4">
-                            {/* READ ONLY INFO CARDS */}
-                            <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 space-y-3">
+                            {/* INFO CARD */}
+                            <div className="bg-gray-50/50 p-5 rounded-2xl border border-gray-100 space-y-4">
+
+                                {/* Name */}
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-blue-100/50 flex items-center justify-center text-blue-600">
-                                        <Mail size={16} />
+                                    <div className="w-10 h-10 rounded-xl bg-gray-900 flex items-center justify-center text-white shadow-md">
+                                        <User size={20} />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase">Email</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide">Full Name</p>
+                                        <p className="text-base font-black text-gray-900">{currentUser?.name || 'N/A'}</p>
+                                    </div>
+                                </div>
+
+                                <div className="h-px bg-gray-200/50 w-full"></div>
+
+                                {/* Email */}
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-blue-100/50 flex items-center justify-center text-blue-600">
+                                        <Mail size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide">Email Address</p>
                                         <p className="text-sm font-bold text-gray-900">{currentUser?.email || 'N/A'}</p>
                                     </div>
                                 </div>
 
                                 <div className="h-px bg-gray-200/50 w-full"></div>
 
+                                {/* Branch Info */}
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-indigo-100/50 flex items-center justify-center text-indigo-600">
-                                        <Shield size={16} />
+                                    <div className="w-10 h-10 rounded-xl bg-emerald-100/50 flex items-center justify-center text-emerald-600">
+                                        <MapPin size={20} />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase">Role</p>
-                                        <p className="text-sm font-bold text-gray-900">{currentUser?.role || 'User'}</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide">Branch Name</p>
+                                        <p className="text-sm font-bold text-gray-900">{currentUser?.branch || 'General'}</p>
                                     </div>
                                 </div>
 
                                 <div className="h-px bg-gray-200/50 w-full"></div>
 
+                                {/* Zone Info */}
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-emerald-100/50 flex items-center justify-center text-emerald-600">
-                                        <MapPin size={16} />
+                                    <div className="w-10 h-10 rounded-xl bg-violet-100/50 flex items-center justify-center text-violet-600">
+                                        <Shield size={20} />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase">Branch / Zone</p>
-                                        <p className="text-sm font-bold text-gray-900">{currentUser?.branch || 'General'}</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide">Zone Name</p>
+                                        <p className="text-sm font-bold text-gray-900">{currentUser?.zone || currentUser?.branch || 'General Zone'}</p>
                                     </div>
                                 </div>
+
                             </div>
 
-                            {/* EDITABLE FIELDS */}
-                            <div>
-                                <label className="block text-xs font-black text-gray-400 uppercase mb-2 ml-1">Update Name</label>
-                                <div className="flex items-center bg-gray-50/50 border border-gray-200 rounded-2xl px-4 py-3 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
-                                    <User size={18} className="text-gray-400 mr-3" />
-                                    <input
-                                        type="text"
-                                        value={editForm.name}
-                                        onChange={e => setEditForm({ ...editForm, name: e.target.value })}
-                                        className="bg-transparent w-full font-bold text-gray-900 focus:outline-none"
-                                        placeholder="Enter your name"
-                                    />
-                                </div>
+                            <div className="pt-2 text-center">
+                                <p className="text-[10px] text-gray-400 font-medium">
+                                    To update your details, please contact your Supervisor or Admin.
+                                </p>
                             </div>
-
-                            <div>
-                                <label className="block text-xs font-black text-gray-400 uppercase mb-2 ml-1">Change Password</label>
-                                <div className="flex items-center bg-gray-50/50 border border-gray-200 rounded-2xl px-4 py-3 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
-                                    <Key size={18} className="text-gray-400 mr-3" />
-                                    <input
-                                        type="text"
-                                        value={editForm.password}
-                                        onChange={e => setEditForm({ ...editForm, password: e.target.value })}
-                                        className="bg-transparent w-full font-bold text-gray-900 focus:outline-none font-mono tracking-wider"
-                                        placeholder="New password"
-                                    />
-                                </div>
-                            </div>
-
-                            <button
-                                onClick={saveProfile}
-                                className="w-full bg-black text-white font-bold py-4 rounded-2xl shadow-xl shadow-gray-200 hover:scale-[1.02] active:scale-95 transition-all mt-2 flex items-center justify-center gap-2"
-                            >
-                                <CheckCircle2 size={18} />
-                                Save Changes
-                            </button>
                         </div>
                     </div>
                 </div>
