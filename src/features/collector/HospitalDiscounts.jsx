@@ -1,52 +1,67 @@
 import React, { useState } from 'react';
-import { MapPin, Phone, Search, Building2, ArrowLeft } from 'lucide-react';
+import { MapPin, Phone, Search, Building2, ArrowLeft, X, Clock, Stethoscope, Info, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-// HARDCODED HOSPITAL DATA (As requested)
+// HARDCODED HOSPITAL DATA WITH DETAILS
 const HOSPITALS_DATA = [
     // 50% DISCOUNT
-    { id: 'h1', name: 'Horyaal Hospital', location: 'Tarabuunka Road, Hodan', phone: '+252 614 269 444', discount: 50 },
-    { id: 'h2', name: 'Hodan Hospital', location: 'Hodan District', phone: '', discount: 50 },
-    { id: 'h3', name: 'Somali Sudanese Hospital', location: 'Hodan, Soona key', phone: '+252 61 323 3333', discount: 50 },
-    { id: 'h4', name: 'Wadajir Hospital', location: 'Wadajir', phone: '', discount: 50 },
-    { id: 'h5', name: 'Somali Syrian Hospital', location: 'Mogadishu', phone: '', discount: 50 },
-    { id: 'h6', name: 'Somali Egyptian Hospital', location: 'Mogadishu', phone: '', discount: 50 },
+    {
+        id: 'h1', name: 'Horyaal Hospital', location: 'Tarabuunka Road, Hodan', phone: '+252 614 269 444', discount: 50,
+        about: 'Leading specialist hospital known for advanced surgery and emergency care.',
+        services: ['General Surgery', 'Orthopedics', 'Emergency 24/7', 'Internal Medicine']
+    },
+    {
+        id: 'h2', name: 'Hodan Hospital', location: 'Hodan District', phone: '', discount: 50,
+        about: 'Community hospital providing accessible healthcare services to Hodan residents.',
+        services: ['Maternity', 'Pediatrics', 'General Checkup', 'Pharmacy']
+    },
+    {
+        id: 'h3', name: 'Somali Sudanese Hospital', location: 'Hodan, Soona key', phone: '+252 61 323 3333', discount: 50,
+        about: 'International collaboration providing specialized treatments and diagnostics.',
+        services: ['Cardiology', 'Neurology', 'Advanced Lab', 'Radiology']
+    },
+    { id: 'h4', name: 'Wadajir Hospital', location: 'Wadajir', phone: '', discount: 50, about: 'General hospital serving Wadajir district.', services: ['General Medicine', 'Emergency'] },
+    { id: 'h5', name: 'Somali Syrian Hospital', location: 'Mogadishu', phone: '', discount: 50, about: 'Expert medical care with Syrian medical specialists.', services: ['Surgery', 'Eye Clinic', 'Dental'] },
+    { id: 'h6', name: 'Somali Egyptian Hospital', location: 'Mogadishu', phone: '', discount: 50, about: 'Joint medical facility offering varied specialization.', services: ['Gynecology', 'Urology', 'General Surgery'] },
 
     // 40% DISCOUNT
-    { id: 'h7', name: 'Kalkaal Specialty Hospital', location: 'Digfer Road, Hodan', phone: '+252 617 633 661', discount: 40 },
-    { id: 'h8', name: 'Ibnu Sinaa Hospital', location: 'Mogadishu', phone: '', discount: 40 },
-    { id: 'h9', name: 'Dalmar Specialist Hospital', location: 'Agagaarka KM5', phone: '+252 61 391 7070', discount: 40 },
-    { id: 'h10', name: 'Adan Cade Hospital', location: 'Mogadishu', phone: '', discount: 40 },
-    { id: 'h11', name: 'Horseed Hospital', location: 'Agagaarka KM5, Zoobe', phone: '+252 610 405 080', discount: 40 },
-    { id: 'h12', name: 'Macaani Hospital', location: 'KM13, Mogadishu', phone: '+252 61 502 4277', discount: 40 },
-    { id: 'h13', name: 'Darul Shifaa Hospital', location: 'Mogadishu', phone: '', discount: 40 },
-    { id: 'h14', name: 'Samakaal Hospital', location: 'Mogadishu', phone: '', discount: 40 },
-    { id: 'h15', name: 'Androcare Hospital', location: 'Mogadishu', phone: '', discount: 40 },
-    { id: 'h16', name: 'Al Casima Hospital', location: 'Mogadishu', phone: '', discount: 40 },
+    {
+        id: 'h7', name: 'Kalkaal Specialty Hospital', location: 'Digfer Road, Hodan', phone: '+252 617 633 661', discount: 40,
+        about: 'Premium specialty hospital with state-of-the-art facilities.',
+        services: ['Neurosurgery', 'Cardiac Center', 'ICU/NICU', 'Dialysis']
+    },
+    { id: 'h8', name: 'Ibnu Sinaa Hospital', location: 'Mogadishu', phone: '', discount: 40, about: 'Named after the father of medicine, providing holistic care.', services: ['General Medicine', 'Pediatrics'] },
+    { id: 'h9', name: 'Dalmar Specialist Hospital', location: 'Agagaarka KM5', phone: '+252 61 391 7070', discount: 40, about: 'Specialist center focused on advanced medical procedures.', services: ['Ophthalmology', 'Dental', 'ENT'] },
+    { id: 'h10', name: 'Adan Cade Hospital', location: 'Mogadishu', phone: '', discount: 40, about: 'Modern facility dedicated to quality patient care.', services: ['Emergency', 'Maternity', 'Surgery'] },
+    { id: 'h11', name: 'Horseed Hospital', location: 'Agagaarka KM5, Zoobe', phone: '+252 610 405 080', discount: 40, about: 'Central hospital with a wide range of medical services.', services: ['General Checkup', 'Lab Services'] },
+    { id: 'h12', name: 'Macaani Hospital', location: 'KM13, Mogadishu', phone: '+252 61 502 4277', discount: 40, about: 'Serving the outskirts with essential medical care.', services: ['General Medicine', 'First Aid'] },
+    { id: 'h13', name: 'Darul Shifaa Hospital', location: 'Mogadishu', phone: '', discount: 40, about: 'Center of healing with compassionate staff.', services: ['General Medicine', 'Pharmacy'] },
+    { id: 'h14', name: 'Samakaal Hospital', location: 'Mogadishu', phone: '', discount: 40, about: 'Trusted healthcare provider in the region.', services: ['Outpatient', 'Diagnostics'] },
+    { id: 'h15', name: 'Androcare Hospital', location: 'Mogadishu', phone: '', discount: 40, about: 'Specialized care for men\'s health and general medicine.', services: ['Urology', 'General Medicine'] },
+    { id: 'h16', name: 'Al Casima Hospital', location: 'Mogadishu', phone: '', discount: 40, about: 'Capital city hospital with diverse medical departments.', services: ['Emergency', 'Surgery'] },
 
     // 30% DISCOUNT
-    { id: 'h17', name: 'Horjoog Hospital', location: 'Mogadishu', phone: '', discount: 30 },
-    { id: 'h18', name: 'Jazeera Specialist Hospital', location: 'Mogadishu', phone: '', discount: 30 },
-    { id: 'h19', name: 'Duco Community Hospital', location: 'Mogadishu', phone: '', discount: 30 },
-    { id: 'h20', name: 'Abuu Bashiir Hospital', location: 'Mogadishu', phone: '', discount: 30 },
-    { id: 'h21', name: 'Daarusalaam Hospital', location: 'Mogadishu', phone: '', discount: 30 },
-    { id: 'h22', name: 'Welcare Hospital', location: 'Mogadishu', phone: '', discount: 30 },
-    { id: 'h23', name: 'Kaafi Hospital', location: 'Mogadishu', phone: '', discount: 30 },
-    { id: 'h24', name: 'Darajaat Hospital', location: 'Mogadishu', phone: '', discount: 30 },
-    { id: 'h25', name: 'Somali Pakistani Hospital', location: 'Mogadishu', phone: '', discount: 30 },
-    { id: 'h26', name: 'Eye Community Hospital', location: 'Mogadishu', phone: '', discount: 30 },
-    { id: 'h27', name: 'Al Zahra Hospital', location: 'Mogadishu', phone: '', discount: 30 },
-    { id: 'h28', name: 'Royal Hospital', location: 'Mogadishu', phone: '', discount: 30 },
-    { id: 'h29', name: 'Somali Specialist Hospital', location: 'Mogadishu', phone: '', discount: 30 },
-    { id: 'h30', name: 'Muqdisho Specialist Hospital', location: 'Yaaqshiid', phone: '+252 61 187 8787', discount: 30 },
-    { id: 'h31', name: 'Amoore Hospital', location: 'Mogadishu', phone: '', discount: 30 },
+    { id: 'h17', name: 'Horjoog Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Dedicated to community health and wellness.', services: ['General Checkup'] },
+    { id: 'h18', name: 'Jazeera Specialist Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Specialist services near the airport road.', services: ['General Medicine', 'Travel Medicine'] },
+    { id: 'h19', name: 'Duco Community Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Community-focused healthcare center.', services: ['MCH', 'General Medicine'] },
+    { id: 'h20', name: 'Abuu Bashiir Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Private hospital offering personalized care.', services: ['Consultation', 'Lab'] },
+    { id: 'h21', name: 'Daarusalaam Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Peaceful environment for recovery and treatment.', services: ['General Medicine', 'Inpatient'] },
+    { id: 'h22', name: 'Welcare Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Quality care with a focus on patient welfare.', services: ['General Checkup', 'Emergency'] },
+    { id: 'h23', name: 'Kaafi Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Sufficient care for all your family needs.', services: ['Family Medicine', 'Pediatrics'] },
+    { id: 'h24', name: 'Darajaat Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Standard medical services.', services: ['General Medicine'] },
+    { id: 'h25', name: 'Somali Pakistani Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Collaboration offering specialized Asian medical expertise.', services: ['Surgery', 'Internal Medicine'] },
+    { id: 'h26', name: 'Eye Community Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Dedicated eye care center.', services: ['Ophthalmology', 'Optometry'] },
+    { id: 'h27', name: 'Al Zahra Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Women and children specialized services.', services: ['Gynecology', 'Pediatrics'] },
+    { id: 'h28', name: 'Royal Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Premium healthcare services.', services: ['VIP Ward', 'Specialist Consultation'] },
+    { id: 'h29', name: 'Somali Specialist Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Expert specialists in various fields.', services: ['Cardiology', 'Neurology'] },
+    { id: 'h30', name: 'Muqdisho Specialist Hospital', location: 'Yaaqshiid', phone: '+252 61 187 8787', discount: 30, about: 'Top-tier specialist hospital in Yaaqshiid.', services: ['Advanced Surgery', 'Diagnostics'] },
+    { id: 'h31', name: 'Amoore Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Accessible healthcare for the local community.', services: ['General Medicine'] },
 ];
 
 export default function HospitalDiscounts() {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
-
-    // Removed DB Fetching Logic. Using static data.
+    const [selectedHospital, setSelectedHospital] = useState(null);
 
     const filtered = HOSPITALS_DATA.filter(h =>
         h.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -69,7 +84,7 @@ export default function HospitalDiscounts() {
             <div className="bg-white px-6 pt-8 pb-6 shadow-sm rounded-b-[2.5rem] sticky top-0 z-20">
                 <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center gap-3">
-                        <button onClick={() => navigate(-1)} className="h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center -ml-2">
+                        <button onClick={() => navigate(-1)} className="h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center -ml-2 active:scale-95 transition-transform">
                             <ArrowLeft size={20} />
                         </button>
                         <div>
@@ -90,7 +105,7 @@ export default function HospitalDiscounts() {
                         placeholder="Search hospitals..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white transition-all"
+                        className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white transition-all shadow-sm"
                     />
                 </div>
             </div>
@@ -105,25 +120,34 @@ export default function HospitalDiscounts() {
                 ) : (
                     discounts.map(disc => (
                         <div key={disc} className="animate-in slide-in-from-bottom-4 duration-500 fade-in">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className={`font-black text-xs px-3 py-1.5 rounded-lg shadow-md transform -skew-x-12 text-white
-                                    ${disc >= 50 ? 'bg-red-600' : disc >= 40 ? 'bg-orange-500' : 'bg-blue-500'}
+                            {/* Discount Header */}
+                            <div className="flex items-center gap-3 mb-4 sticky top-40 z-10">
+                                <div className={`font-black text-xs px-4 py-2 rounded-xl shadow-lg transform -skew-x-6 text-white tracking-widest border-2 border-white
+                                    ${disc >= 50 ? 'bg-gradient-to-r from-red-600 to-rose-500' : disc >= 40 ? 'bg-gradient-to-r from-orange-500 to-amber-500' : 'bg-gradient-to-r from-blue-500 to-indigo-500'}
                                 `}>
                                     {disc}% OFF
                                 </div>
-                                <div className="h-px bg-gray-200 flex-1"></div>
+                                <div className="h-0.5 bg-gray-100 flex-1 rounded-full"></div>
                             </div>
 
+                            {/* Cards Grid */}
                             <div className="grid gap-3">
                                 {grouped[disc].map(hospital => (
-                                    <div key={hospital.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 active:scale-[0.98] transition-all">
+                                    <div
+                                        key={hospital.id}
+                                        onClick={() => setSelectedHospital(hospital)}
+                                        className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 active:scale-[0.98] transition-all cursor-pointer hover:shadow-md hover:border-gray-200"
+                                    >
+                                        {/* Icon Box */}
                                         <div className="h-14 w-14 bg-stone-50 rounded-2xl flex items-center justify-center text-stone-400 shrink-0 border border-stone-100 overflow-hidden relative">
                                             <Building2 size={24} />
-                                            <div className={`absolute top-0 right-0 px-1.5 py-0.5 text-[8px] font-black text-white rounded-bl-lg
+                                            <div className={`absolute top-0 right-0 px-1.5 py-0.5 text-[8px] font-black text-white rounded-bl-lg shadow-sm
                                                 ${disc >= 50 ? 'bg-red-600' : disc >= 40 ? 'bg-orange-500' : 'bg-blue-500'}`}>
                                                 {disc}%
                                             </div>
                                         </div>
+
+                                        {/* Content */}
                                         <div className="flex-1 min-w-0">
                                             <div className="flex justify-between items-start">
                                                 <h3 className="font-extrabold text-gray-900 text-sm leading-tight mb-1 truncate pr-2">{hospital.name}</h3>
@@ -136,11 +160,11 @@ export default function HospitalDiscounts() {
                                                 </div>
                                             </div>
                                         </div>
-                                        {hospital.phone && (
-                                            <a href={`tel:${hospital.phone}`} className="h-10 w-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center hover:bg-green-100 transition-colors shadow-sm">
-                                                <Phone size={18} fill="currentColor" />
-                                            </a>
-                                        )}
+
+                                        {/* Arrow / Action Hint */}
+                                        <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300">
+                                            <ArrowLeft size={14} className="rotate-180" />
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -150,6 +174,91 @@ export default function HospitalDiscounts() {
             </div>
 
             <div className="h-24"></div>
+
+            {/* DETAIL MODAL */}
+            {selectedHospital && (
+                <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in" onClick={() => setSelectedHospital(null)}></div>
+                    <div className="bg-white w-full max-w-md rounded-t-[2.5rem] sm:rounded-[2.5rem] p-6 relative z-10 animate-in slide-in-from-bottom duration-300">
+                        {/* Drag Handle */}
+                        <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6 sm:hidden"></div>
+
+                        <div className="flex justify-between items-start mb-6">
+                            <div>
+                                <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-black text-white mb-2 shadow-sm
+                                     ${selectedHospital.discount >= 50 ? 'bg-red-500' : selectedHospital.discount >= 40 ? 'bg-orange-500' : 'bg-blue-500'}
+                                `}>
+                                    <CheckCircle2 size={12} />
+                                    {selectedHospital.discount}% COVERED
+                                </div>
+                                <h2 className="text-2xl font-black text-gray-900 leading-tight">{selectedHospital.name}</h2>
+                            </div>
+                            <button onClick={() => setSelectedHospital(null)} className="p-2 bg-gray-100 rounded-full text-gray-400 hover:bg-gray-200">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Info Cards */}
+                        <div className="space-y-4">
+                            {/* Location */}
+                            <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                <div className="bg-white p-2.5 rounded-xl text-blue-500 shadow-sm">
+                                    <MapPin size={20} />
+                                </div>
+                                <div>
+                                    <h3 className="text-xs font-bold text-gray-400 uppercase mb-0.5">Location</h3>
+                                    <p className="font-bold text-gray-900 text-sm">{selectedHospital.location || 'Mogadishu'}</p>
+                                </div>
+                            </div>
+
+                            {/* About */}
+                            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Info size={16} className="text-gray-400" />
+                                    <h3 className="text-xs font-bold text-gray-400 uppercase">About Hospital</h3>
+                                </div>
+                                <p className="text-sm font-medium text-gray-600 leading-relaxed">
+                                    {selectedHospital.about || "This hospital is a verified Beco partner offering discounted healthcare services to all employees."}
+                                </p>
+                            </div>
+
+                            {/* Services */}
+                            <div>
+                                <div className="flex items-center gap-2 mb-3 px-1">
+                                    <Stethoscope size={16} className="text-indigo-500" />
+                                    <h3 className="text-xs font-black text-indigo-900 uppercase">Available Services</h3>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {selectedHospital.services && selectedHospital.services.length > 0 ? (
+                                        selectedHospital.services.map((svc, i) => (
+                                            <span key={i} className="px-3 py-1.5 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-lg border border-indigo-100/50">
+                                                {svc}
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <span className="text-sm text-gray-400 italic">General services available.</span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Action Button */}
+                        <div className="mt-8">
+                            {selectedHospital.phone ? (
+                                <a href={`tel:${selectedHospital.phone}`} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-center flex items-center justify-center gap-2 shadow-xl shadow-gray-200 active:scale-95 transition-transform">
+                                    <Phone size={20} />
+                                    Call Hospital Now
+                                </a>
+                            ) : (
+                                <button disabled className="w-full py-4 bg-gray-100 text-gray-400 rounded-2xl font-bold text-center cursor-not-allowed">
+                                    Phone Number Unavailable
+                                </button>
+                            )}
+                        </div>
+
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
