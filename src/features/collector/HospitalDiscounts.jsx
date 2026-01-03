@@ -56,6 +56,11 @@ const HOSPITALS_DATA = [
     { id: 'h29', name: 'Somali Specialist Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Expert specialists in various fields.', services: ['Cardiology', 'Neurology'] },
     { id: 'h30', name: 'Muqdisho Specialist Hospital', location: 'Yaaqshiid', phone: '+252 61 187 8787', discount: 30, about: 'Top-tier specialist hospital in Yaaqshiid.', services: ['Advanced Surgery', 'Diagnostics'] },
     { id: 'h31', name: 'Amoore Hospital', location: 'Mogadishu', phone: '', discount: 30, about: 'Accessible healthcare for the local community.', services: ['General Medicine'] },
+    {
+        id: 'h32', name: 'Shaafi Hospital', location: 'Hodon District, Mogadishu', phone: '+252 61 287 7778', discount: 30,
+        about: 'Established by Somali doctors offering comprehensive specialized care and diagnostics.',
+        services: ['Primary Care', 'Surgery', 'Emergency 24/7', 'Maternity']
+    },
 ];
 
 export default function HospitalDiscounts() {
