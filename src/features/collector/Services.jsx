@@ -1,15 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Book, Heart, Receipt, ChevronRight, Upload, CheckCircle2, Wifi, Users, X, User, Mail, Shield, MapPin, Key, Headphones, BookOpen, BookText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import * as XLSX from 'xlsx';
-import { collection, query, where, getDocs, doc, updateDoc, writeBatch, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 
 export default function Services() {
     const navigate = useNavigate();
-    const fileInputRef = useRef(null);
-    const [uploadStatus, setUploadStatus] = useState(null);
-    const [message, setMessage] = useState('');
+
+    // ASSISTANT & USER LOGIC
 
     // ASSISTANT & USER LOGIC
     const [showAssistantModal, setShowAssistantModal] = useState(false);
@@ -102,153 +100,7 @@ export default function Services() {
         }
     };
 
-    const handleFileUpload = (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
 
-        setUploadStatus('loading');
-        setMessage('Processing file...');
-
-        const reader = new FileReader();
-
-        const processData = (rawData) => {
-            try {
-                // Map specific columns
-                const mappedData = rawData.map(row => {
-                    const keys = Object.keys(row);
-
-                    const findK = (checks, exclude = []) => keys.find(k => {
-                        const low = k.toLowerCase().replace(/\s+/g, '');
-                        const matches = checks.some(c => low.includes(c));
-                        const excluded = exclude.some(ex => low.includes(ex));
-                        return matches && !excluded;
-                    });
-
-                    const sqnKey = findK(['sqn', 'tix', 'id', 'account', 'acc', 'ref', 'number', 'no']);
-                    const nameKey = findK(['name', 'magaca', 'customer']);
-                    const tellKey = findK(['tell', 'phone', 'mob', 'cell', 'tel', 'mobile']);
-
-                    // Financials
-                    const prevKey = findK(['prev', 'old', 'hore'], []);
-                    const balKey = findK(['balance', 'due', 'owe', 'haraaga', 'har'], ['prev', 'old', 'total', 'wadarta', 'hore']);
-
-                    const record = {
-                        sqn: row[sqnKey] ? String(row[sqnKey]) : null,
-                        name: row[nameKey] || 'Unknown',
-                        phone: row[tellKey] ? String(row[tellKey]) : null,
-                        prev_balance: parseFloat(row[prevKey] || 0),
-                        balance: parseFloat(row[balKey] || 0),
-                        status: 'Unpaid',
-                    };
-
-                    return (record.sqn && record.name !== 'Unknown') ? record : null;
-                }).filter(Boolean);
-
-                saveToFirebase(mappedData);
-            } catch (err) {
-                console.error("Mapping Error", err);
-                setUploadStatus('error');
-                setMessage('Failed to map data columns. Check file format.');
-            }
-        };
-
-        // Handler for Excel Files
-        if (file.name.match(/\.(xlsx|xls)$/)) {
-            reader.onload = (e) => {
-                try {
-                    const data = e.target.result;
-                    const workbook = XLSX.read(data, { type: 'binary' });
-                    const sheetName = workbook.SheetNames[0];
-                    const sheet = workbook.Sheets[sheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(sheet);
-                    processData(jsonData);
-                } catch (err) {
-                    console.error(err);
-                    setUploadStatus('error');
-                    setMessage('Failed to parse Excel file.');
-                }
-            };
-            reader.readAsBinaryString(file);
-        }
-        else {
-            reader.onload = (e) => {
-                try {
-                    let data = [];
-                    const text = e.target.result;
-
-                    if (file.name.endsWith('.json')) {
-                        data = JSON.parse(text);
-                        processData(data);
-                    } else if (file.name.endsWith('.csv')) {
-                        const lines = text.split('\n');
-                        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-                        data = lines.slice(1).filter(l => l.trim()).map(line => {
-                            const values = line.split(',');
-                            let obj = {};
-                            headers.forEach((h, i) => { obj[h] = values[i]?.trim(); });
-                            return obj;
-                        });
-                        processData(data);
-                    }
-                } catch (err) {
-                    setUploadStatus('error');
-                    setMessage('Failed to parse file.');
-                }
-            };
-            reader.readAsText(file);
-        }
-    };
-
-    const saveToFirebase = async (data) => {
-        if (data.length > 0) {
-            try {
-                const userStr = localStorage.getItem('beco_current_user');
-                const user = userStr ? JSON.parse(userStr) : {};
-                const ownerId = user.id;
-                const zone = user.branch || 'General';
-
-                if (!ownerId) {
-                    setUploadStatus('error');
-                    setMessage('Error: User not identified. Please relogin.');
-                    return;
-                }
-
-                setMessage(`Uploading ${data.length} records to Zone: ${zone}...`);
-
-                const CHUNK_SIZE = 450;
-                for (let i = 0; i < data.length; i += CHUNK_SIZE) {
-                    const chunk = data.slice(i, i + CHUNK_SIZE);
-                    const batch = writeBatch(db);
-
-                    chunk.forEach(record => {
-                        const ref = doc(db, 'zones', zone, 'customers', String(record.sqn));
-                        const taggedRecord = {
-                            ...record,
-                            collector_id: ownerId,
-                            branch: zone,
-                            branch_id: user.branchId || null,
-                            updated_at: new Date().toISOString()
-                        };
-                        batch.set(ref, taggedRecord, { merge: true });
-                    });
-
-                    await batch.commit();
-                }
-
-                setUploadStatus('success');
-                setMessage(`Successfully imported ${data.length} customers to ${zone}!`);
-                setTimeout(() => { navigate('/baafiye'); }, 1500);
-
-            } catch (e) {
-                console.error("Upload failed", e);
-                setUploadStatus('error');
-                setMessage('Failed to sync: ' + e.message);
-            }
-        } else {
-            setUploadStatus('error');
-            setMessage('No valid data found in file.');
-        }
-    };
 
 
 
@@ -317,25 +169,7 @@ export default function Services() {
             {/* CLEAN GRID */}
             <div className="px-5 grid grid-cols-2 gap-4">
 
-                {/* Import Data Banner - Cleaner */}
-                <div
-                    onClick={() => { if (uploadStatus !== 'loading') fileInputRef.current?.click(); }}
-                    className="col-span-2 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-center justify-between cursor-pointer hover:shadow-md transition-all active:scale-[0.99]"
-                >
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
-                            {uploadStatus === 'loading' ? <div className="animate-spin w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full"></div> : <Upload size={24} strokeWidth={2.5} />}
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-gray-900 text-sm">Import Customers</h3>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">{message || 'Upload Excel / CSV'}</p>
-                        </div>
-                    </div>
-                    <div className="bg-gray-50 p-2 rounded-lg text-gray-400">
-                        <ChevronRight size={18} />
-                    </div>
-                    <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".xlsx,.xls,.json,.csv" className="hidden" />
-                </div>
+
 
                 {/* Service Cards */}
 

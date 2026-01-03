@@ -4,8 +4,9 @@ import { createPortal } from 'react-dom';
 import { cn } from '../../lib/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CustomerEditModal from '../../components/CustomerEditModal';
-import { collection, query, where, getDocs, doc, updateDoc, addDoc, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc, addDoc, onSnapshot, writeBatch } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
+import * as XLSX from 'xlsx';
 
 // SAFE HELPERS
 // SAFE HELPERS
@@ -142,6 +143,11 @@ export default function Baafiye() {
     const [isSearchActive, setIsSearchActive] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+    // UPLOAD STATE
+    const fileInputRef = useRef(null);
+    const [uploadStatus, setUploadStatus] = useState(null);
+    const [uploadMessage, setUploadMessage] = useState('');
     const [quickActionId, setQuickActionId] = useState(null);
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -396,6 +402,161 @@ export default function Baafiye() {
             localStorage.setItem('baafiye_local_data', JSON.stringify(newCustomers));
         } catch (e) {
             console.error("Failed to clear today in Local Storage", e);
+        }
+    };
+
+    // --- FILE UPLOAD LOGIC ---
+    const handleFileUpload = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        setUploadStatus('loading');
+        setUploadMessage('Processing file...');
+
+        const reader = new FileReader();
+
+        const processData = (rawData) => {
+            try {
+                // Map specific columns
+                const mappedData = rawData.map(row => {
+                    const keys = Object.keys(row);
+
+                    const findK = (checks, exclude = []) => keys.find(k => {
+                        const low = k.toLowerCase().replace(/\s+/g, '');
+                        const matches = checks.some(c => low.includes(c));
+                        const excluded = exclude.some(ex => low.includes(ex));
+                        return matches && !excluded;
+                    });
+
+                    const sqnKey = findK(['sqn', 'tix', 'id', 'account', 'acc', 'ref', 'number', 'no']);
+                    const nameKey = findK(['name', 'magaca', 'customer']);
+                    const tellKey = findK(['tell', 'phone', 'mob', 'cell', 'tel', 'mobile']);
+
+                    // Financials
+                    const prevKey = findK(['prev', 'old', 'hore'], []);
+                    const balKey = findK(['balance', 'due', 'owe', 'haraaga', 'har'], ['prev', 'old', 'total', 'wadarta', 'hore']);
+
+                    const record = {
+                        sqn: row[sqnKey] ? String(row[sqnKey]) : null,
+                        name: row[nameKey] || 'Unknown',
+                        phone: row[tellKey] ? String(row[tellKey]) : null,
+                        prev_balance: parseFloat(row[prevKey] || 0),
+                        balance: parseFloat(row[balKey] || 0),
+                        status: 'Unpaid',
+                    };
+
+                    return (record.sqn && record.name !== 'Unknown') ? record : null;
+                }).filter(Boolean);
+
+                saveToFirebase(mappedData);
+            } catch (err) {
+                console.error("Mapping Error", err);
+                setUploadStatus('error');
+                setUploadMessage('Failed to map data columns. Check file format.');
+            }
+        };
+
+        // Handler for Excel Files
+        if (file.name.match(/\.(xlsx|xls)$/)) {
+            reader.onload = (e) => {
+                try {
+                    const data = e.target.result;
+                    const workbook = XLSX.read(data, { type: 'binary' });
+                    const sheetName = workbook.SheetNames[0];
+                    const sheet = workbook.Sheets[sheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(sheet);
+                    processData(jsonData);
+                } catch (err) {
+                    console.error(err);
+                    setUploadStatus('error');
+                    setUploadMessage('Failed to parse Excel file.');
+                }
+            };
+            reader.readAsBinaryString(file);
+        }
+        else {
+            reader.onload = (e) => {
+                try {
+                    let data = [];
+                    const text = e.target.result;
+
+                    if (file.name.endsWith('.json')) {
+                        data = JSON.parse(text);
+                        processData(data);
+                    } else if (file.name.endsWith('.csv')) {
+                        const lines = text.split('\n');
+                        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+                        data = lines.slice(1).filter(l => l.trim()).map(line => {
+                            const values = line.split(',');
+                            let obj = {};
+                            headers.forEach((h, i) => { obj[h] = values[i]?.trim(); });
+                            return obj;
+                        });
+                        processData(data);
+                    }
+                } catch (err) {
+                    setUploadStatus('error');
+                    setUploadMessage('Failed to parse file.');
+                }
+            };
+            reader.readAsText(file);
+        }
+    };
+
+    const saveToFirebase = async (data) => {
+        if (data.length > 0) {
+            try {
+                const userStr = localStorage.getItem('beco_current_user');
+                const user = userStr ? JSON.parse(userStr) : {};
+                const ownerId = user.id;
+                const zone = user.branch || 'General';
+
+                if (!ownerId) {
+                    setUploadStatus('error');
+                    setUploadMessage('Error: User not identified. Please relogin.');
+                    return;
+                }
+
+                setUploadMessage(`Uploading ${data.length} records to Zone: ${zone}...`);
+
+                const CHUNK_SIZE = 450;
+                for (let i = 0; i < data.length; i += CHUNK_SIZE) {
+                    const chunk = data.slice(i, i + CHUNK_SIZE);
+                    const batch = writeBatch(db);
+
+                    chunk.forEach(record => {
+                        const ref = doc(db, 'zones', zone, 'customers', String(record.sqn));
+                        const taggedRecord = {
+                            ...record,
+                            collector_id: ownerId,
+                            branch: zone,
+                            branch_id: user.branchId || null,
+                            updated_at: new Date().toISOString()
+                        };
+                        batch.set(ref, taggedRecord, { merge: true });
+                    });
+
+                    await batch.commit();
+                }
+
+                setUploadStatus('success');
+                setUploadMessage(`Successfully imported ${data.length} customers!`);
+
+                // Refresh data manually or let potential snapshot listener handle it
+                // We'll rely on listener if active, but let's clear loading state
+                setTimeout(() => {
+                    setUploadStatus(null);
+                    setUploadMessage('');
+                }, 1500);
+
+            } catch (e) {
+                console.error("Upload failed", e);
+                setUploadStatus('error');
+                setUploadMessage('Failed to sync: ' + e.message);
+            }
+        } else {
+            setUploadStatus('error');
+            setUploadMessage('No valid data found in file.');
         }
     };
 
@@ -894,14 +1055,36 @@ export default function Baafiye() {
                                     Start by uploading your customer data Excel sheet to see them here.
                                 </p>
                                 <button
-                                    onClick={() => navigate('/services')}
-                                    className="bg-gray-900 text-white font-bold py-4 px-10 rounded-2xl shadow-xl shadow-gray-200 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={uploadStatus === 'loading'}
+                                    className="bg-gray-900 text-white font-bold py-4 px-10 rounded-2xl shadow-xl shadow-gray-200 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group disabled:opacity-50 disabled:cursor-wait"
                                 >
-                                    <span className="text-lg">Upload Now</span>
-                                    <div className="bg-white/20 p-1.5 rounded-lg group-hover:bg-white/30 transition-colors">
-                                        <ChevronRight size={18} />
-                                    </div>
+                                    {uploadStatus === 'loading' ? (
+                                        <>
+                                            <div className="animate-spin w-5 h-5 border-2 border-white/30 border-t-white rounded-full"></div>
+                                            <span className="text-lg">Uploading...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="text-lg">Upload Now</span>
+                                            <div className="bg-white/20 p-1.5 rounded-lg group-hover:bg-white/30 transition-colors">
+                                                <ChevronRight size={18} />
+                                            </div>
+                                        </>
+                                    )}
                                 </button>
+                                {uploadMessage && (
+                                    <p className={`mt-4 text-xs font-bold ${uploadStatus === 'error' ? 'text-red-500' : 'text-green-500'}`}>
+                                        {uploadMessage}
+                                    </p>
+                                )}
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    onChange={handleFileUpload}
+                                    accept=".xlsx,.xls,.json,.csv"
+                                    className="hidden"
+                                />
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-24 px-6 text-center animate-in fade-in zoom-in duration-500">
