@@ -308,17 +308,26 @@ export default function Baafiye() {
 
             // Update Firestore
             // Assuming 'sqn' is the document ID. If not, we need the doc ID.
-            // If the customer object has a separate 'id' field for Firestore doc ID, use that.
-            // For now, let's assume sqn might be the ID or we query for it.
-            // Best practice: Use specific ID.
             const docId = updatedCustomer.id || updatedCustomer.sqn;
             if (docId) {
                 const collectionPath = updatedCustomer._collectionPath || 'customers';
                 const customerRef = doc(db, collectionPath, String(docId));
-                await updateDoc(customerRef, {
-                    ...updatedCustomer,
-                    is_favorite: updatedCustomer.isFavorite ?? false // Ensure boolean
+
+                // Sanitize Payload for Firestore (No undefined allowed)
+                const payload = { ...updatedCustomer };
+
+                // Remove internal/UI fields if necessary, or just ensure no undefined
+                Object.keys(payload).forEach(key => {
+                    if (payload[key] === undefined) payload[key] = null;
                 });
+
+                // Explicitly ensure 'fahfahin' is string or null
+                if (payload.fahfahin === undefined) payload.fahfahin = '';
+
+                // Ensure is_favorite mapping
+                payload.is_favorite = payload.isFavorite ?? false;
+
+                await updateDoc(customerRef, payload);
                 console.log("Customer saved to Firestore");
             } else {
                 console.warn("No ID found for customer, cannot update Firestore", updatedCustomer);
