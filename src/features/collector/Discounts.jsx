@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { BadgePercent, Phone, Calendar, Search, Tag, AlertCircle, Share2, CheckCircle2, Copy } from 'lucide-react';
 import { MOCK_CUSTOMERS } from '../../lib/mockData';
-import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, getDocs, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 
 export default function Discounts() {
     const [customers, setCustomers] = useState([]);
     const [selectedIds, setSelectedIds] = useState(new Set());
+
+    // DISCOUNT EDIT MODAL STATE
+    const [discountModalCustomer, setDiscountModalCustomer] = useState(null);
+    const [discountForm, setDiscountForm] = useState({ paidAmount: '' });
 
     // AUTH CONTEXT
     const currentUser = JSON.parse(localStorage.getItem('beco_current_user') || 'null');
@@ -119,12 +123,25 @@ export default function Discounts() {
         }
     };
 
-    const selectAll = () => {
-        if (selectedIds.size === customers.length) {
-            setSelectedIds(new Set());
-        } else {
-            const allIds = new Set(customers.map(c => c.sqn));
-            setSelectedIds(allIds);
+    const handleSaveDiscount = async (updatedCustomer) => {
+        try {
+            // Update Firestore
+            const zone = currentUser.branch || 'General';
+            // Assuming customer has ID or we use SQN as ID. Using ID from doc is safest.
+            const docId = updatedCustomer.id || updatedCustomer.sqn;
+
+            const customerRef = doc(db, 'zones', zone, 'customers', String(docId));
+            await updateDoc(customerRef, {
+                status: 'Discount',
+                discountAmount: updatedCustomer.discountAmount,
+                paidAmount: updatedCustomer.paidAmount,
+                fahfahin: updatedCustomer.fahfahin
+            });
+            console.log("Discount updated successfully");
+            setDiscountModalCustomer(null);
+        } catch (e) {
+            console.error("Error updating discount", e);
+            alert("Error updating discount: " + e.message);
         }
     };
 
@@ -184,15 +201,23 @@ export default function Discounts() {
                         return (
                             <div
                                 key={`${customer.sqn}-${i}`}
-                                onClick={() => toggleSelection(customer.sqn)}
-                                className={`rounded-3xl p-5 shadow-sm border relative overflow-hidden group transition-all cursor-pointer active:scale-95 ${isSelected ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-500' : 'bg-white border-gray-100 hover:shadow-md'}`}
+                                className={`rounded-3xl p-5 shadow-sm border relative overflow-hidden group transition-all active:scale-95 ${isSelected ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-500' : 'bg-white border-gray-100 hover:shadow-md'}`}
                             >
-                                {/* Selection Indicator */}
-                                <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${isSelected ? 'bg-indigo-600 border-indigo-600' : 'border-gray-200 bg-white'}`}>
-                                    {isSelected && <CheckCircle2 size={14} className="text-white" />}
+                                {/* Selection Indicator (Click to Toggle) */}
+                                <div
+                                    onClick={(e) => { e.stopPropagation(); toggleSelection(customer.sqn); }}
+                                    className={`absolute top-4 right-4 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors z-20 cursor-pointer ${isSelected ? 'bg-indigo-600 border-indigo-600' : 'border-gray-200 bg-white hover:border-indigo-400'}`}
+                                >
+                                    {isSelected && <CheckCircle2 size={16} className="text-white" />}
                                 </div>
-
-                                <div className="pr-8">
+                                <div
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setDiscountModalCustomer(customer);
+                                        setDiscountForm({ paidAmount: customer.paidAmount || '' });
+                                    }}
+                                    className="pr-8"
+                                >
                                     <div className="flex items-center gap-3 mb-3">
                                         <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-lg shadow-sm ${isSelected ? 'bg-indigo-200 text-indigo-700' : 'bg-gray-100 text-gray-500'}`}>
                                             %
@@ -232,17 +257,107 @@ export default function Discounts() {
             </div>
 
             {/* FLOATING ACTION BUTTON */}
-            {selectedIds.size > 0 && (
-                <div className="fixed bottom-24 left-0 right-0 px-6 z-40 flex justify-center pointer-events-none">
+            {
+                selectedIds.size > 0 && (
+                    <div className="fixed bottom-24 left-0 right-0 px-6 z-40 flex justify-center pointer-events-none">
+                        <button
+                            onClick={handleShare}
+                            className="bg-gray-900 text-white px-6 py-3.5 rounded-2xl shadow-xl font-bold flex items-center space-x-3 pointer-events-auto transform transition-all active:scale-95 animate-in slide-in-from-bottom-5"
+                        >
+                            <Share2 size={18} />
+                            <span>Share ({selectedIds.size}) Requests</span>
+                        </button>
+                    </div>
+                )
+            }
+        </div >
+    )
+}
+
+{/* DISCOUNT CALCULATION MODAL */ }
+{
+    discountModalCustomer && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in" onClick={() => setDiscountModalCustomer(null)}>
+            <div onClick={e => e.stopPropagation()} className="bg-white rounded-[2rem] w-full max-w-sm p-6 shadow-2xl animate-in zoom-in-95">
+                <div className="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 className="text-xl font-black text-gray-900">Edit Discount</h3>
+                        <p className="text-xs font-bold text-gray-400">Update Calculation</p>
+                    </div>
+                    <button onClick={() => setDiscountModalCustomer(null)} className="p-2 bg-gray-100 rounded-full text-gray-400"><X size={20} /></button>
+                </div>
+
+                <div className="space-y-5">
+                    <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-xs font-bold text-gray-400 uppercase">Customer Balance</span>
+                            <span className="text-lg font-black text-gray-900">${discountModalCustomer.balance}</span>
+                        </div>
+                        <div className="w-full bg-gray-200 h-1.5 rounded-full mt-2 overflow-hidden">
+                            <div className="bg-indigo-500 h-full w-full"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="text-xs font-black text-gray-900 uppercase ml-1 mb-2 block">
+                            Waxa la dhiibay (Paid Amount)
+                        </label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                            <input
+                                type="number"
+                                autoFocus
+                                value={discountForm.paidAmount}
+                                onChange={(e) => setDiscountForm({ ...discountForm, paidAmount: e.target.value })}
+                                className="w-full pl-8 pr-4 py-4 bg-white border-2 border-indigo-100 focus:border-indigo-500 rounded-2xl font-black text-lg focus:outline-none transition-colors"
+                                placeholder="0.00"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Calculation Display */}
+                    {discountForm.paidAmount && (
+                        <div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 animate-in slide-in-from-top-2">
+                            <div className="flex justify-between items-center mb-1">
+                                <span className="text-xs font-bold text-indigo-400 uppercase">Calculated Discount</span>
+                            </div>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-2xl font-black text-indigo-600">
+                                    ${(parseFloat(discountModalCustomer.balance || 0) - parseFloat(discountForm.paidAmount || 0)).toFixed(2)}
+                                </span>
+                                <span className="text-xs font-bold text-indigo-400">will be discounted</span>
+                            </div>
+                        </div>
+                    )}
+
                     <button
-                        onClick={handleShare}
-                        className="bg-gray-900 text-white px-6 py-3.5 rounded-2xl shadow-xl font-bold flex items-center space-x-3 pointer-events-auto transform transition-all active:scale-95 animate-in slide-in-from-bottom-5"
+                        onClick={() => {
+                            const originalBal = parseFloat(discountModalCustomer.balance || 0);
+                            const paid = parseFloat(discountForm.paidAmount || 0);
+                            const discount = originalBal - paid;
+
+                            if (paid < 0 || paid > originalBal) {
+                                alert("Please enter a valid amount (0 - Balance).");
+                                return;
+                            }
+
+                            handleSaveDiscount({
+                                ...discountModalCustomer,
+                                discountAmount: discount.toFixed(2),
+                                paidAmount: paid.toFixed(2),
+                                fahfahin: `Discount Request: $${discount.toFixed(2)} (Paid $${paid})`
+                            });
+                        }}
+                        className="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-indigo-200 active:scale-95 transition-all text-sm uppercase tracking-wide flex justify-center gap-2"
                     >
-                        <Share2 size={18} />
-                        <span>Share ({selectedIds.size}) Requests</span>
+                        <CheckCircle2 size={18} />
+                        <span>Update Discount</span>
                     </button>
                 </div>
-            )}
+            </div>
         </div>
+    )
+}
+        </div >
     );
 }
