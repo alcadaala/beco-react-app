@@ -20,8 +20,7 @@ export default function Services() {
     const [isViewingProfile, setIsViewingProfile] = useState(false);
     const [editForm, setEditForm] = useState({ name: '', password: '' });
 
-    // QURAN MODAL STATE
-    const [showQuranModal, setShowQuranModal] = useState(false);
+    // QURAN MODAL STATE - REMOVED
 
     useEffect(() => {
         const loadUserAndAssistants = async () => {
@@ -338,7 +337,7 @@ export default function Services() {
     };
 
     const handleQuranClick = () => {
-        setShowQuranModal(true);
+        navigate('/quran');
     };
 
     return (
@@ -403,64 +402,7 @@ export default function Services() {
 
             </div>
 
-            {/* QURAN SELECTION MODAL */}
-            {showQuranModal && (
-                <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in">
-                    <div className="bg-white w-full max-w-sm rounded-[2.5rem] p-6 shadow-2xl animate-in slide-in-from-bottom-10 sm:zoom-in-95">
-                        <div className="flex justify-between items-center mb-6">
-                            <div>
-                                <h2 className="text-xl font-black text-gray-900">Holy Quran</h2>
-                                <p className="text-xs text-gray-500 font-bold uppercase">Choose Mode</p>
-                            </div>
-                            <button onClick={() => setShowQuranModal(false)} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"><X size={20} /></button>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <button
-                                onClick={() => navigate('/quran', { state: { mode: 'audio' } })}
-                                className="flex flex-col items-center justify-center p-6 rounded-3xl bg-emerald-50 border-2 border-emerald-100 hover:bg-emerald-100 active:scale-95 transition-all gap-3"
-                            >
-                                <div className="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-200">
-                                    <Headphones size={28} />
-                                </div>
-                                <span className="font-black text-gray-900">Dhageyso</span>
-                                <span className="text-[10px] uppercase font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-md">Audio</span>
-                            </button>
-
-                            <button
-                                onClick={() => navigate('/quran', { state: { mode: 'read' } })}
-                                className="flex flex-col items-center justify-center p-6 rounded-3xl bg-teal-50 border-2 border-teal-100 hover:bg-teal-100 active:scale-95 transition-all gap-3"
-                            >
-                                <div className="w-14 h-14 bg-teal-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-teal-200">
-                                    <BookOpen size={28} />
-                                </div>
-                                <span className="font-black text-gray-900">Aqriso</span>
-                                <span className="text-[10px] uppercase font-bold text-teal-600 bg-teal-100 px-2 py-0.5 rounded-md">Read</span>
-                            </button>
-
-                            <div className="col-span-2">
-                                <button
-                                    onClick={() => navigate('/quran', { state: { mode: 'tafsiir' } })}
-                                    className="w-full flex items-center justify-between p-4 rounded-3xl bg-violet-50 border-2 border-violet-100 hover:bg-violet-100 active:scale-95 transition-all group"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-violet-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-violet-200">
-                                            <BookText size={24} />
-                                        </div>
-                                        <div className="text-left">
-                                            <span className="block font-black text-gray-900 text-lg">Tafsiir</span>
-                                            <span className="text-[10px] uppercase font-bold text-violet-600 bg-violet-100 px-2 py-0.5 rounded-md">Somali Translation</span>
-                                        </div>
-                                    </div>
-                                    <div className="bg-white p-2 rounded-full text-violet-600 shadow-sm group-hover:translate-x-1 transition-transform">
-                                        <ChevronRight size={20} />
-                                    </div>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* QURAN SELECTION MODAL - REMOVED */}
 
             {/* PROFILE DETAIL MODAL (Read Only) */}
             {isViewingProfile && (
