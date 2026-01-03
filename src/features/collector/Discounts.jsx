@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BadgePercent, Phone, Calendar, Search, Tag, AlertCircle, Share2, CheckCircle2, Copy } from 'lucide-react';
+import { BadgePercent, Phone, Calendar, Search, Tag, AlertCircle, Share2, CheckCircle2, Copy, X } from 'lucide-react';
 import { MOCK_CUSTOMERS } from '../../lib/mockData';
 import { collection, query, where, getDocs, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
@@ -270,94 +270,91 @@ export default function Discounts() {
                     </div>
                 )
             }
-        </div >
-    )
-}
 
-{/* DISCOUNT CALCULATION MODAL */ }
-{
-    discountModalCustomer && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in" onClick={() => setDiscountModalCustomer(null)}>
-            <div onClick={e => e.stopPropagation()} className="bg-white rounded-[2rem] w-full max-w-sm p-6 shadow-2xl animate-in zoom-in-95">
-                <div className="flex justify-between items-center mb-6">
-                    <div>
-                        <h3 className="text-xl font-black text-gray-900">Edit Discount</h3>
-                        <p className="text-xs font-bold text-gray-400">Update Calculation</p>
-                    </div>
-                    <button onClick={() => setDiscountModalCustomer(null)} className="p-2 bg-gray-100 rounded-full text-gray-400"><X size={20} /></button>
-                </div>
-
-                <div className="space-y-5">
-                    <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                        <div className="flex justify-between items-center mb-1">
-                            <span className="text-xs font-bold text-gray-400 uppercase">Customer Balance</span>
-                            <span className="text-lg font-black text-gray-900">${discountModalCustomer.balance}</span>
-                        </div>
-                        <div className="w-full bg-gray-200 h-1.5 rounded-full mt-2 overflow-hidden">
-                            <div className="bg-indigo-500 h-full w-full"></div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="text-xs font-black text-gray-900 uppercase ml-1 mb-2 block">
-                            Waxa la dhiibay (Paid Amount)
-                        </label>
-                        <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
-                            <input
-                                type="number"
-                                autoFocus
-                                value={discountForm.paidAmount}
-                                onChange={(e) => setDiscountForm({ ...discountForm, paidAmount: e.target.value })}
-                                className="w-full pl-8 pr-4 py-4 bg-white border-2 border-indigo-100 focus:border-indigo-500 rounded-2xl font-black text-lg focus:outline-none transition-colors"
-                                placeholder="0.00"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Calculation Display */}
-                    {discountForm.paidAmount && (
-                        <div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 animate-in slide-in-from-top-2">
-                            <div className="flex justify-between items-center mb-1">
-                                <span className="text-xs font-bold text-indigo-400 uppercase">Calculated Discount</span>
+            {/* DISCOUNT CALCULATION MODAL */}
+            {
+                discountModalCustomer && (
+                    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in" onClick={() => setDiscountModalCustomer(null)}>
+                        <div onClick={e => e.stopPropagation()} className="bg-white rounded-[2rem] w-full max-w-sm p-6 shadow-2xl animate-in zoom-in-95">
+                            <div className="flex justify-between items-center mb-6">
+                                <div>
+                                    <h3 className="text-xl font-black text-gray-900">Edit Discount</h3>
+                                    <p className="text-xs font-bold text-gray-400">Update Calculation</p>
+                                </div>
+                                <button onClick={() => setDiscountModalCustomer(null)} className="p-2 bg-gray-100 rounded-full text-gray-400"><X size={20} /></button>
                             </div>
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-2xl font-black text-indigo-600">
-                                    ${(parseFloat(discountModalCustomer.balance || 0) - parseFloat(discountForm.paidAmount || 0)).toFixed(2)}
-                                </span>
-                                <span className="text-xs font-bold text-indigo-400">will be discounted</span>
+
+                            <div className="space-y-5">
+                                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="text-xs font-bold text-gray-400 uppercase">Customer Balance</span>
+                                        <span className="text-lg font-black text-gray-900">${discountModalCustomer.balance}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 h-1.5 rounded-full mt-2 overflow-hidden">
+                                        <div className="bg-indigo-500 h-full w-full"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="text-xs font-black text-gray-900 uppercase ml-1 mb-2 block">
+                                        Waxa la dhiibay (Paid Amount)
+                                    </label>
+                                    <div className="relative">
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                                        <input
+                                            type="number"
+                                            autoFocus
+                                            value={discountForm.paidAmount}
+                                            onChange={(e) => setDiscountForm({ ...discountForm, paidAmount: e.target.value })}
+                                            className="w-full pl-8 pr-4 py-4 bg-white border-2 border-indigo-100 focus:border-indigo-500 rounded-2xl font-black text-lg focus:outline-none transition-colors"
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Calculation Display */}
+                                {discountForm.paidAmount && (
+                                    <div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 animate-in slide-in-from-top-2">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <span className="text-xs font-bold text-indigo-400 uppercase">Calculated Discount</span>
+                                        </div>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-2xl font-black text-indigo-600">
+                                                ${(parseFloat(discountModalCustomer.balance || 0) - parseFloat(discountForm.paidAmount || 0)).toFixed(2)}
+                                            </span>
+                                            <span className="text-xs font-bold text-indigo-400">will be discounted</span>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <button
+                                    onClick={() => {
+                                        const originalBal = parseFloat(discountModalCustomer.balance || 0);
+                                        const paid = parseFloat(discountForm.paidAmount || 0);
+                                        const discount = originalBal - paid;
+
+                                        if (paid < 0 || paid > originalBal) {
+                                            alert("Please enter a valid amount (0 - Balance).");
+                                            return;
+                                        }
+
+                                        handleSaveDiscount({
+                                            ...discountModalCustomer,
+                                            discountAmount: discount.toFixed(2),
+                                            paidAmount: paid.toFixed(2),
+                                            fahfahin: `Discount Request: $${discount.toFixed(2)} (Paid $${paid})`
+                                        });
+                                    }}
+                                    className="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-indigo-200 active:scale-95 transition-all text-sm uppercase tracking-wide flex justify-center gap-2"
+                                >
+                                    <CheckCircle2 size={18} />
+                                    <span>Update Discount</span>
+                                </button>
                             </div>
                         </div>
-                    )}
-
-                    <button
-                        onClick={() => {
-                            const originalBal = parseFloat(discountModalCustomer.balance || 0);
-                            const paid = parseFloat(discountForm.paidAmount || 0);
-                            const discount = originalBal - paid;
-
-                            if (paid < 0 || paid > originalBal) {
-                                alert("Please enter a valid amount (0 - Balance).");
-                                return;
-                            }
-
-                            handleSaveDiscount({
-                                ...discountModalCustomer,
-                                discountAmount: discount.toFixed(2),
-                                paidAmount: paid.toFixed(2),
-                                fahfahin: `Discount Request: $${discount.toFixed(2)} (Paid $${paid})`
-                            });
-                        }}
-                        className="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-indigo-200 active:scale-95 transition-all text-sm uppercase tracking-wide flex justify-center gap-2"
-                    >
-                        <CheckCircle2 size={18} />
-                        <span>Update Discount</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    )
-}
+                    </div>
+                )
+            }
         </div >
     );
 }
