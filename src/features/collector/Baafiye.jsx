@@ -1327,13 +1327,26 @@ export default function Baafiye() {
                             </div>
 
                             <div className="space-y-5">
-                                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                                    <div className="flex justify-between items-center mb-1">
-                                        <span className="text-xs font-bold text-gray-400 uppercase">Customer Balance</span>
-                                        <span className="text-lg font-black text-gray-900">${discountModalCustomer.balance}</span>
-                                    </div>
-                                    <div className="w-full bg-gray-200 h-1.5 rounded-full mt-2 overflow-hidden">
-                                        <div className="bg-indigo-500 h-full w-full"></div>
+                                <div>
+                                    <h4 className="text-gray-400 font-bold text-xs uppercase mb-3">FINANCIALS</h4>
+                                    <div className="flex gap-2">
+                                        {/* BALANCE */}
+                                        <div className="bg-white border border-gray-100 p-3 rounded-2xl flex-1 shadow-sm text-center">
+                                            <span className="block text-[10px] font-bold text-gray-400 uppercase mb-1">BALANCE</span>
+                                            <span className="text-lg font-black text-emerald-500">${discountModalCustomer.balance}</span>
+                                        </div>
+
+                                        {/* TOTAL BILL */}
+                                        <div className="bg-white border border-gray-100 p-3 rounded-2xl flex-1 shadow-sm text-center flex flex-col items-center justify-center">
+                                            <span className="block text-[10px] font-bold text-gray-400 uppercase mb-1">TOTAL BILL</span>
+                                            <Receipt size={20} className="text-blue-500" />
+                                        </div>
+
+                                        {/* PREV BAL */}
+                                        <div className="bg-white border border-gray-100 p-3 rounded-2xl flex-1 shadow-sm text-center">
+                                            <span className="block text-[10px] font-bold text-gray-400 uppercase mb-1">PREV BAL</span>
+                                            <span className="text-lg font-black text-gray-400">${discountModalCustomer.prev_balance || '0'}</span>
+                                        </div>
                                     </div>
                                 </div>
 
