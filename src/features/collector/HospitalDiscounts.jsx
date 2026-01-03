@@ -1,37 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { MapPin, Phone, Search, Building2, TicketPercent, ArrowLeft } from 'lucide-react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
+import React, { useState } from 'react';
+import { MapPin, Phone, Search, Building2, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+// HARDCODED HOSPITAL DATA (As requested)
+const HOSPITALS_DATA = [
+    // 50% DISCOUNT
+    { id: 'h1', name: 'Horyaal Hospital', location: 'Tarabuunka Road, Hodan', phone: '+252 614 269 444', discount: 50 },
+    { id: 'h2', name: 'Hodan Hospital', location: 'Hodan District', phone: '', discount: 50 },
+    { id: 'h3', name: 'Somali Sudanese Hospital', location: 'Hodan, Soona key', phone: '+252 61 323 3333', discount: 50 },
+    { id: 'h4', name: 'Wadajir Hospital', location: 'Wadajir', phone: '', discount: 50 },
+    { id: 'h5', name: 'Somali Syrian Hospital', location: 'Mogadishu', phone: '', discount: 50 },
+    { id: 'h6', name: 'Somali Egyptian Hospital', location: 'Mogadishu', phone: '', discount: 50 },
+
+    // 40% DISCOUNT
+    { id: 'h7', name: 'Kalkaal Specialty Hospital', location: 'Digfer Road, Hodan', phone: '+252 617 633 661', discount: 40 },
+    { id: 'h8', name: 'Ibnu Sinaa Hospital', location: 'Mogadishu', phone: '', discount: 40 },
+    { id: 'h9', name: 'Dalmar Specialist Hospital', location: 'Agagaarka KM5', phone: '+252 61 391 7070', discount: 40 },
+    { id: 'h10', name: 'Adan Cade Hospital', location: 'Mogadishu', phone: '', discount: 40 },
+    { id: 'h11', name: 'Horseed Hospital', location: 'Agagaarka KM5, Zoobe', phone: '+252 610 405 080', discount: 40 },
+    { id: 'h12', name: 'Macaani Hospital', location: 'KM13, Mogadishu', phone: '+252 61 502 4277', discount: 40 },
+    { id: 'h13', name: 'Darul Shifaa Hospital', location: 'Mogadishu', phone: '', discount: 40 },
+    { id: 'h14', name: 'Samakaal Hospital', location: 'Mogadishu', phone: '', discount: 40 },
+    { id: 'h15', name: 'Androcare Hospital', location: 'Mogadishu', phone: '', discount: 40 },
+    { id: 'h16', name: 'Al Casima Hospital', location: 'Mogadishu', phone: '', discount: 40 },
+
+    // 30% DISCOUNT
+    { id: 'h17', name: 'Horjoog Hospital', location: 'Mogadishu', phone: '', discount: 30 },
+    { id: 'h18', name: 'Jazeera Specialist Hospital', location: 'Mogadishu', phone: '', discount: 30 },
+    { id: 'h19', name: 'Duco Community Hospital', location: 'Mogadishu', phone: '', discount: 30 },
+    { id: 'h20', name: 'Abuu Bashiir Hospital', location: 'Mogadishu', phone: '', discount: 30 },
+    { id: 'h21', name: 'Daarusalaam Hospital', location: 'Mogadishu', phone: '', discount: 30 },
+    { id: 'h22', name: 'Welcare Hospital', location: 'Mogadishu', phone: '', discount: 30 },
+    { id: 'h23', name: 'Kaafi Hospital', location: 'Mogadishu', phone: '', discount: 30 },
+    { id: 'h24', name: 'Darajaat Hospital', location: 'Mogadishu', phone: '', discount: 30 },
+    { id: 'h25', name: 'Somali Pakistani Hospital', location: 'Mogadishu', phone: '', discount: 30 },
+    { id: 'h26', name: 'Eye Community Hospital', location: 'Mogadishu', phone: '', discount: 30 },
+    { id: 'h27', name: 'Al Zahra Hospital', location: 'Mogadishu', phone: '', discount: 30 },
+    { id: 'h28', name: 'Royal Hospital', location: 'Mogadishu', phone: '', discount: 30 },
+    { id: 'h29', name: 'Somali Specialist Hospital', location: 'Mogadishu', phone: '', discount: 30 },
+    { id: 'h30', name: 'Muqdisho Specialist Hospital', location: 'Yaaqshiid', phone: '+252 61 187 8787', discount: 30 },
+    { id: 'h31', name: 'Amoore Hospital', location: 'Mogadishu', phone: '', discount: 30 },
+];
 
 export default function HospitalDiscounts() {
     const navigate = useNavigate();
-    const [hospitals, setHospitals] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
-    useEffect(() => {
-        const fetchHospitals = async () => {
-            try {
-                const q = query(collection(db, 'hospitals'));
-                const snapshot = await getDocs(q);
-                let data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    // Removed DB Fetching Logic. Using static data.
 
-                // Client side sort by Discount DESC
-                data.sort((a, b) => (b.discount || 0) - (a.discount || 0));
-
-                setHospitals(data);
-            } catch (error) {
-                console.error("Error fetching hospitals:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchHospitals();
-    }, []);
-
-    const filtered = hospitals.filter(h =>
+    const filtered = HOSPITALS_DATA.filter(h =>
         h.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (h.location && h.location.toLowerCase().includes(searchTerm.toLowerCase()))
     );
@@ -44,7 +61,7 @@ export default function HospitalDiscounts() {
         return acc;
     }, {});
 
-    const discounts = Object.keys(grouped).sort((a, b) => b - a); // 50, 40, 30
+    const discounts = Object.keys(grouped).sort((a, b) => b - a); // 50, 40, 30...
 
     return (
         <div className="min-h-screen bg-stone-50 pb-24">
@@ -80,11 +97,7 @@ export default function HospitalDiscounts() {
 
             {/* Content */}
             <div className="p-6 space-y-8">
-                {loading ? (
-                    <div className="flex justify-center py-20">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
-                    </div>
-                ) : filtered.length === 0 ? (
+                {filtered.length === 0 ? (
                     <div className="text-center py-20">
                         <Building2 size={48} className="mx-auto text-gray-300 mb-4" />
                         <p className="text-gray-400 font-bold">No hospitals found.</p>
@@ -105,11 +118,7 @@ export default function HospitalDiscounts() {
                                 {grouped[disc].map(hospital => (
                                     <div key={hospital.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 active:scale-[0.98] transition-all">
                                         <div className="h-14 w-14 bg-stone-50 rounded-2xl flex items-center justify-center text-stone-400 shrink-0 border border-stone-100 overflow-hidden relative">
-                                            {hospital.image_url ? (
-                                                <img src={hospital.image_url} alt={hospital.name} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <Building2 size={24} />
-                                            )}
+                                            <Building2 size={24} />
                                             <div className={`absolute top-0 right-0 px-1.5 py-0.5 text-[8px] font-black text-white rounded-bl-lg
                                                 ${disc >= 50 ? 'bg-red-600' : disc >= 40 ? 'bg-orange-500' : 'bg-blue-500'}`}>
                                                 {disc}%
