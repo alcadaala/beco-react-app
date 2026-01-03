@@ -383,27 +383,64 @@ export default function Baafiye() {
     };
 
     // CLEAR TODAY LOGIC (Local Storage Only)
-    const handleClearToday = async () => {
-        if (!window.confirm("Ma hubtaa inaad tirtirto jadwalka maanta (Clear Today)?")) return;
+    const handleClearToday = async (force = false) => {
+        if (!force && !window.confirm("Ma hubtaa inaad tirtirto jadwalka maanta (Clear Today)?")) return;
 
         // Update State
         const newCustomers = customers.map(c => {
             const f = (c.fahfahin || '').toLowerCase();
             const isToday = f.includes('caawa') || f.includes('galabta') || f.includes('galbta') || f.includes('duhur');
-            if (isToday || c.isFavorite) {
-                return { ...c, fahfahin: isToday ? '' : c.fahfahin, isFavorite: false };
+
+            // Only clear the note if it's a "Today" task.
+            // DO NOT UNPIN (keep isFavorite as is).
+            if (isToday) {
+                return { ...c, fahfahin: '' };
             }
             return c;
         });
-        setCustomers(newCustomers);
 
-        // Update Local Storage
-        try {
-            localStorage.setItem('baafiye_local_data', JSON.stringify(newCustomers));
-        } catch (e) {
-            console.error("Failed to clear today in Local Storage", e);
-        }
+        setCustomers(newCustomers);
+        localStorage.setItem('baafiye_local_data', JSON.stringify(newCustomers));
     };
+
+    // AUTOMATIC DAILY RESET (12:00 AM Logic)
+    useEffect(() => {
+        const checkDailyReset = () => {
+            const lastResetDate = localStorage.getItem('baafiye_last_reset_date');
+            const todayStr = new Date().toDateString();
+
+            if (lastResetDate !== todayStr && customers.length > 0) {
+                console.log("New Day Detected! Running Daily Reset...");
+
+                // Logic duplicates handleClearToday but purely for finding items to reset
+                // We calculate new state here to avoid dependency issues with handleClearToday function identity
+                let hasChanges = false;
+                const newCustomers = customers.map(c => {
+                    const f = (c.fahfahin || '').toLowerCase();
+                    const isToday = f.includes('caawa') || f.includes('galabta') || f.includes('galbta') || f.includes('duhur');
+
+                    if (isToday) {
+                        hasChanges = true;
+                        return { ...c, fahfahin: '' }; // Clear "Today" notes
+                        // Note: We keep isFavorite (Pins) as per user request
+                    }
+                    return c;
+                });
+
+                if (hasChanges) {
+                    setCustomers(newCustomers);
+                    localStorage.setItem('baafiye_local_data', JSON.stringify(newCustomers));
+                }
+
+                // Update the reset date so it doesn't run again today
+                localStorage.setItem('baafiye_last_reset_date', todayStr);
+            }
+        };
+
+        if (customers.length > 0) {
+            checkDailyReset();
+        }
+    }, [customers.length]); // Check when data loads/changes length mostly.
 
     // --- FILE UPLOAD LOGIC ---
     const handleFileUpload = (event) => {
