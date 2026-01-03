@@ -306,113 +306,96 @@ export default function Services() {
     };
 
     return (
-        <div className="min-h-full bg-gray-50 pb-24">
-            {/* NEW PROFILE HEADER SECTION */}
-            <div className="bg-white p-6 pb-8 rounded-b-[2.5rem] shadow-xl relative overflow-hidden mb-6">
-                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 opacity-100 z-0"></div>
-
-                {/* Decorative Blobs */}
-                <div className="absolute top-[-50%] right-[-20%] w-80 h-80 bg-white/10 rounded-full blur-3xl z-0 pointer-events-none"></div>
-                <div className="absolute bottom-[-20%] left-[-20%] w-64 h-64 bg-black/10 rounded-full blur-3xl z-0 pointer-events-none"></div>
-
-                <div className="relative z-10 flex flex-col items-center text-center mt-2">
-                    <div className="w-20 h-20 bg-white p-1 rounded-full shadow-lg mb-3 relative group">
+        <div className="flex flex-col h-full bg-gray-50/50 pb-24 min-h-screen font-sans">
+            {/* Header Area (Tasks Style) */}
+            <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 px-5 py-4 border-b border-indigo-500/30 sticky top-0 z-10 shadow-lg mb-6">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h1 className="text-2xl font-black text-white tracking-tight">Services</h1>
+                        <div className="flex items-center space-x-1 mt-0.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            <p className="text-xs text-indigo-100 font-bold uppercase tracking-wide">
+                                Tools & Utilities
+                            </p>
+                        </div>
+                    </div>
+                    {/* User Profile Trigger */}
+                    <button
+                        onClick={handleEditProfile}
+                        className="w-11 h-11 rounded-2xl border-2 border-white/10 p-0.5 cursor-pointer hover:bg-white/10 transition-colors flex items-center justify-center overflow-hidden shadow-lg shadow-indigo-900/20"
+                    >
                         <img
                             src={`https://ui-avatars.com/api/?name=${currentUser?.name || 'User'}&background=random&color=fff&size=128`}
                             alt="Profile"
-                            className="w-full h-full rounded-full object-cover"
+                            className="w-full h-full rounded-xl object-cover"
                         />
-                        <button
-                            onClick={handleEditProfile}
-                            className="absolute bottom-0 right-0 bg-gray-900 text-white p-1.5 rounded-full shadow-md hover:scale-110 transition-transform"
-                        >
-                            <FileText size={12} />
-                        </button>
-                    </div>
-
-                    <h2 className="text-2xl font-black text-white leading-tight mb-1">
-                        {currentUser?.name || 'Loading...'}
-                    </h2>
-
-                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-lg border border-white/20">
-                        <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                        <span className="text-xs font-bold text-white uppercase tracking-wider">
-                            {currentUser?.branch || 'General Zone'}
-                        </span>
-                    </div>
+                    </button>
                 </div>
             </div>
 
-            {/* GLASSMORPHISM COMPACT GRID */}
-            <div className="px-4 grid grid-cols-2 gap-4 relative z-10">
+            {/* CLEAN GRID */}
+            <div className="px-5 grid grid-cols-2 gap-4">
 
-                {/* Upload Card (Glass Style) */}
+                {/* Import Data Banner - Cleaner */}
                 <div
                     onClick={() => { if (uploadStatus !== 'loading') fileInputRef.current?.click(); }}
-                    className="col-span-2 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 backdrop-blur-xl rounded-3xl p-5 border border-white/30 shadow-2xl relative overflow-hidden flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer h-28"
+                    className="col-span-2 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-center justify-between cursor-pointer hover:shadow-md transition-all active:scale-[0.99]"
                 >
-                    <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-colors"></div>
-                    <div className="relative z-10 flex items-center gap-4">
-                        <div className="w-14 h-14 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                            {uploadStatus === 'loading' ? <div className="animate-spin w-6 h-6 border-2 border-white border-t-transparent rounded-full"></div> : <Upload size={28} className="text-white" />}
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                            {uploadStatus === 'loading' ? <div className="animate-spin w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full"></div> : <Upload size={24} strokeWidth={2.5} />}
                         </div>
                         <div>
-                            <h3 className="font-black text-gray-800 text-lg leading-tight">Import Data</h3>
-                            <p className="text-xs font-bold text-gray-500">{message || 'Upload Excel Sheet'}</p>
+                            <h3 className="font-bold text-gray-900 text-sm">Import Customers</h3>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">{message || 'Upload Excel / CSV'}</p>
                         </div>
                     </div>
-                    <div className="relative z-10 bg-white/20 p-2.5 rounded-full backdrop-blur-md shadow-sm border border-white/50">
-                        <ChevronRight size={20} className="text-gray-700" />
+                    <div className="bg-gray-50 p-2 rounded-lg text-gray-400">
+                        <ChevronRight size={18} />
                     </div>
                     <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".xlsx,.xls,.json,.csv" className="hidden" />
                 </div>
 
-                {/* Service Cards (Glassmorphism) */}
+                {/* Service Cards - No Animation, Clean Look */}
                 <ServiceCard
                     title="Quran"
                     icon={Book}
-                    gradient="from-emerald-400 to-teal-500"
-                    shadow="shadow-emerald-200"
+                    color="bg-emerald-500"
                     onClick={() => navigate('/quran')}
                 />
 
                 <ServiceCard
                     title="Hospitals"
                     icon={Heart}
-                    gradient="from-pink-400 to-rose-500"
-                    shadow="shadow-pink-200"
+                    color="bg-rose-500"
                     onClick={() => navigate('/hospital-discounts')}
                 />
 
                 <ServiceCard
                     title="Reports"
                     icon={Receipt}
-                    gradient="from-violet-400 to-purple-500"
-                    shadow="shadow-violet-200"
+                    color="bg-violet-500"
                     onClick={() => navigate('/billing')}
                 />
 
                 <ServiceCard
                     title="Bundles"
                     icon={Wifi}
-                    gradient="from-blue-400 to-cyan-500"
-                    shadow="shadow-blue-200"
+                    color="bg-cyan-500"
                     onClick={() => navigate('/data-bundles')}
                 />
 
                 <ServiceCard
                     title="Assistants"
                     icon={Users}
-                    gradient="from-amber-400 to-orange-500"
-                    shadow="shadow-amber-200"
+                    color="bg-amber-500"
                     onClick={() => setShowAssistantModal(true)}
                 />
 
                 <ServiceCard
                     title="Clear List"
                     icon={FileSpreadsheet}
-                    gradient="from-red-400 to-red-600"
-                    shadow="shadow-red-200"
+                    color="bg-red-500"
                     onClick={handleClearMyData}
                 />
 
@@ -519,20 +502,17 @@ export default function Services() {
     );
 }
 
-// NEW COMPACT SERVICE CARD
-// NEW GLASSMORPHISM SERVICE CARD
-function ServiceCard({ title, icon: Icon, gradient, shadow, onClick }) {
+// CLEAN SERVICE CARD (No Animation, Minimal)
+function ServiceCard({ title, icon: Icon, color, onClick }) {
     return (
         <div
             onClick={onClick}
-            className="bg-white/80 backdrop-blur-xl rounded-[1.8rem] p-4 shadow-lg border border-white/60 active:scale-95 transition-all cursor-pointer flex flex-col items-center justify-center gap-3 h-32 relative overflow-hidden group hover:bg-white/90"
+            className="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-3 h-32 cursor-pointer hover:shadow-md hover:border-blue-100 transition-all"
         >
-            <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${gradient} opacity-10 rounded-full blur-xl -mr-6 -mt-6 group-hover:opacity-20 transition-opacity`}></div>
-
-            <div className={`w-14 h-14 bg-gradient-to-br ${gradient} rounded-2xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform ${shadow}`}>
-                <Icon size={26} className="text-white drop-shadow-sm" />
+            <div className={`w-12 h-12 rounded-2xl ${color} flex items-center justify-center text-white shadow-sm`}>
+                <Icon size={22} strokeWidth={2.5} />
             </div>
-            <span className="font-extrabold text-gray-700 text-sm tracking-tight group-hover:text-gray-900">{title}</span>
+            <span className="font-bold text-gray-700 text-xs uppercase tracking-wide">{title}</span>
         </div>
     );
 }
