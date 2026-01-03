@@ -462,6 +462,34 @@
         "answer": 0
     },
     {
+        "id": "general-so-n-1",
+        "category": "general",
+        "language": "so",
+        "difficulty": "normal",
+        "question": "Sheeg magaca saxaabigii loo yaqaan 'Turjumaanul Quraan'?",
+        "options": [
+            "Cabdullahi bin Cabbaas",
+            "Cali bin Abi Daalib",
+            "Ubay bin Kacab",
+            "Mu'aad bin Jabal"
+        ],
+        "answer": 0
+    },
+    {
+        "id": "general-so-n-2",
+        "category": "general",
+        "language": "so",
+        "difficulty": "normal",
+        "question": "Waa kuma saxaabiga kaliya ee arkay Dijaal?",
+        "options": [
+            "Tamiim Ad-Daari",
+            "Cumar bin Khadaab",
+            "Xudayfa bin Yamaan",
+            "Salmaan Al-Faarisi"
+        ],
+        "answer": 0
+    },
+    {
         "id": "ar-quran-e-1",
         "category": "quran",
         "language": "ar",
@@ -474,6 +502,20 @@
             "سورة الرحمن"
         ],
         "answer": 1
+    },
+    {
+        "id": "ar-quran-e-2",
+        "category": "quran",
+        "language": "ar",
+        "difficulty": "easy",
+        "question": "ما هي السورة التي تسمى 'أم الكتاب'؟",
+        "options": [
+            "سورة الفاتحة",
+            "سورة البقرة",
+            "سورة الكهف",
+            "سورة يوسف"
+        ],
+        "answer": 0
     },
     {
         "id": "ar-hadith-e-1",
@@ -490,6 +532,20 @@
         "answer": 1
     },
     {
+        "id": "ar-hadith-e-2",
+        "category": "hadith",
+        "language": "ar",
+        "difficulty": "easy",
+        "question": "أصح كتاب بعد كتاب الله؟",
+        "options": [
+            "صحيح البخاري",
+            "صحيح مسلم",
+            "موطأ مالك",
+            "مسند أحمد"
+        ],
+        "answer": 0
+    },
+    {
         "id": "ar-salat-e-1",
         "category": "salat",
         "language": "ar",
@@ -502,5 +558,19 @@
             "5"
         ],
         "answer": 1
+    },
+    {
+        "id": "ar-salat-e-2",
+        "category": "salat",
+        "language": "ar",
+        "difficulty": "easy",
+        "question": "صلاة تصلى عند انقطاع المطر؟",
+        "options": [
+            "صلاة الاستسقاء",
+            "صلاة الضحى",
+            "صلاة الخسوف",
+            "صلاة الكسوف"
+        ],
+        "answer": 0
     }
 ]
