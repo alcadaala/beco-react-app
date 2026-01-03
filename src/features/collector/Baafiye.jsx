@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Search, Filter, Phone, Calendar, MessageCircle, MessageSquare, ChevronDown, MapPin, X, User, FileText, CheckCircle2, Send, Users, Copy, Edit, ArrowRight, AlertCircle, Lock, MoreHorizontal, Plus, Clock, ChevronRight, Bell, Trash2, Upload, BarChart3, CircleUser, Heart, Pin, RefreshCw, Receipt, Tag } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { cn } from '../../lib/utils';
