@@ -307,22 +307,19 @@ export default function Services() {
 
     return (
         <div className="flex flex-col h-full bg-gray-50/50 pb-24 min-h-screen font-sans">
-            {/* Header Area (Tasks Style) */}
-            <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 px-5 py-4 border-b border-indigo-500/30 sticky top-0 z-10 shadow-lg mb-6">
+            {/* Header Area (Hospital Style) */}
+            <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 px-6 pt-8 pb-8 rounded-b-[2.5rem] sticky top-0 z-20 shadow-lg mb-6">
                 <div className="flex justify-between items-center">
                     <div>
                         <h1 className="text-2xl font-black text-white tracking-tight">Services</h1>
-                        <div className="flex items-center space-x-1 mt-0.5">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                            <p className="text-xs text-indigo-100 font-bold uppercase tracking-wide">
-                                Tools & Utilities
-                            </p>
-                        </div>
+                        <p className="text-xs text-indigo-100 font-bold uppercase tracking-wide">
+                            Tools & Utilities
+                        </p>
                     </div>
                     {/* User Profile Trigger */}
                     <button
                         onClick={handleEditProfile}
-                        className="w-11 h-11 rounded-2xl border-2 border-white/10 p-0.5 cursor-pointer hover:bg-white/10 transition-colors flex items-center justify-center overflow-hidden shadow-lg shadow-indigo-900/20"
+                        className="w-12 h-12 rounded-2xl border border-white/10 bg-white/10 backdrop-blur-sm p-0.5 cursor-pointer hover:bg-white/20 transition-colors flex items-center justify-center overflow-hidden shadow-lg"
                     >
                         <img
                             src={`https://ui-avatars.com/api/?name=${currentUser?.name || 'User'}&background=random&color=fff&size=128`}
