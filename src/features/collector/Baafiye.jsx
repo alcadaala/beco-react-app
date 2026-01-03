@@ -1232,17 +1232,17 @@ export default function Baafiye() {
                                 <div className="space-y-3">
                                     {/* SQN / TEEL OPTION */}
                                     {/* SQN / TEEL OPTION - DIRECT DIAL */}
+                                    {/* SQN - DIRECT DIAL (Updated per user request) */}
                                     <div
                                         className="flex items-center justify-between w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl group hover:bg-green-50 hover:border-green-200 transition-all cursor-pointer active:scale-95"
                                         onClick={() => {
-                                            logActivity('call', 'SQN/Tell', callSelection.name, callSelection.sqn);
-                                            window.location.href = `tel:${callSelection.tell}`;
+                                            logActivity('call', 'SQN_Dial', callSelection.name, callSelection.sqn);
+                                            window.location.href = `tel:${callSelection.sqn}`;
                                         }}
                                     >
                                         <div className="text-left">
                                             <div className="text-xs font-bold text-gray-400 uppercase mb-0.5">Account / SQN</div>
-                                            <div className="font-black text-lg text-gray-900">{callSelection.tell || 'N/A'}</div>
-                                            <div className="text-[10px] font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full inline-block mt-1">SQN: {callSelection.sqn}</div>
+                                            <div className="font-black text-2xl text-gray-900 tracking-wider">{callSelection.sqn}</div>
                                         </div>
                                         <div className="bg-white p-2.5 rounded-full shadow-sm text-gray-400 group-hover:text-green-600 transition-colors">
                                             <Phone size={20} />
