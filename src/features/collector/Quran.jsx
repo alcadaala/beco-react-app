@@ -179,6 +179,11 @@ export default function Quran() {
         audio.onended = () => setIsPlaying(false);
         audio.onpause = () => setIsPlaying(false);
         audio.onplay = () => setIsPlaying(true);
+
+        return () => {
+            audio.pause();
+            audio.src = "";
+        };
     }, []);
 
     const filteredSurahs = surahs.filter(s =>
@@ -202,8 +207,8 @@ export default function Quran() {
 
         return (
             currentSurah && (
-                <div className="fixed bottom-6 w-[92%] left-[4%] sm:w-auto sm:left-6 sm:right-6 z-[60] animate-in slide-in-from-bottom duration-500 max-w-xl mx-auto">
-                    <div className="bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-2 pl-4 pr-2 shadow-2xl shadow-black/50 flex items-center justify-between">
+                <div className="fixed bottom-4 left-0 right-0 z-[60] animate-in slide-in-from-bottom duration-500 flex justify-center w-full pointer-events-none">
+                    <div className="w-[94%] max-w-xl pointer-events-auto bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-[2rem] p-2 pl-3 pr-2 shadow-2xl shadow-black/50 flex items-center justify-between">
                         <div className="flex items-center space-x-3 flex-1 overflow-hidden group cursor-pointer" onClick={() => !readingSurah && openReader(currentSurah)}>
                             <div className="relative h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
                                 {isPlaying && <div className="absolute inset-0 bg-emerald-500/30 rounded-full animate-ping opacity-75"></div>}
