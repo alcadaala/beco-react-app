@@ -32,7 +32,24 @@ export default function Services() {
                     const userRef = doc(db, 'profiles', user.id);
                     const userSnap = await getDoc(userRef);
                     if (userSnap.exists()) {
-                        user = { id: userSnap.id, ...userSnap.data() };
+                        const userData = userSnap.data();
+                        user = { id: userSnap.id, ...userData };
+
+                        // IF Branch Name is missing but we have Branch ID, fetch it!
+                        if ((!user.branch && !user.branch_name) && user.branch_id) {
+                            try {
+                                const branchRef = doc(db, 'branches', user.branch_id);
+                                const branchSnap = await getDoc(branchRef);
+                                if (branchSnap.exists()) {
+                                    user.branch_name = branchSnap.data().name;
+                                    // Optionally update profile with this missing content for future optimization
+                                    // await updateDoc(userRef, { branch: user.branch_name }); 
+                                }
+                            } catch (err) {
+                                console.error("Error fetching branch details:", err);
+                            }
+                        }
+
                         setCurrentUser(user);
                         // Update local storage to keep it fresh
                         localStorage.setItem('beco_current_user', JSON.stringify(user));

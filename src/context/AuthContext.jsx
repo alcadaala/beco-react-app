@@ -93,6 +93,8 @@ export const AuthProvider = ({ children }) => {
                     phone: metadata.phone || '',
                     zone: metadata.zone || '',
                     branch_id: metadata.branch_id || '',
+                    branch: metadata.branch || metadata.branch_name || '', // Save Name
+                    branch_name: metadata.branch_name || metadata.branch || '',
                     role: metadata.role || 'Collector',
                     status: 'Active', // Auto-approve
                     created_at: serverTimestamp(),

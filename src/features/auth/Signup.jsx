@@ -47,6 +47,8 @@ const Signup = () => {
                 phone: formData.phone,
                 zone: formData.zone,
                 branch_id: branchData.id,
+                branch: formData.branch_name, // Save the actual name
+                branch_name: formData.branch_name, // Redundant for safety
                 role: 'Collector'
             });
 
