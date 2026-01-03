@@ -154,6 +154,33 @@ export default function Discounts() {
         }
     };
 
+    const handleMarkAsPaid = async () => {
+        const selectedCustomers = customers.filter(c => selectedIds.has(c.sqn));
+        if (selectedCustomers.length === 0) return;
+
+        if (!confirm(`Are you sure you want to mark ${selectedCustomers.length} customers as PAID?`)) return;
+
+        try {
+            const zone = currentUser.branch || 'General';
+            const batchPromises = selectedCustomers.map(c => {
+                const docId = c.id || c.sqn;
+                const customerRef = doc(db, 'zones', zone, 'customers', String(docId));
+                return updateDoc(customerRef, {
+                    status: 'Paid',
+                    paidDate: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+            });
+
+            await Promise.all(batchPromises);
+            setSelectedIds(new Set()); // Clear selection
+            console.log("Marked as Paid successfully");
+        } catch (e) {
+            console.error("Error marking as paid", e);
+            alert("Failed to mark as paid: " + e.message);
+        }
+    };
+
     return (
         <div className="flex flex-col h-full bg-gray-50 pb-24 relative font-sans">
             {/* Header - PREMIUM GRADIENT THEME (Tasks Style) */}
@@ -168,12 +195,35 @@ export default function Discounts() {
                             </p>
                         </div>
                     </div>
-                    <button
-                        onClick={selectAll}
-                        className="text-xs font-bold text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg active:scale-95 transition-all backdrop-blur-sm border border-white/10 shadow-sm"
-                    >
-                        {selectedIds.size === customers.length ? 'Deselect All' : 'Select All'}
-                    </button>
+
+                    <div className="flex items-center space-x-2">
+                        {/* ACTION BUTTONS (Visible when selected) */}
+                        {selectedIds.size > 0 && (
+                            <>
+                                <button
+                                    onClick={handleShare}
+                                    className="p-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all active:scale-95 backdrop-blur-sm border border-white/10"
+                                    title="Share Requests"
+                                >
+                                    <Share2 size={18} />
+                                </button>
+                                <button
+                                    onClick={handleMarkAsPaid}
+                                    className="p-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-100 rounded-lg border border-emerald-500/30 transition-all active:scale-95 backdrop-blur-sm"
+                                    title="Mark as Paid"
+                                >
+                                    <CheckCircle2 size={18} />
+                                </button>
+                            </>
+                        )}
+
+                        <button
+                            onClick={selectAll}
+                            className="text-xs font-bold text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg active:scale-95 transition-all backdrop-blur-sm border border-white/10 shadow-sm"
+                        >
+                            {selectedIds.size === customers.length ? 'Deselect All' : 'Select All'}
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -186,13 +236,13 @@ export default function Discounts() {
                     <div className="relative z-10 flex justify-between items-end">
                         <div className="flex flex-col">
                             <span className="text-indigo-100 text-[10px] font-bold uppercase tracking-widest mb-1">Total Paid</span>
-                            <span className="text-3xl font-black text-white tracking-tight">
+                            <span className="text-2xl font-black text-white tracking-tight">
                                 ${customers.reduce((sum, c) => sum + parseFloat(c.paidAmount || 0), 0).toFixed(2)}
                             </span>
                         </div>
                         <div className="flex flex-col items-end">
                             <span className="text-indigo-100 text-[10px] font-bold uppercase tracking-widest mb-1">Total Discount</span>
-                            <span className="text-2xl font-black text-white/90 tracking-tight">
+                            <span className="text-xl font-black text-white/90 tracking-tight">
                                 ${customers.reduce((sum, c) => sum + parseFloat(c.discountAmount || 0), 0).toFixed(2)}
                             </span>
                         </div>
@@ -268,20 +318,7 @@ export default function Discounts() {
                 )}
             </div>
 
-            {/* FLOATING ACTION BUTTON */}
-            {
-                selectedIds.size > 0 && (
-                    <div className="fixed bottom-24 left-0 right-0 px-6 z-40 flex justify-center pointer-events-none">
-                        <button
-                            onClick={handleShare}
-                            className="bg-gray-900 text-white px-6 py-3.5 rounded-2xl shadow-xl font-bold flex items-center space-x-3 pointer-events-auto transform transition-all active:scale-95 animate-in slide-in-from-bottom-5"
-                        >
-                            <Share2 size={18} />
-                            <span>Share ({selectedIds.size}) Requests</span>
-                        </button>
-                    </div>
-                )
-            }
+
 
             {/* DISCOUNT CALCULATION MODAL */}
             {
